@@ -3,15 +3,16 @@
 \label{ch:relatedwork}
 \label{ch:chapter2}
 
-\subsection{Long Context LLMs}
+\section{Long-Context LLMs}
 
-Other model architectures have been proposed to extend the effective context window length that use transformer variants with modified attention mechanisms. Alternatively, studies have suggested fine tuning LLMs using positional embeddings. However, these methods are currently in an early stage and incur in high costs during training. \\
+Novel model architectures have been proposed to extend the effective context window length that use transformer variants with modified attention mechanisms like recurrence. Alternatively, some studies suggest fine-tuning LLMs with positional embeddings. However, these methods are still in their early stages and incur high training costs. \\
 
-\noindent Wang et al suggested a model architecture that implements a residual side net that serves as a memory repository for the fixed LLM \cite{wang2023augmentinglanguagemodelslongterm}.
+\noindent Wang et al. proposed a model architecture that incorporates a residual side network, which serves as long-term memory storage for the LLM \cite{wang2023augmentinglanguagemodelslongterm}.
 
-\subsection{Retrieval Augmented Generation}
+\section{Retrieval Augmented Generation}
 
+Retrieval Augmented Generation enhances LLMs by integrating relevant knowledge from external data sources into their context \cite{lewis2021retrievalaugmentedgenerationknowledgeintensivenlp}. This strategy has been widely used to implement long-term memory for LLM conversational agents, where relevant memories are retrieved and then used to generate responses \cite{zeng2024structuralmemoryllmagents}. \\ 
 
+\noindent Various studies have explored different retrieval granularities, including chunks, summaries, and knowledge triples \cite{zeng2024structuralmemoryllmagents}, as well as different retrieval algorithms such as BM25 and semantic similarity.\\
 
-% STATE OF THE ART
-\input{chapter2/section_1_state_of_the_art}
+\noindent Graph RAG extends this approach by using an LLM to extract entities and relationships from a corpus, constructing a knowledge graph that enables more effective reasoning over the data. This structured representation helps answer global questions where conventional RAG methods often underperform \cite{edge2024localglobalgraphrag}.
