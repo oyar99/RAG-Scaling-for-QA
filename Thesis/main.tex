@@ -1,0 +1,37 @@
+\documentclass[11pt,twoside]{report}
+\include{config/config}
+
+\begin{document}
+
+\include{other/title}
+\cleardoublepage
+
+\newpage
+\thispagestyle{empty}
+
+\cleardoublepage
+\pagestyle{fancy}
+
+\justifying
+
+\include{other/abstract} %Abstract
+\include{other/acknowledgements} % Acknowledgements
+\include{other/tables} % Tables
+
+% Remove 'Chapter #' from the header
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}} 
+
+% CONTENTS
+
+\include{chapter1/chapter1}
+\include{chapter2/chapter2}
+
+% BIBLIOGRAPHY
+\include{other/bibliography}
+
+\appendix
+\include{appendix/appendices}
+
+\end{document}
+
