@@ -8,7 +8,7 @@ In this work, we present a systematic evaluation of three agent-based architectu
 
 We evalute the 3 systems against well-known dataset benchmarks for QA and MHQA.
 
-- _LoCoMo_: A dataset consisting of 10 _very_ long-term conversations between two users annotated for the QA task. The dataset has been forked into this repository under `datasets\locomo` folder. See [LoCoMo](https://github.com/snap-research/locomo) for more details on the generation and statistics of the dataset.
+- _LoCoMo_: A dataset consisting of 10 _very_ long-term conversations between two users annotated for the QA task. The dataset has been forked into this repository under `src\datasets\locomo` folder. See [LoCoMo](https://github.com/snap-research/locomo) for more details on the generation and statistics of the dataset.
 
 ## Requirements
 
