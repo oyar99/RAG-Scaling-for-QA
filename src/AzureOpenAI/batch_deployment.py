@@ -1,11 +1,12 @@
 from logger.logger import Logger
-from AzureOpenAI.openai_client import get_openai_client
+from AzureOpenAI.openai_client import OpenAIClient
 from models.question import Question
 import json
 import io
 import time
 
 from utils.byte_utils import format_size
+from utils.token_utils import estimate_num_tokens
 
 
 def queue_qa_batch_job(
@@ -58,6 +59,12 @@ def queue_qa_batch_job(
 
     if not isinstance(presence_penalty, float) or presence_penalty < -2 or presence_penalty > 2:
         raise ValueError("presence_penalty must be a float between -2 and 2")
+ 
+    for question in questions:
+        token_count = estimate_num_tokens(system_prompt[question["conversation_id"]] + question["question"], model)
+        
+        if token_count > 20e3:
+            Logger().warn(f"Question {question['question_id']} exceeds 20,000 tokens.")
 
     jobs = [
         {
@@ -86,10 +93,10 @@ def queue_qa_batch_job(
     Logger().info(f"batch file size: {format_size(len(jsonl_encoded))}")
     
     byte_stream = io.BytesIO(jsonl_encoded)
-
-    openai_client = get_openai_client()
     
     Logger().info("Starting batch file upload ...")
+    
+    openai_client = OpenAIClient().get_client()
     
     # Upload jsonl file for batch processing
     batch_file = openai_client.files.create(

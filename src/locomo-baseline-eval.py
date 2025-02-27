@@ -5,25 +5,16 @@ from AzureOpenAI.batch_deployment import queue_qa_batch_job
 from logger.logger import Logger
 from models.question import Question
 from dotenv import load_dotenv
+import re
+from collections import defaultdict
 
 QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
-question and you need to provide a short concise answer based only on the provided conversation between two people. \
+question and you need to provide a concise answer with no explanations based only on the provided conversation between two people. \
 
-The conversation takes place over multiple days called sessions and is formatted as a json file with the following keys:
-    
-- speaker_a: The name of the first speaker in the conversation.
-- speaker_b: The name of the second speaker in the conversation.
-- session_x_date_time: The date and time of the session x in the conversation.
-- session_x: An array of messages.
-    
-Each message is formatted as a dictionary with the following keys:
-    
-- speaker: The name of the speaker.
-- dia_id: The dialogue id of the message.
-- text: The text of the message.
-    
+The conversation takes place over multiple days and the date of each conversation is written at the beginning of the conversation:
+
 Below is the conversation between the two users.
-    
+
 {conversation}
 '''
 
@@ -58,8 +49,32 @@ def read_dataset(conversation_id: str = None):
         ]
 
 
+def parse_conversation(conversation):
+    pattern = re.compile(r"^session_\d+$")
+
+    parsed_messages = [
+        {'speaker': message['speaker'],
+            'text': message['text'], 'session': key}
+        for key, session in conversation.items() if pattern.match(key)
+        for message in session
+    ]
+
+    grouped_messages = defaultdict(list)
+    for message in parsed_messages:
+        grouped_messages[message['session']].append(message)
+
+    return "\n".join(
+        [
+            f"DATE: {conversation[f'{session}_date_time']}\nCONVERSATION:\n" + "\n".join(
+                [f"{message['speaker']} said: {message['text']}" for message in messages]
+            )
+            for session, messages in grouped_messages.items()
+        ]
+    )
+
+
 def build_system_prompt(conversation):
-    return QA_PROMPT.format(conversation=conversation)
+    return QA_PROMPT.format(conversation=parse_conversation(conversation))
 
 
 def main():

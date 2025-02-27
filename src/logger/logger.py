@@ -12,12 +12,23 @@ class Logger(metaclass=Singleton):
         self._logger = logging.getLogger(__name__)
         log_level = os.getenv("LOG_LEVEL", "INFO").upper()
         self._logger.setLevel(log_level)
+        
+        self._run_id = str(uuid.uuid4())
+        
+        # Create console handler
         ch = logging.StreamHandler()
         ch.setLevel(log_level)
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         self._logger.addHandler(ch)
-        self._run_id = str(uuid.uuid4())
+        
+        # Create file handler
+        log_dir = os.path.join(os.path.normpath(os.getcwd() + os.sep + os.pardir), 'logs')
+        log_fname = os.path.join(log_dir, f'app-{self._run_id}.log')
+        fh = logging.FileHandler(log_fname)
+        fh.setLevel(log_level)
+        fh.setFormatter(formatter)
+        self._logger.addHandler(fh)
     
     def info(self, message: str) -> None:
         """Logs a message at the INFO level.
@@ -26,6 +37,14 @@ class Logger(metaclass=Singleton):
             message (str): message to be logged
         """
         self._logger.info(message)
+        
+    def warn(self, message: str) -> None:
+        """Logs a message at the WARN level.
+
+        Args:
+            message (str): message to be logged
+        """
+        self._logger.warning(message)
         
     def get_run_id(self) -> str:
         """Returns the run id.
