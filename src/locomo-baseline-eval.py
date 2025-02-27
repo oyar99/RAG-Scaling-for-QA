@@ -37,7 +37,10 @@ def parse_args():
     parser.add_argument('-m', '--model', type=str,
                         required=True, help='model deployment identifier')
     parser.add_argument('-c', '--conversation', type=str,
-                        help='conversation id (optional)')
+                        help='conversation id to be evaluated (optional)')
+
+    parser.add_argument('-q', '--questions', type=int,
+                        help='number of questions to be answered in each conversation (optional)')
 
     return parser.parse_args()
 
@@ -64,8 +67,9 @@ def main():
     load_dotenv()
 
     dataset = read_dataset(args.conversation)
-    
-    Logger().info(f"Locomo dataset read successfully. Total samples: {len(dataset)}")
+
+    Logger().info(
+        f"Locomo dataset read successfully. Total samples: {len(dataset)}")
 
     Logger().info("Building system prompts")
 
@@ -76,7 +80,6 @@ def main():
     }
 
     Logger().info("Building questions")
-
     questions = [
         Question(
             question_id=qa['id'],
@@ -84,13 +87,16 @@ def main():
             conversation_id=conversation_sample['sample_id']
         )
         for conversation_sample in dataset
-        for qa in conversation_sample['qa']
+        for qa in (conversation_sample['qa'] if args.questions is None else conversation_sample['qa'][:args.questions])
     ]
+
+    Logger().info(f"Questions length: {len(questions)}")
 
     queue_qa_batch_job(
         args.model, system_prompt=system_prompt, questions=questions)
 
 
 if __name__ == "__main__":
-    Logger().info(f"Starting Locomo baseline evaluation. RunId: {Logger().get_run_id()}")
+    Logger().info(
+        f"Starting Locomo baseline evaluation. RunId: {Logger().get_run_id()}")
     main()
