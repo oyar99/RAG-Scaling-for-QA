@@ -15,6 +15,11 @@ class OpenAIClient(metaclass=Singleton):
         self.initialize_client()
 
     def initialize_client(self):
+        """Initializes the Azure OpenAI client if it is not already initialized.
+        
+        Raises:
+            ValueError: if any of the required environment variables are not set
+        """
         if self._client is None:
             azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
             api_key = os.getenv("AZURE_OPENAI_API_KEY")
