@@ -1,12 +1,13 @@
+"""Evaluation baseline benchmark for the Locomo dataset."""
 import argparse
 import json
-
-from AzureOpenAI.batch_deployment import queue_qa_batch_job
-from logger.logger import Logger
-from models.question import Question
-from dotenv import load_dotenv
 import re
 from collections import defaultdict
+from dotenv import load_dotenv
+
+from azure_open_ai.batch_deployment import queue_qa_batch_job
+from logger.logger import Logger
+from models.question import Question
 
 QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
 question and you need to provide a concise answer with no explanations based only on the provided conversation between two people. \
@@ -20,6 +21,11 @@ Below is the conversation between the two users.
 
 
 def parse_args():
+    """Parses the command line arguments.
+
+    Returns:
+        dict: the parsed arguments
+    """
     parser = argparse.ArgumentParser(
         prog='locomo-baseline-eval',
         description='Evaluate the Locomo benchmark using the baseline system'
@@ -36,20 +42,37 @@ def parse_args():
     return parser.parse_args()
 
 
-def read_dataset(conversation_id: str = None):
+def read_dataset(conversation_id: str = None) -> list[dict]:
+    """Reads the Locomo dataset from the datasets directory.
+
+    Args:
+        conversation_id (str, optional): _description_. Defaults to None.
+
+    Returns:
+        list[dict]: the dataset as a list of dictionaries
+    """
     Logger().info("Reading Locomo dataset")
-    with open("datasets\locomo\locomo10.json", "r") as locomo_dataset:
+    with open("datasets\\locomo\\locomo10.json", "r", encoding="utf-8") as locomo_dataset:
         return [
             {
                 **conversation_sample,
-                'qa': [{**qa, 'id': f'{conversation_sample["sample_id"]}-{i + 1}'} for i, qa in enumerate(conversation_sample['qa'])]
+                'qa': [{**qa, 'id': f'{conversation_sample["sample_id"]}-{i + 1}'}
+                       for i, qa in enumerate(conversation_sample['qa'])]
             }
             for conversation_sample in (json.load(locomo_dataset) if not conversation_id else [
                 sample for sample in json.load(locomo_dataset) if sample['sample_id'] == conversation_id])
         ]
 
 
-def parse_conversation(conversation):
+def parse_conversation(conversation) -> str:
+    """Parses the conversation object in a human-readable format.
+
+    Args:
+        conversation (dict): the conversation object between two users
+
+    Returns:
+        str: a human readable string representation of the conversation
+    """
     pattern = re.compile(r"^session_\d+$")
 
     parsed_messages = [
@@ -73,11 +96,23 @@ def parse_conversation(conversation):
     )
 
 
-def build_system_prompt(conversation):
+def build_system_prompt(conversation) -> str:
+    """Builds the system prompt for the model.
+
+    Args:
+        conversation (dict): the conversation object between two users
+
+    Returns:
+        str: the system prompt
+    """
     return QA_PROMPT.format(conversation=parse_conversation(conversation))
 
 
 def main():
+    """
+    Entry point of the script. Parses arguments, reads the dataset, builds system prompts and 
+    questions, and queues the batch job for evaluation.
+    """
     args = parse_args()
     load_dotenv()
 

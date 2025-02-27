@@ -4,7 +4,7 @@ import json
 import io
 import time
 from logger.logger import Logger
-from AzureOpenAI.openai_client import OpenAIClient
+from azure_open_ai.openai_client import OpenAIClient
 from models.question import Question
 
 from utils.byte_utils import format_size
