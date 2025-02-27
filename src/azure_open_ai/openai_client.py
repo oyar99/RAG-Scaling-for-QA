@@ -11,19 +11,21 @@ class OpenAIClient(metaclass=Singleton):
     """
 
     def __init__(self):
-        self._initialize_client()
+        self._client = None
+        self.initialize_client()
 
-    def _initialize_client(self):
-        azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
-        api_key = os.getenv("AZURE_OPENAI_API_KEY")
-        api_version = os.getenv(
-            "AZURE_OPENAI_API_VERSION") or "2024-08-01-preview"
+    def initialize_client(self):
+        if self._client is None:
+            azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+            api_key = os.getenv("AZURE_OPENAI_API_KEY")
+            api_version = os.getenv(
+                "AZURE_OPENAI_API_VERSION") or "2024-08-01-preview"
 
-        self._client = AzureOpenAI(
-            azure_endpoint=azure_endpoint,
-            api_key=api_key,
-            api_version=api_version
-        )
+            self._client = AzureOpenAI(
+                azure_endpoint=azure_endpoint,
+                api_key=api_key,
+                api_version=api_version
+            )
 
     def get_client(self):
         """Returns the Azure OpenAI client.

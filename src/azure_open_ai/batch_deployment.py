@@ -15,10 +15,7 @@ def queue_qa_batch_job(
     model: str,
     system_prompt: dict[str, str],
     questions: list[Question],
-    temperature: float = 0.0,
-    max_tokens: int = 1000,
-    frequency_penalty: float = 0.0,
-    presence_penalty: float = 0.0,
+    job_args: dict = None,
 ):
     """
     Queues a batch job for Question Answering using Azure OpenAI.
@@ -27,12 +24,13 @@ def queue_qa_batch_job(
         model (str): the deployment model name
         system_prompt (dict[str, str]): a dictionary that maps conversations to their corresponding system prompts
         questions (list[Question]): the list of questions to be answered
-        temperature (float, optional): the sampling temperature to use. Defaults to 0.0.
-        max_tokens (int, optional): the maximum number of tokens that can be generated in the completion. 
+        job_args (dict, optional): a dictionary of job arguments. Defaults to None. Possible arguments are:
+            temperature (float, optional): the sampling temperature to use. Defaults to 0.0.
+            max_tokens (int, optional): the maximum number of tokens that can be generated in the completion.
             Defaults to 1000.
-        frequency_penalty (float, optional): penalize new tokens based on their existing frequency in the text so far. 
-            Defaults to 0.0.
-        presence_penalty (float, optional): penalize new tokens based on whether they appear in the text so far. 
+            frequency_penalty (float, optional): penalize new tokens based on their existing frequency in the 
+            text so far. Defaults to 0.0.
+            presence_penalty (float, optional): penalize new tokens based on whether they appear in the text so far. 
             Defaults to 0.0.
 
     Raises:
@@ -49,18 +47,17 @@ def queue_qa_batch_job(
 
     if not isinstance(questions, list) or len(questions) <= 0:
         raise ValueError("questions must be a non-empty list.")
-
-    if not isinstance(temperature, float) or temperature < 0 or temperature > 2:
-        raise ValueError("temperature must be a float between 0 and 2")
-
-    if not isinstance(max_tokens, int) or max_tokens <= 0:
-        raise ValueError("max_tokens must be a positive integer.")
-
-    if not isinstance(frequency_penalty, float) or frequency_penalty < -2 or frequency_penalty > 2:
-        raise ValueError("frequency_penalty must be a float between -2 and 2")
-
-    if not isinstance(presence_penalty, float) or presence_penalty < -2 or presence_penalty > 2:
-        raise ValueError("presence_penalty must be a float between -2 and 2")
+    
+    if job_args is None: 
+        job_args = {
+            'temperature': 0.0,
+            'max_tokens': 1000,
+            'frequency_penalty': 0.0,
+            'presence_penalty': 0.0
+        }
+    
+    if not isinstance(job_args, dict):
+        raise ValueError("job_args must be a dictionary.")
 
     for question in questions:
         token_count = estimate_num_tokens(
@@ -82,10 +79,10 @@ def queue_qa_batch_job(
                      "content": system_prompt[question["conversation_id"]]},
                     {"role": "user", "content": question["question"]}
                 ],
-                "temperature": temperature,
-                "frequency_penalty": frequency_penalty,
-                "presence_penalty": presence_penalty,
-                "max_tokens": max_tokens
+                "temperature": job_args['temperature'],
+                "frequency_penalty": job_args['frequency_penalty'],
+                "presence_penalty": job_args['presence_penalty'],
+                "max_tokens": job_args['max_tokens']
             },
         }
         for question in questions
@@ -112,7 +109,7 @@ def queue_qa_batch_job(
     # Wait until the file is uploaded
     while True:
         file = openai_client.files.retrieve(batch_file.id)
-        if file.status == "processed" or file.status == "error":
+        if file.status in ("processed", "error"):
             break
         Logger().info("Waiting for file to be uploaded...")
         time.sleep(10)
