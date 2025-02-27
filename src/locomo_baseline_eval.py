@@ -10,11 +10,12 @@ from logger.logger import Logger
 from models.question import Question
 
 QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
-question and you need to provide a concise answer with no explanations based only on the provided conversation between two people. \
+conversation between two users followed by a question. You need to provide a concise answer using exact \
+words from the conversations when possible. \
 
 The conversation takes place over multiple days and the date of each conversation is written at the beginning of the conversation:
 
-Below is the conversation between the two users.
+Below is the conversation.
 
 {conversation}
 '''
@@ -38,6 +39,9 @@ def parse_args():
 
     parser.add_argument('-q', '--questions', type=int,
                         help='number of questions to be answered in each conversation (optional)')
+
+    parser.add_argument('-ct', '--category', type=int,
+                        help='category to be evaluated (optional)')
 
     return parser.parse_args()
 
@@ -94,7 +98,27 @@ def parse_conversation(conversation) -> str:
             for session, messages in grouped_messages.items()
         ]
     )
+    
+def filter_questions(questions: list, limit: int = None, category: int = None) -> list:
+    """Filters the questions based on the category and limit.
 
+    Args:
+        questions (list): the list of questions
+        limit (int, optional): the limit of questions to be returned
+        category (int): the category to be returned. All if not specified
+
+    Returns:
+        list: the filtered list of questions
+    """
+    filtered_questions = [
+        question for question in questions
+        if category is None or question['category'] == category
+    ]
+
+    if limit is not None:
+        filtered_questions = filtered_questions[:limit]
+      
+    return filtered_questions
 
 def build_system_prompt(conversation) -> str:
     """Builds the system prompt for the model.
@@ -130,14 +154,16 @@ def main():
     }
 
     Logger().info("Building questions")
+    
     questions = [
         Question(
             question_id=qa['id'],
             question=qa['question'],
-            conversation_id=conversation_sample['sample_id']
+            conversation_id=conversation_sample['sample_id'],
+            category=qa['category']
         )
         for conversation_sample in dataset
-        for qa in (conversation_sample['qa'] if args.questions is None else conversation_sample['qa'][:args.questions])
+        for qa in (filter_questions(conversation_sample['qa'], args.questions, args.category))
     ]
 
     Logger().info(f"Questions length: {len(questions)}")
