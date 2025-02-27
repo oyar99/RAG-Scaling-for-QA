@@ -1,9 +1,11 @@
-from logger.logger import Logger
-from AzureOpenAI.openai_client import OpenAIClient
-from models.question import Question
+"""Module to queue a batch job for Question Answering using Azure OpenAI."""
+
 import json
 import io
 import time
+from logger.logger import Logger
+from AzureOpenAI.openai_client import OpenAIClient
+from models.question import Question
 
 from utils.byte_utils import format_size
 from utils.token_utils import estimate_num_tokens
@@ -26,16 +28,16 @@ def queue_qa_batch_job(
         system_prompt (dict[str, str]): a dictionary that maps conversations to their corresponding system prompts
         questions (list[Question]): the list of questions to be answered
         temperature (float, optional): the sampling temperature to use. Defaults to 0.0.
-        max_tokens (int, optional): the maximum number of tokens that can be generated in the completion. Defaults to 1000.
-        frequency_penalty (float, optional): penalize new tokens based on their existing frequency in the text so far. Defaults to 0.0.
-        presence_penalty (float, optional): penalize new tokens based on whether they appear in the text so far. Defaults to 0.0.
+        max_tokens (int, optional): the maximum number of tokens that can be generated in the completion. 
+            Defaults to 1000.
+        frequency_penalty (float, optional): penalize new tokens based on their existing frequency in the text so far. 
+            Defaults to 0.0.
+        presence_penalty (float, optional): penalize new tokens based on whether they appear in the text so far. 
+            Defaults to 0.0.
 
     Raises:
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
+        ValueError: if any of the input parameters are invalid
+        RuntimeError: if the file upload fails
     """
 
     if not isinstance(model, str) or len(model) <= 0:
@@ -59,12 +61,14 @@ def queue_qa_batch_job(
 
     if not isinstance(presence_penalty, float) or presence_penalty < -2 or presence_penalty > 2:
         raise ValueError("presence_penalty must be a float between -2 and 2")
- 
+
     for question in questions:
-        token_count = estimate_num_tokens(system_prompt[question["conversation_id"]] + question["question"], model)
-        
+        token_count = estimate_num_tokens(
+            system_prompt[question["conversation_id"]] + question["question"], model)
+
         if token_count > 20e3:
-            Logger().warn(f"Question {question['question_id']} exceeds 20,000 tokens.")
+            Logger().warn(
+                f"Question {question['question_id']} exceeds 20,000 tokens.")
 
     jobs = [
         {
@@ -86,24 +90,25 @@ def queue_qa_batch_job(
         }
         for question in questions
     ]
-    
+
     jobs_jsonl = "\n".join(json.dumps(job) for job in jobs)
     jsonl_encoded = jobs_jsonl.encode("utf-8")
 
     Logger().info(f"batch file size: {format_size(len(jsonl_encoded))}")
-    
+
     byte_stream = io.BytesIO(jsonl_encoded)
-    
+
     Logger().info("Starting batch file upload ...")
-    
+
     openai_client = OpenAIClient().get_client()
-    
+
     # Upload jsonl file for batch processing
     batch_file = openai_client.files.create(
-        file=(f'locomo-run-{Logger().get_run_id()}.jsonl', byte_stream, 'application/jsonl'),
+        file=(f'locomo-run-{Logger().get_run_id()}.jsonl',
+              byte_stream, 'application/jsonl'),
         purpose="batch",
     )
-    
+
     # Wait until the file is uploaded
     while True:
         file = openai_client.files.retrieve(batch_file.id)
@@ -111,10 +116,11 @@ def queue_qa_batch_job(
             break
         Logger().info("Waiting for file to be uploaded...")
         time.sleep(10)
-        
+
     if file.status == "error":
-        raise Exception(f"File upload failed: {file.error}")
-    
+        # pylint: disable-next=broad-except
+        raise RuntimeError(f"File upload failed: {file.error}")
+
     Logger().info("File upload succeeded.")
     Logger().info("Creating batch job ...")
 
@@ -124,5 +130,5 @@ def queue_qa_batch_job(
         endpoint="/v1/chat/completions",
         completion_window="24h"
     )
-    
+
     return batch_job
