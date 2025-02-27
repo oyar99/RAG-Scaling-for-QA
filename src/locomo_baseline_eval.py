@@ -98,7 +98,8 @@ def parse_conversation(conversation) -> str:
             for session, messages in grouped_messages.items()
         ]
     )
-    
+
+
 def filter_questions(questions: list, limit: int = None, category: int = None) -> list:
     """Filters the questions based on the category and limit.
 
@@ -117,8 +118,9 @@ def filter_questions(questions: list, limit: int = None, category: int = None) -
 
     if limit is not None:
         filtered_questions = filtered_questions[:limit]
-      
+
     return filtered_questions
+
 
 def build_system_prompt(conversation) -> str:
     """Builds the system prompt for the model.
@@ -154,7 +156,7 @@ def main():
     }
 
     Logger().info("Building questions")
-    
+
     questions = [
         Question(
             question_id=qa['id'],

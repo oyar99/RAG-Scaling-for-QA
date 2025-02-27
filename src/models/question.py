@@ -15,6 +15,7 @@ class QuestionCategory(Enum):
     SINGLE_HOP = 4
     ADVERSARIAL = 5
 
+
 class Question(dict):
     """A question class that inherits from dict.
 
@@ -29,4 +30,3 @@ class Question(dict):
     def __repr__(self):
         return f"""Question(question_id={self.get('question_id')}, question={self.get('question')}),\
     conversation_id={self.get('conversation_id')}, category={self.get('category')})"""
-

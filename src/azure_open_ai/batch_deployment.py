@@ -47,15 +47,15 @@ def queue_qa_batch_job(
 
     if not isinstance(questions, list) or len(questions) <= 0:
         raise ValueError("questions must be a non-empty list.")
-    
-    if job_args is None: 
+
+    if job_args is None:
         job_args = {
             'temperature': 0.0,
             'max_tokens': 1000,
             'frequency_penalty': 0.0,
             'presence_penalty': 0.0
         }
-    
+
     if not isinstance(job_args, dict):
         raise ValueError("job_args must be a dictionary.")
 
