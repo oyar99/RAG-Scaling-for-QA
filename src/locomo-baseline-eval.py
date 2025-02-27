@@ -2,6 +2,7 @@ import argparse
 import json
 
 from AzureOpenAI.batch_deployment import queue_qa_batch_job
+from logger.logger import Logger
 from models.question import Question
 from dotenv import load_dotenv
 
@@ -35,18 +36,22 @@ def parse_args():
 
     parser.add_argument('-m', '--model', type=str,
                         required=True, help='model deployment identifier')
+    parser.add_argument('-c', '--conversation', type=str,
+                        help='conversation id (optional)')
 
     return parser.parse_args()
 
 
-def read_dataset():
+def read_dataset(conversation_id: str = None):
+    Logger().info("Reading Locomo dataset")
     with open("datasets\locomo\locomo10.json", "r") as locomo_dataset:
         return [
             {
                 **conversation_sample,
                 'qa': [{**qa, 'id': f'{conversation_sample["sample_id"]}-{i + 1}'} for i, qa in enumerate(conversation_sample['qa'])]
             }
-            for conversation_sample in json.load(locomo_dataset)
+            for conversation_sample in (json.load(locomo_dataset) if not conversation_id else [
+                sample for sample in json.load(locomo_dataset) if sample['sample_id'] == conversation_id])
         ]
 
 
@@ -57,11 +62,21 @@ def build_system_prompt(conversation):
 def main():
     args = parse_args()
     load_dotenv()
-    dataset = read_dataset()
+
+    dataset = read_dataset(args.conversation)
+    
+    Logger().info(f"Locomo dataset read successfully. Total samples: {len(dataset)}")
+
+    Logger().info("Building system prompts")
+
     system_prompt = {
-        conversation_sample['sample_id']: build_system_prompt(conversation_sample['conversation'])
+        conversation_sample['sample_id']: build_system_prompt(
+            conversation_sample['conversation'])
         for conversation_sample in dataset
     }
+
+    Logger().info("Building questions")
+
     questions = [
         Question(
             question_id=qa['id'],
@@ -71,9 +86,11 @@ def main():
         for conversation_sample in dataset
         for qa in conversation_sample['qa']
     ]
-    
-    queue_qa_batch_job(args.model, system_prompt=system_prompt, questions=questions)
+
+    queue_qa_batch_job(
+        args.model, system_prompt=system_prompt, questions=questions)
 
 
 if __name__ == "__main__":
+    Logger().info(f"Starting Locomo baseline evaluation. RunId: {Logger().get_run_id()}")
     main()

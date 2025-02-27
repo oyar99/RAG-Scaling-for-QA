@@ -1,7 +1,11 @@
+from logger.logger import Logger
 from AzureOpenAI.openai_client import get_openai_client
 from models.question import Question
-from openai import AzureOpenAI
 import json
+import io
+import time
+
+from utils.byte_utils import format_size
 
 
 def queue_qa_batch_job(
@@ -76,6 +80,42 @@ def queue_qa_batch_job(
         for question in questions
     ]
     
-    # TODO: Send requests to Azure OpenAI
+    jobs_jsonl = "\n".join(json.dumps(job) for job in jobs)
+    jsonl_encoded = jobs_jsonl.encode("utf-8")
+
+    Logger().info(f"batch file size: {format_size(len(jsonl_encoded))}")
+    
+    byte_stream = io.BytesIO(jsonl_encoded)
 
     openai_client = get_openai_client()
+    
+    Logger().info("Starting batch file upload ...")
+    
+    # Upload jsonl file for batch processing
+    batch_file = openai_client.files.create(
+        file=(f'locomo-run-{Logger().get_run_id()}.jsonl', byte_stream, 'application/jsonl'),
+        purpose="batch",
+    )
+    
+    # Wait until the file is uploaded
+    while True:
+        file = openai_client.files.retrieve(batch_file.id)
+        if file.status == "processed" or file.status == "error":
+            break
+        Logger().info("Waiting for file to be uploaded...")
+        time.sleep(10)
+        
+    if file.status == "error":
+        raise Exception(f"File upload failed: {file.error}")
+    
+    Logger().info("File upload succeeded.")
+    Logger().info("Creating batch job ...")
+
+    # Create a batch job
+    batch_job = openai_client.batches.create(
+        input_file_id=batch_file.id,
+        endpoint="/v1/chat/completions",
+        completion_window="24h"
+    )
+    
+    return batch_job
