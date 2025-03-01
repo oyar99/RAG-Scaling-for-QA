@@ -8,6 +8,7 @@ See https://mrqa.github.io/
 
 from collections import Counter
 from evaluator.normalizer import normalize_answer
+from logger.logger import Logger
 
 
 def eval_f1_score(qa_pairs: list[tuple[str, str]]) -> float:
@@ -46,4 +47,9 @@ def f1_score(expected: str, actual: str) -> float:
     precision = num_same / len(actual_tokens)
     recall = num_same / len(expected_tokens)
 
-    return (2 * precision * recall) / (precision + recall)
+    f1 = (2 * precision * recall) / (precision + recall)
+
+    Logger().debug(
+        f"F1 score: {f1} - Expected: {expected} - Actual: {actual}")
+
+    return f1

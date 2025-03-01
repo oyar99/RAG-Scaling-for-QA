@@ -31,11 +31,21 @@ def parse_args():
     parser.add_argument('-ct', '--category', type=int,
                         help='category to be predicted (optional)')
 
+    parser.add_argument('-dt', '--dis-trunc', type=int, default=0,
+                        help='disable truncation (optional)')
+
+    parser.add_argument('-np', '--noop', type=int, default=0,
+                        help='do not run actual prediction (optional)')
+
     # Evaluation mode arguments
     parser.add_argument('-ev', '--evaluation', type=str,
                         help='evaluation file path (required in evaluation mode)')
 
+    parser.add_argument('-bt', '--bert-eval', type=int,
+                        default=0, help='run bert evaluation (optional)')
+
     return parser.parse_args()
+
 
 def main():
     """

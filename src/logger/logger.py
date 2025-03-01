@@ -13,7 +13,7 @@ class Logger(metaclass=Singleton):
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
-        log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+        log_level = os.getenv("LOG_LEVEL", "DEBUG").upper()
         self._logger.setLevel(log_level)
 
         self._run_id = str(uuid.uuid4())

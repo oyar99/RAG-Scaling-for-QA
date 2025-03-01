@@ -6,11 +6,16 @@ from azure_open_ai.batch_deployment import queue_qa_batch_job
 from datasets.locomo.read_locomo import read_locomo
 from logger.logger import Logger
 from models.question import Question
+from utils.token_utils import estimate_num_tokens
 
 QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
-conversation between two users followed by a question. You need to provide a concise answer using exact \
-words from the conversations when possible. Your answer should not contain any explanations or repeated sentences \
-from the question itself. \
+conversation between two users, followed by a question. Your task is to provide an EXACT answer, using only words \
+found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, a date, or an object), please \
+provide just that word. For example if the question is:
+
+Q: "what book did Carlos buy on his birthday?"
+
+Your answer should be: "Becoming Nicole"
 
 The conversation takes place over multiple days and the date of each conversation is written at the beginning of the conversation:
 
@@ -42,7 +47,7 @@ Please provide the model deployment identifier using the -m flag.""")
 
     system_prompt = {
         conversation_sample['sample_id']: build_system_prompt(
-            conversation_sample['conversation'])
+            conversation_sample['conversation'], args)
         for conversation_sample in dataset
     }
 
@@ -62,7 +67,7 @@ Please provide the model deployment identifier using the -m flag.""")
     Logger().info(f"Questions length: {len(questions)}")
 
     queue_qa_batch_job(
-        args.model, system_prompt=system_prompt, questions=questions)
+        args.model, system_prompt=system_prompt, questions=questions, stop=args.noop)
 
 
 def filter_questions(questions: list, limit: int = None, category: int = None) -> list:
@@ -87,23 +92,27 @@ def filter_questions(questions: list, limit: int = None, category: int = None) -
     return filtered_questions
 
 
-def build_system_prompt(conversation) -> str:
+def build_system_prompt(conversation, args) -> str:
     """Builds the system prompt for the model.
 
     Args:
         conversation (dict): the conversation object between two users
 
+        args (Namespace): the arguments passed to the script
+
     Returns:
         str: the system prompt
     """
-    return QA_PROMPT.format(conversation=parse_conversation(conversation))
+    return QA_PROMPT.format(conversation=parse_conversation(conversation, args))
 
 
-def parse_conversation(conversation) -> str:
+def parse_conversation(conversation, args) -> str:
     """Parses the conversation object in a human-readable format.
 
     Args:
         conversation (dict): the conversation object between two users
+
+        args (Namespace): the arguments passed to the script
 
     Returns:
         str: a human readable string representation of the conversation
@@ -121,7 +130,7 @@ def parse_conversation(conversation) -> str:
     for message in parsed_messages:
         grouped_messages[message['session']].append(message)
 
-    return "\n".join(
+    conversation = "\n".join(
         [
             f"DATE: {conversation[f'{session}_date_time']}\nCONVERSATION:\n" + "\n".join(
                 [f"{message['speaker']} said: {message['text']}" for message in messages]
@@ -129,3 +138,31 @@ def parse_conversation(conversation) -> str:
             for session, messages in grouped_messages.items()
         ]
     )
+
+    if args.dis_trunc:
+        return conversation
+
+    return truncate_conversation(conversation, args.model)
+
+
+def truncate_conversation(conversation: str, model: str) -> str:
+    """Truncates the conversation to 16,000 tokens.
+
+    Args:
+        conversation (str): the conversation to be truncated
+
+        model (str): the model deployment identifier
+
+    Returns:
+        str: the truncated conversation
+    """
+    token_count = estimate_num_tokens(conversation, model)
+
+    Logger().info(
+        f"Conversation consists of approximately {token_count} tokens.")
+
+    if token_count > 16000:
+        Logger().warn("Conversation exceeds 16,000 tokens. Truncating..., This may affect the model's performance.")
+        conversation = conversation[-15000:]
+
+    return conversation

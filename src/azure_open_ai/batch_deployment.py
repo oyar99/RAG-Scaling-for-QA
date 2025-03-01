@@ -8,14 +8,44 @@ from azure_open_ai.openai_client import OpenAIClient
 from models.question import Question
 
 from utils.byte_utils import format_size
-from utils.token_utils import estimate_num_tokens
+from utils.token_utils import estimate_cost, estimate_num_tokens
 
 
+def guard_job(cost: int, stop: bool = False) -> None:
+    """Guard the job based on the estimated cost.
+
+    Args:
+        cost (int): the estimated cost of the job
+
+    Raises:
+        RuntimeError: if the cost exceeds $2.0
+    """
+    if cost == 0.0:
+        Logger().error("Estimated cost is $0.0. Please review the questions.")
+        raise RuntimeError("Program terminated forcefully.")
+
+    if cost > 0.0:
+        Logger().info(f"Estimated cost: {cost:.2f}")
+
+    if cost > 0.1:
+        Logger().warn(
+            "Estimated cost exceeds $0.1. \
+Please review the questions and ensure they are not too verbose.")
+
+    if cost > 0.25 and not stop:
+        Logger().error(
+            "Cost likely exceeds $0.25. Stopping execution ..."
+        )
+        raise RuntimeError("Program terminated forcefully.")
+
+
+# pylint: disable-next=too-many-locals
 def queue_qa_batch_job(
     model: str,
     system_prompt: dict[str, str],
     questions: list[Question],
     job_args: dict = None,
+    stop: bool = False
 ):
     """
     Queues a batch job for Question Answering using Azure OpenAI.
@@ -59,13 +89,23 @@ def queue_qa_batch_job(
     if not isinstance(job_args, dict):
         raise ValueError("job_args must be a dictionary.")
 
+    cost = 0.0
+
     for question in questions:
         token_count = estimate_num_tokens(
             system_prompt[question["conversation_id"]] + question["question"], model)
 
-        if token_count > 20e3:
+        cost += estimate_cost(token_count, model)
+
+        if token_count > 15000:
             Logger().warn(
-                f"Question {question['question_id']} exceeds 20,000 tokens.")
+                f"Question {question['question_id']} exceeds 15,000 tokens. Truncation is recommended.")
+
+    guard_job(cost, stop)
+
+    if stop:
+        Logger().warn("Returning without queuing job.")
+        return None
 
     jobs = [
         {

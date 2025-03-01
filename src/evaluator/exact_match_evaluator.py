@@ -3,6 +3,7 @@
 
 
 from evaluator.normalizer import normalize_answer
+from logger.logger import Logger
 
 
 def eval_exact_match(qa_pairs: list[tuple[str, str]]) -> float:
@@ -18,6 +19,7 @@ def eval_exact_match(qa_pairs: list[tuple[str, str]]) -> float:
     """
     return sum(exact_match(gt, a) for (gt, a) in qa_pairs) / len(qa_pairs)
 
+
 def exact_match(expected: str, actual: str) -> float:
     """
     Evaluates the exact match between the ground truth answer and the model's answer.
@@ -29,5 +31,9 @@ def exact_match(expected: str, actual: str) -> float:
     Returns:
         float: the exact match score
     """
-    return 1.0 if normalize_answer(expected) == normalize_answer(actual) else 0.0
-    
+    em = 1.0 if normalize_answer(expected) == normalize_answer(actual) else 0.0
+
+    Logger().debug(
+        f"Exact match score: {em} - Expected: {expected} - Actual: {actual}")
+
+    return em
