@@ -70,7 +70,7 @@ def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
     Logger().info("Evaluating exact match score")
 
     em = eval_exact_match(qa_pairs)
-    f1 = eval_f1_score(qa_pairs)
+    f1, precision, recall = eval_f1_score(qa_pairs)
     bert_score = None
 
     if args.bert_eval:
@@ -79,6 +79,8 @@ def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
 
     Logger().info(f"Exact match score: {em}")
     Logger().info(f"F1 score: {f1}")
+    Logger().info(f"Precision: {precision}")
+    Logger().info(f"Recall: {recall}")
 
     output_dir = os.path.join(os.path.normpath(
         os.getcwd() + os.sep + os.pardir), 'output')
@@ -87,5 +89,7 @@ def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
     with open(output_name, "w", encoding="utf-8") as output_file:
         output_file.write(f"Exact match score: {em}")
         output_file.write(f"F1 score: {f1}")
+        output_file.write(f"Precision: {precision}")
+        output_file.write(f"Recall: {recall}")
         if bert_score:
             output_file.write(f"BERT score: {bert_score}")

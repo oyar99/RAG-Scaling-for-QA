@@ -11,7 +11,7 @@ from evaluator.normalizer import normalize_answer
 from logger.logger import Logger
 
 
-def eval_f1_score(qa_pairs: list[tuple[str, str]]) -> float:
+def eval_f1_score(qa_pairs: list[tuple[str, str]]) -> tuple[float, float, float]:
     """
     Evaluates the F1 score between the ground truth answers and the model's answers.
 
@@ -21,10 +21,17 @@ def eval_f1_score(qa_pairs: list[tuple[str, str]]) -> float:
     Returns:
         float: the F1 score
     """
-    return sum(f1_score(gt, a) for (gt, a) in qa_pairs) / len(qa_pairs)
+    f1_scores = [f1_score(gt, a) for (gt, a) in qa_pairs]
+    f1, precision, recall = zip(*f1_scores)
+
+    avg_f1 = sum(f1) / len(f1)
+    avg_precision = sum(precision) / len(precision)
+    avg_recall = sum(recall) / len(recall)
+
+    return avg_f1, avg_precision, avg_recall
 
 
-def f1_score(expected: str, actual: str) -> float:
+def f1_score(expected: str, actual: str) -> tuple[float, float, float]:
     """
     Evaluates the F1 score between the ground truth answer and the model's answer.
 
@@ -52,4 +59,4 @@ def f1_score(expected: str, actual: str) -> float:
     Logger().debug(
         f"F1 score: {f1} - Expected: {expected} - Actual: {actual}")
 
-    return f1
+    return f1, precision, recall
