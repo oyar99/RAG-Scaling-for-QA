@@ -58,7 +58,7 @@ class Logger(metaclass=Singleton):
             message (str): message to be logged
         """
         self._logger.debug(message)
-        
+
     def error(self, message: str) -> None:
         """Logs a message at the ERROR level.
 
