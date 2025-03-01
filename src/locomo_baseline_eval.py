@@ -6,12 +6,14 @@ from collections import defaultdict
 from dotenv import load_dotenv
 
 from azure_open_ai.batch_deployment import queue_qa_batch_job
+from evaluator.evaluator import evaluator
 from logger.logger import Logger
 from models.question import Question
 
 QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
 conversation between two users followed by a question. You need to provide a concise answer using exact \
-words from the conversations when possible. \
+words from the conversations when possible. Your answer should not contain any explanations or repeated sentences \
+from the question itself. \
 
 The conversation takes place over multiple days and the date of each conversation is written at the beginning of the conversation:
 
@@ -42,6 +44,10 @@ def parse_args():
 
     parser.add_argument('-ct', '--category', type=int,
                         help='category to be evaluated (optional)')
+
+    parser.add_argument('-e', '--evaluation', type=str,
+                        help="""the path to the evaluation file (optional).\
+                        If specified, the system will only run the evaluation""")
 
     return parser.parse_args()
 
@@ -146,6 +152,33 @@ def main():
 
     Logger().info(
         f"Locomo dataset read successfully. Total samples: {len(dataset)}")
+
+    if args.evaluation:
+        Logger().info("Running evaluation")
+
+        with open(args.evaluation, "r", encoding="utf-8") as evaluation_file:
+            evaluation = [json.loads(line) for line in evaluation_file]
+
+            dataset_map = {sample['sample_id']: sample for sample in dataset}
+
+            def extract_qa_pair(eval_item) -> tuple[str, str]:
+                Logger().debug(
+                    f"Extracting QA pair for evaluation item: {eval_item['custom_id']}")
+                match = re.match(r'^(conv-.\d+)-(\d+)$',
+                                 eval_item['custom_id'])
+                conversation_id = match.group(1)
+                message_id = match.group(2)
+                qa_pair = (str(dataset_map[conversation_id]['qa'][int(message_id)-1]['answer']),
+                           str(eval_item['response']['body']['choices'][0]['message']['content']))
+
+                Logger().debug(
+                    f"QA pair extracted (truth, predicted): {qa_pair}")
+                return qa_pair
+
+            evaluator([extract_qa_pair(eval_item)
+                       for eval_item in evaluation])
+
+        return
 
     Logger().info("Building system prompts")
 

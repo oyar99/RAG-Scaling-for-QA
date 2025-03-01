@@ -51,6 +51,14 @@ class Logger(metaclass=Singleton):
         """
         self._logger.warning(message)
 
+    def debug(self, message: str) -> None:
+        """Logs a message at the VERBOSE level.
+
+        Args:
+            message (str): message to be logged
+        """
+        self._logger.debug(message)
+
     def get_run_id(self) -> str:
         """Returns the run id.
 
