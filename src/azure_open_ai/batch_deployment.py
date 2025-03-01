@@ -51,7 +51,7 @@ def queue_qa_batch_job(
     if job_args is None:
         job_args = {
             'temperature': 0.0,
-            'max_tokens': 1000,
+            'max_tokens': 50,
             'frequency_penalty': 0.0,
             'presence_penalty': 0.0
         }

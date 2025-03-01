@@ -53,13 +53,7 @@ Each conversation is stored as JSON object with the following format:
 
 Each conversation consists of multiple sessions that occurred at different times.
 
-The QA task can be evaluated using the `locomo_baseline_eval.py` script which uses an LLM to answer each question directly given the conversations as context.
-
-## How to run
-
-```sh
-python .\locomo_baseline_eval.py -m gpt-4o-mini -c conv-26 -q 10 -ct 2
-```
+The QA task can be evaluated using the `index.py` with the appropriate command line arguments.
 
 There are 5 different types of questions. Each question has a corresponding category from the below list.
 
