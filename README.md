@@ -2,7 +2,7 @@
 
 _Cognitive Language Agents_ is a framework for designing intelling language agents that integrates LLMs for reasoning and communication, using language as their primary means of interaction with their environment. Language agents consist of three key components: memory, action, and decision-making.
 
-In this work, we present a systematic evaluation of three agent-based architectures to implement long-term memory for Question Answering (QA) and Multi-Hop Question Answering (MHQA). We seek to evaluate how well these agent-based architectures perform in more general purpose tasks and how well their planning, collaboration and decision-making capabilites can be leveraged.
+In this work, we present a systematic evaluation of three agent-based architectures to implement long-term memory for Question Answering (QA) and Multi-Hop Question Answering (MHQA). We seek to evaluate how well these agent-based architectures perform in more general purpose tasks and how well their planning, collaboration and decision-making capabilites can be leveraged for both retrieval and answering.
 
 ## Datasets
 
