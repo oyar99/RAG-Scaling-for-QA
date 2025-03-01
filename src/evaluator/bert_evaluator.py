@@ -1,3 +1,5 @@
+"""Bert Evaluator module."""
+
 from bert_score import score
 
 from evaluator.normalizer import normalize_answer
