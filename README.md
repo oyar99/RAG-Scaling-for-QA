@@ -54,7 +54,7 @@ Sample models supported:
 The script supports two execution modes: `predict` and `eval`. Predict will generate answers for the given dataset that must be in the appropriate format.
 
 ```sh
-python .\index.py -m gpt-4o-mini -c conv-26 -q 10 -ct 2
+python .\index.py -e "predict" -m gpt-4o-mini -c conv-26 -q 20 -ct 4
 ```
 
 Evaluation will run the evaluation metrics `Exact Match (EM)` and `F1 Score` with the provided answers against the ground truth answers.
