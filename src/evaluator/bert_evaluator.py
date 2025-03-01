@@ -33,7 +33,7 @@ def bert_score(expected: str, actual: str) -> float:
     expected_tokens = normalize_answer(expected)
     actual_tokens = normalize_answer(actual)
 
-    # pylint: disable-next:unbalanced-tuple-unpacking
+    # pylint: disable-next=unbalanced-tuple-unpacking
     (_, _, f1) = score([actual_tokens], [expected_tokens],
                      lang='en', verbose=False)
 
