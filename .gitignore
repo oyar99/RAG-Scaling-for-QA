@@ -166,5 +166,4 @@ output/
 
 # Ignore hotpot dataset files as they are too large
 src/datasets/hotpot/hotpot_dev_distractor_v1.json
-src/datasets/hotpot/hotpot_dev_fullwiki_v1.json
-src/datasets/hotpot/hotpot_train_v1.1.json
+src/datasets/hotpot/hotpot_corpus.json

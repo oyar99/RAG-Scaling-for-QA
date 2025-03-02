@@ -5,7 +5,7 @@ import io
 import time
 from logger.logger import Logger
 from azure_open_ai.openai_client import OpenAIClient
-from models.question import Question
+from models.dataset import Dataset
 
 from utils.byte_utils import format_size
 from utils.token_utils import estimate_cost, estimate_num_tokens
@@ -42,8 +42,7 @@ Please review the questions and ensure they are not too verbose.")
 # pylint: disable-next=too-many-locals
 def queue_qa_batch_job(
     model: str,
-    system_prompt: dict[str, str],
-    questions: list[Question],
+    dataset: Dataset,
     job_args: dict = None,
     stop: bool = False
 ):
@@ -52,8 +51,7 @@ def queue_qa_batch_job(
 
     Args:
         model (str): the deployment model name
-        system_prompt (dict[str, str]): a dictionary that maps conversations to their corresponding system prompts
-        questions (list[Question]): the list of questions to be answered
+        dataset (Dataset): the dataset to use for the job
         job_args (dict, optional): a dictionary of job arguments. Defaults to None. Possible arguments are:
             temperature (float, optional): the sampling temperature to use. Defaults to 0.0.
             max_tokens (int, optional): the maximum number of tokens that can be generated in the completion.
@@ -72,11 +70,8 @@ def queue_qa_batch_job(
         raise ValueError(
             "model must be a non-empty string.")
 
-    if not isinstance(system_prompt, dict) or len(system_prompt) <= 0:
-        raise ValueError("system_prompt must be a non-empty string.")
-
-    if not isinstance(questions, list) or len(questions) <= 0:
-        raise ValueError("questions must be a non-empty list.")
+    if not isinstance(dataset, Dataset):
+        raise ValueError("dataset must be an instance of Dataset.")
 
     if job_args is None:
         job_args = {
@@ -91,15 +86,19 @@ def queue_qa_batch_job(
 
     cost = 0.0
 
-    for question in questions:
-        token_count = estimate_num_tokens(
-            system_prompt[question["conversation_id"]] + question["question"], model)
+    questions = dataset.get_questions()
+    system_prompt = dataset.build_system_prompt()
 
-        cost += estimate_cost(token_count, model)
+    for sample_id, question_set in questions.items():
+        for question in question_set:
+            token_count = estimate_num_tokens(
+                system_prompt[sample_id] + question["question"], model)
 
-        if token_count > 15000:
-            Logger().warn(
-                f"Question {question['question_id']} exceeds 15,000 tokens. Truncation is recommended.")
+            cost += estimate_cost(token_count, model)
+
+            if token_count > 15000:
+                Logger().warn(
+                    f"Question {question['question_id']} exceeds 15,000 tokens. Truncation is recommended.")
 
     guard_job(cost, stop)
 
@@ -116,7 +115,7 @@ def queue_qa_batch_job(
                 "model": model,
                 "messages": [
                     {"role": "system",
-                     "content": system_prompt[question["conversation_id"]]},
+                     "content": system_prompt[sample_id]},
                     {"role": "user", "content": question["question"]}
                 ],
                 "temperature": job_args['temperature'],
@@ -125,7 +124,8 @@ def queue_qa_batch_job(
                 "max_tokens": job_args['max_tokens']
             },
         }
-        for question in questions
+        for sample_id, question_set in questions.items()
+        for question in question_set
     ]
 
     jobs_jsonl = "\n".join(json.dumps(job) for job in jobs)

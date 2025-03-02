@@ -1,5 +1,4 @@
-"""A module to create a question class."""
-
+"""A module to create a question-answer class."""
 from enum import Enum
 
 
@@ -15,18 +14,17 @@ class QuestionCategory(Enum):
     SINGLE_HOP = 4
     ADVERSARIAL = 5
 
-
-class Question(dict):
+class QuestionAnswer(dict):
     """A question class that inherits from dict.
 
     Args:
         dict: inherits from dict
     """
 
-    def __init__(self, question_id: str, question: str, conversation_id: str, category: QuestionCategory):
+    def __init__(self, question_id: str, question: str, answer: str, category: QuestionCategory):
         dict.__init__(self, question_id=question_id,
-                      question=question, conversation_id=conversation_id, category=category)
+                      question=question, answer=answer, category=category)
 
     def __repr__(self):
         return f"""Question(question_id={self.get('question_id')}, question={self.get('question')}),\
-    conversation_id={self.get('conversation_id')}, category={self.get('category')})"""
+    answer={self.get('answer')}, category={self.get('category')})"""
