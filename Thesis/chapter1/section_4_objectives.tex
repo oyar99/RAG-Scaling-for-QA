@@ -2,12 +2,11 @@
 \label{sec:objectives}
 
 \subsection{General Objective}
-Compare the performance of various RAG strategies in solving natural language tasks that require long inputs, such as multi-hop question answering.
+Evaluate the performance of three agent-based architectures designed to implement long-term memory in solving natural language long-input tasks including QA and MHQA.
 
 \subsection{Specific Objectives}
 
 \begin{enumerate}
-    \item Implement a RAG framework that incorporates both semantic and lexical search using hybrid memory structures.
-    \item Evaluate the system's performance against baseline models, including graph-based RAG and naive RAG.
-    \item Develop a dataset for multi-hop question answering in Spanish to assess how different architectures perform in a multilingual setting.
+    \item Design and implement three agent-based architectures for long-term memory incorporating principles from cognitive science.
+    \item Evaluate the systems using $R@2$ and $R@5$ for retrieval performance and Exact Match (EM) and $F1$ score for QA across four benchmark datasets: LoCoMo, HotpotQA, MuSiQue, and 2WikiMultiHopQA \cite{maharana-etal-2024-evaluating}\cite{yang2018hotpotqa}\cite{trivedi2021musique}\cite{ho-etal-2020-constructing}.
 \end{enumerate}
