@@ -3,6 +3,8 @@
 import json
 import io
 import time
+from typing import Optional
+from openai.types import Batch
 from logger.logger import Logger
 from azure_open_ai.openai_client import OpenAIClient
 from models.dataset import Dataset
@@ -39,13 +41,12 @@ Please review the questions and ensure they are not too verbose.")
         raise RuntimeError("Program terminated forcefully.")
 
 
-# pylint: disable-next=too-many-locals
 def queue_qa_batch_job(
     model: str,
     dataset: Dataset,
     job_args: dict = None,
     stop: bool = False
-):
+) -> Optional[Batch]:
     """
     Queues a batch job for Question Answering using Azure OpenAI.
 

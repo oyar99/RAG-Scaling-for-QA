@@ -6,7 +6,8 @@ import re
 
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
-from models.question_answer import QuestionAnswer, QuestionCategory
+from models.question_answer import QuestionAnswer
+from utils.question_utils import filter_questions
 from utils.token_utils import estimate_num_tokens
 
 QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
@@ -92,28 +93,6 @@ def _truncate_conversation(conversation: str, model: str) -> str:
     return conversation
 
 
-def _filter_questions(questions: list, limit: int = None, category: int = None) -> list:
-    """Filters the questions based on the category and limit.
-
-    Args:
-        questions (list): the list of questions
-        limit (int, optional): the limit of questions to be returned
-        category (int): the category to be returned. All if not specified
-
-    Returns:
-        list: the filtered list of questions
-    """
-    filtered_questions = [
-        question for question in questions
-        if (category is None and category != QuestionCategory.ADVERSARIAL) or question['category'] == category
-    ]
-
-    if limit is not None and limit < len(filtered_questions):
-        filtered_questions = filtered_questions[:limit]
-
-    return filtered_questions
-
-
 class Locomo(Dataset):
     """Locomo dataset class."""
 
@@ -140,7 +119,7 @@ class Locomo(Dataset):
                         # See https://github.com/oyar99/HybridLongMemGPT/issues/3
                         context=[_parse_conversation(
                             conversation_sample['conversation'], self._args)],
-                        qa=_filter_questions([QuestionAnswer(
+                        qa=filter_questions([QuestionAnswer(
                             question_id=f'{conversation_sample["sample_id"]}-{i + 1}',
                             question=qa['question'],
                             answer=qa.get('answer') or qa.get(
@@ -149,9 +128,9 @@ class Locomo(Dataset):
                         ) for i, qa in enumerate(conversation_sample['qa'])], self._args.questions, self._args.category)
                     )
                 )
-                for conversation_sample in (json.load(locomo_dataset) if not conversation_id else [
-                    sample for sample in json.load(locomo_dataset) if sample['sample_id'] == conversation_id])
-            ]
+                for conversation_sample in json.load(locomo_dataset)
+                if conversation_id is None or conversation_sample['_id'] == conversation_id
+            ][:self._args.limit]
 
             self._dataset = dataset
             Logger().info(

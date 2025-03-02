@@ -21,15 +21,22 @@ def parse_args():
     parser.add_argument('-e', '--execution', choices=['eval', 'predict'], required=True,
                         help='mode of execution (required)')
 
+    # Dataset processing arguments
+    parser.add_argument('-d', '--dataset', type=str, required=True,
+                        help='dataset to be processed (required)')
+    parser.add_argument('-c', '--conversation', type=str,
+                        help='conversation id to be extracted from the dataset - (optional)')
+    parser.add_argument('-q', '--questions', type=int,
+                        help='number of questions to be processed in each dataset sample (optional)')
+    parser.add_argument('-ct', '--category', type=int,
+                        help='category to be extracted from the dataset (optional)')
+    parser.add_argument('-l', '--limit', type=int,
+                        help='limit the number of samples to process.\
+Ignored if conversation id is provided (optional)')
+
     # Predict mode arguments
     parser.add_argument('-m', '--model', type=str,
                         help='model deployment identifier (required in predict mode)')
-    parser.add_argument('-c', '--conversation', type=str,
-                        help='conversation id to be predicted (optional)')
-    parser.add_argument('-q', '--questions', type=int,
-                        help='number of questions to be answered in each conversation during predict mode (optional)')
-    parser.add_argument('-ct', '--category', type=int,
-                        help='category to be predicted (optional)')
 
     parser.add_argument('-dt', '--dis-trunc', type=int, default=0,
                         help='disable truncation (optional)')

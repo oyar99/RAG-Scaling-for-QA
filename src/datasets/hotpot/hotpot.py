@@ -4,6 +4,7 @@ import json
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
 from models.question_answer import QuestionAnswer, QuestionCategory
+from utils.question_utils import filter_questions
 
 
 QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with relevant \
@@ -46,18 +47,18 @@ class Hotpot(Dataset):
                     sample=DatasetSampleInstance(
                         context=([' '.join(doc[1])
                                  for doc in sample['context']]),
-                        qa=[QuestionAnswer(
+                        qa=filter_questions([QuestionAnswer(
                             question_id=sample['_id'],
                             question=sample['question'],
                             answer=sample['answer'],
                             category=QuestionCategory.MULTI_HOP
                             if sample['type'] == 'bridge' else QuestionCategory.OPEN_DOMAIN
-                        )]
+                        )], self._args.questions, self._args.category)
                     )
                 )
-                for sample in (json.load(hotpot_dataset) if not conversation_id else [
-                    sample for sample in json.load(hotpot_dataset) if sample['_id'] == conversation_id])
-            ]
+                for sample in json.load(hotpot_dataset)
+                if conversation_id is None or sample['_id'] == conversation_id
+            ][:self._args.limit]
 
             self._dataset = dataset
             Logger().info(

@@ -1,22 +1,34 @@
 # Evaluating Cognitive Language Agent Architectures for Enabling Long-Term Memory in Large Language Models
 
-_Cognitive Language Agents_ is a framework for designing intelling language agents that integrates LLMs for reasoning and communication, using language as their primary means of interaction with their environment. Language agents consist of three key components: memory, action, and decision-making.
+_Cognitive Language Agents_ is a framework for designing **intelligent** language agents that integrate **LLMs** for reasoning and communication, using language as their primary means of interacting with their environment. These agents consist of three key components: **memory, action, and decision-making**.
 
-In this work, we present a systematic evaluation of three agent-based architectures to implement long-term memory for Question Answering (QA) and Multi-Hop Question Answering (MHQA). We seek to evaluate how well these agent-based architectures perform in more general purpose tasks and how well their planning, collaboration and decision-making capabilites can be leveraged for both retrieval and answering.
+In this work, we present a **systematic evaluation** of three agent-based architectures designed to implement **long-term memory** for **Question Answering (QA)** and **Multi-Hop Question Answering (MHQA)**. Our goal is to assess how well these architectures perform on **general-purpose tasks** and how effectively their **planning, collaboration, and decision-making capabilities** can be leveraged for both **retrieval** and **answering**.
 
 ## Datasets
 
-We evalute the 3 systems against well-known dataset benchmarks for QA and MHQA.
+We evaluate the **three systems** against well-known benchmark datasets for **QA and MHQA**:
 
-- _LoCoMo_: A dataset consisting of 10 _very_ long-term conversations between two users annotated for the QA task. The dataset has been forked into this repository under `src\datasets\locomo` folder. See [LoCoMo](https://github.com/snap-research/locomo) for more details on the generation and statistics of the dataset.
+- **_LoCoMo_**: A dataset consisting of **10 very long-term conversations** between two users, annotated for the QA task. The dataset has been **forked into this repository** under the `src/datasets/locomo` directory. See [LoCoMo](https://github.com/snap-research/locomo) for details on dataset generation and statistics.
+
+- **_HotpotQA_**: A QA dataset featuring **natural, multi-hop questions**. This dataset has been **forked into this repository** under the `src/datasets/hotpot` directory, with instructions on how to initialize it correctly.
+
+## Questions
+
+Each dataset includes a subset of **five different types of questions**, with a particular focus on **Multi-Hop questions**:
+
+1. **Multi-Hop (1)**: The model must **perform multiple reasoning steps** across different parts of the conversation to derive the correct answer.
+2. **Temporal (2)**: The model must answer a question that requires **understanding dates and times** within the conversation.
+3. **Open-Domain (3)**: General broad questions about the conversation that require **deep comprehension**.
+4. **Single-Hop (4)**: The model must **extract a single piece of information** from the conversation to answer the question.
+5. **Adversarial (5)**: The model must determine whether the answer is **(a) not mentioned** or **(b) explicitly stated** in the conversation.
 
 ## Requirements
 
-We recommend installing Python 3.9 and creating a virtual environment.
+We recommend using **Python 3.9** and creating a virtual environment.
 
-Verify isntalled version.
+Verify the installed Python version:
 
-```bash
+```sh
 python --version
 ```
 
@@ -40,30 +52,75 @@ pip install -r requirements.txt
 
 ## Closed-Source Models
 
-The script supports any closed models that support batch deployments through the Azure Open AI API
+The script supports any **closed-source models** that allow **batch deployments** via the Azure Open AI API
 
-Sample models supported:
+Supported Models
 
 | Model Name      | Context Length |
 |-----------------|----------------|
-| GPT-3.5 Turbo   | 16385 tokens   |
-| GPT-4o-mini     | 128000 tokens  |
+| GPT-3.5 Turbo   | 16,385 tokens   |
+| GPT-4o-mini     | 128,000 tokens  |
 
 ## How to run
 
-The script supports two execution modes: `predict` and `eval`. Predict will generate answers for the given dataset that must be in the appropriate format.
+The script supports two execution modes:
+
+- `predict`: Generates answers for a given dataset that must be in the appropriate format.
+- `eval`: Runs evaluation metrics (`Exact Match (EM)` and `F1 Score`) against ground-truth answers.
+
+### Running Predictions
+
+Below are examples of using the script in `predict` mode.
+
+#### Example 1: Single-Hop Questions (LoCoMo Dataset)
+
+To generate predictions for **up to 20 single-hop questions** from a single conversation in the _LoCoMo_ dataset using `gpt-4o-mini`, run:
 
 ```sh
-python .\index.py -e "predict" -m gpt-4o-mini -c conv-26 -q 20 -ct 4
+python .\index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo
 ```
 
-Evaluation will run the evaluation metrics `Exact Match (EM)` and `F1 Score` with the provided answers against the ground truth answers.
+**Explanation:**
+
+-e predict    # Runs the script in prediction mode.
+-m gpt-4o-mini    # Specifies GPT-4o-mini as the model. See [closed-source models](#closed-source-models).
+-c conv-26    # Identifies the conversation ID to process. Change "conv-26" to target a different conversation or omit.
+-q 20    # Limits the number of questions to at most 20.
+-ct 4    # Filters only single-hop questions. See [Questions](#questions)
+-d locomo    # Specifies the dataset (_LoCoMo_) to use. See [Datasets](#datasets)
+
+#### Example 2: Multi-Hop Questions (HotpotQA Dataset)
+
+To generate predictions for all multi-hop questions from up to 10 conversations in the _hotpotQA_ dataset using gpt-4o-mini, you can run the following command:
+
+```sh
+python .\index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
+```
+
+**Explanation:**
+
+-l 10    # Limits the number of conversations/samples to at most 10.
+-ct 1    # Filters only multi-hop questions. See [Questions](#questions)
+-d hotpot    # Specifies the dataset (_hotpotQA_) to use. See [Datasets](#datasets)
+
+### Running Evaluation
+
+To evalaute the generated predictions against ground truth using **Exact Match (EM)** and **F1 Score**, run:
 
 ```sh
 python .\index.py -e "eval" -ev "predictions.jsonl"
 ```
 
-For more information on the supported command line arguments, run:
+**Explanation:**
+
+-e eval    # Runs the script in evaluation mode.
+-ev predictions.jsonl    # Path to the batch output containing the generated answers.
+
+The metrics will be placed in the `output` directory.
+
+### Getting Help
+
+For more details on available command-line arguments, run:
 
 ```sh
 python .\index.py --help

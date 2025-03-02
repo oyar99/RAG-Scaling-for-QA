@@ -3,6 +3,7 @@
 import os
 import json
 import re
+from typing import Optional
 from datasets.locomo.locomo import Locomo
 from evaluator.exact_match_evaluator import eval_exact_match
 from evaluator.f1_evaluator import eval_f1_score
@@ -18,6 +19,11 @@ def evaluator(args) -> None:
         args (Namespace): the arguments passed to the script
     """
 
+    # Need to override these parameters to ensure that question ids which
+    # depend on the original index can be correctly mapped
+    # TODO: Figure out better solution. See https://github.com/oyar99/HybridLongMemGPT/issues/4
+    args.questions = None
+    args.category = None
     locomo = Locomo(args)
     dataset = locomo.read()
 
@@ -33,15 +39,22 @@ def evaluator(args) -> None:
     with open(args.evaluation, "r", encoding="utf-8") as evaluation_file:
         evaluation = [json.loads(line) for line in evaluation_file]
 
-        dataset_map = {sample['sample_id']: sample['sample'] for sample in dataset}
+        dataset_map = {sample['sample_id']: sample['sample']
+                       for sample in dataset}
 
-        def extract_qa_pair(eval_item) -> tuple[str, str]:
+        def extract_qa_pair(eval_item) -> Optional[tuple[str, str]]:
             Logger().debug(
                 f"Extracting QA pair for evaluation item: {eval_item['custom_id']}")
             match = re.match(r'^(conv-.\d+)-(\d+)$',
                              eval_item['custom_id'])
             sample_id = match.group(1)
             message_id = match.group(2)
+
+            if sample_id not in dataset_map:
+                Logger().warn(
+                    f"Sample id {sample_id} not found in the dataset. Skipping evaluation ...")
+                return None
+
             conversation_obj = dataset_map[sample_id]['qa'][int(
                 message_id)-1]
             qa_pair = (str(conversation_obj['answer']),
@@ -51,8 +64,9 @@ def evaluator(args) -> None:
                 f"QA extracted: (question, truth, predicted): {conversation_obj['question']}{qa_pair}")
             return qa_pair
 
-        evaluate([extract_qa_pair(eval_item)
-                  for eval_item in evaluation], args)
+        qa_pairs = [pair for pair in (extract_qa_pair(
+            eval_item) for eval_item in evaluation) if pair is not None]
+        evaluate(qa_pairs, args)
 
 
 def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
