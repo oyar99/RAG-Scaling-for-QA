@@ -65,7 +65,7 @@ Supported Models
 
 The script supports two execution modes:
 
-- `predict`: Generates answers for a given dataset that must be in the appropriate format.
+- `predict`: Generates answers for a given dataset.
 - `eval`: Runs evaluation metrics (`Exact Match (EM)` and `F1 Score`) against ground-truth answers.
 
 ### Running Predictions
@@ -82,12 +82,14 @@ python .\index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo
 
 **Explanation:**
 
+```sh
 -e predict    # Runs the script in prediction mode.
 -m gpt-4o-mini    # Specifies GPT-4o-mini as the model. See [closed-source models](#closed-source-models).
 -c conv-26    # Identifies the conversation ID to process. Change "conv-26" to target a different conversation or omit.
 -q 20    # Limits the number of questions to at most 20.
 -ct 4    # Filters only single-hop questions. See [Questions](#questions)
 -d locomo    # Specifies the dataset (_LoCoMo_) to use. See [Datasets](#datasets)
+```
 
 #### Example 2: Multi-Hop Questions (HotpotQA Dataset)
 
@@ -99,9 +101,11 @@ python .\index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
 
 **Explanation:**
 
+```sh
 -l 10    # Limits the number of conversations/samples to at most 10.
 -ct 1    # Filters only multi-hop questions. See [Questions](#questions)
 -d hotpot    # Specifies the dataset (_hotpotQA_) to use. See [Datasets](#datasets)
+```
 
 ### Running Evaluation
 
@@ -113,8 +117,10 @@ python .\index.py -e "eval" -ev "predictions.jsonl"
 
 **Explanation:**
 
+```sh
 -e eval    # Runs the script in evaluation mode.
 -ev predictions.jsonl    # Path to the batch output containing the generated answers.
+```
 
 The metrics will be placed in the `output` directory.
 
