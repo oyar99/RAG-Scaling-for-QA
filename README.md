@@ -84,11 +84,11 @@ python .\index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo
 
 ```sh
 -e predict    # Runs the script in prediction mode.
--m gpt-4o-mini    # Specifies GPT-4o-mini as the model. See [closed-source models](#closed-source-models).
+-m gpt-4o-mini    # Specifies GPT-4o-mini as the model.
 -c conv-26    # Identifies the conversation ID to process. Change "conv-26" to target a different conversation or omit.
 -q 20    # Limits the number of questions to at most 20.
--ct 4    # Filters only single-hop questions. See [Questions](#questions)
--d locomo    # Specifies the dataset (_LoCoMo_) to use. See [Datasets](#datasets)
+-ct 4    # Filters only single-hop questions.
+-d locomo    # Specifies the dataset (LoCoMo) to use.
 ```
 
 #### Example 2: Multi-Hop Questions (HotpotQA Dataset)
@@ -103,8 +103,8 @@ python .\index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
 
 ```sh
 -l 10    # Limits the number of conversations/samples to at most 10.
--ct 1    # Filters only multi-hop questions. See [Questions](#questions)
--d hotpot    # Specifies the dataset (_hotpotQA_) to use. See [Datasets](#datasets)
+-ct 1    # Filters only multi-hop questions.
+-d hotpot    # Specifies the dataset (hotpotQA) to use.
 ```
 
 ### Running Evaluation
