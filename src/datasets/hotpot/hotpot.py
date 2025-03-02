@@ -28,6 +28,7 @@ class Hotpot(Dataset):
     def __init__(self, args):
         self._args = args
         self._dataset = None
+        self._dataset_map = None
         super().__init__()
         Logger().info("Initialized an instance of the Hotpot dataset")
 
@@ -64,10 +65,38 @@ class Hotpot(Dataset):
                 sample['sample']['qa']) > 0][:self._args.limit]
 
             self._dataset = dataset
+            self._dataset_map = {
+                sample['sample_id']: sample['sample']
+                for sample in dataset
+            }
             Logger().info(
                 f"Hotpot dataset read successfully. Total samples: {len(dataset)}")
 
             return dataset
+
+    def get_question(self, question_id: str) -> QuestionAnswer:
+        """
+        Gets a question from the dataset.
+
+        Args:
+            question_id (str): the unique identifier of the question
+
+        Returns:
+            QuestionAnswer: the question
+        """
+        if not self._dataset_map:
+            Logger().error("Dataset not read. Please read the dataset before getting questions.")
+            raise ValueError(
+                "Dataset not read. Please read the dataset before getting questions.")
+
+        if question_id not in self._dataset_map:
+            Logger().error(
+                f"Question id {question_id} not found in the dataset.")
+            raise ValueError(
+                f"Question id {question_id} not found in the dataset.")
+
+        # Question_id is the same as the sample_id in this dataset
+        return next((qa for qa in self._dataset_map[question_id]['qa'] if qa['question_id'] == question_id), None)
 
     def build_system_prompt(self) -> dict[str, str]:
         """

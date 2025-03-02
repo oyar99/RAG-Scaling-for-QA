@@ -2,7 +2,6 @@
 
 import os
 import json
-import re
 from typing import Optional
 from evaluator.exact_match_evaluator import eval_exact_match
 from evaluator.f1_evaluator import eval_f1_score
@@ -25,11 +24,11 @@ def evaluator(args, dataset: Dataset) -> None:
     """
 
     # Need to override these parameters to ensure that question ids which
-    # depend on the original index can be correctly mapped
+    # depend on the original index can be correctly mapped for LoCoMo dataset
     # TODO: Figure out better solution. See https://github.com/oyar99/HybridLongMemGPT/issues/4
     args.questions = None
     args.category = None
-    d = dataset.read()
+    _ = dataset.read()
 
     Logger().info("Running evaluation")
 
@@ -40,29 +39,21 @@ def evaluator(args, dataset: Dataset) -> None:
     with open(args.evaluation, "r", encoding="utf-8") as evaluation_file:
         evaluation = [json.loads(line) for line in evaluation_file]
 
-        dataset_map = {sample['sample_id']: sample['sample']
-                       for sample in d}
-
         def extract_qa_pair(eval_item) -> Optional[tuple[str, str]]:
             Logger().debug(
                 f"Extracting QA pair for evaluation item: {eval_item['custom_id']}")
-            match = re.match(r'^(conv-.\d+)-(\d+)$',
-                             eval_item['custom_id'])
-            sample_id = match.group(1)
-            message_id = match.group(2)
+            question = dataset.get_question(eval_item['custom_id'])
 
-            if sample_id not in dataset_map:
+            if question is None:
                 Logger().warn(
-                    f"Sample id {sample_id} not found in the dataset. Skipping evaluation ...")
+                    f"Sample id {eval_item['custom_id']} not found in the dataset. Skipping evaluation ...")
                 return None
 
-            conversation_obj = dataset_map[sample_id]['qa'][int(
-                message_id)-1]
-            qa_pair = (str(conversation_obj['answer']),
+            qa_pair = (str(question['answer']),
                        str(eval_item['response']['body']['choices'][0]['message']['content']))
 
             Logger().debug(
-                f"QA extracted: (question, truth, predicted): {conversation_obj['question']}{qa_pair}")
+                f"QA extracted: (question, truth, predicted): {question['question']}{qa_pair}")
             return qa_pair
 
         qa_pairs = [pair for pair in (extract_qa_pair(

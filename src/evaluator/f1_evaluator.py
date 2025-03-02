@@ -49,10 +49,10 @@ def f1_score(expected: str, actual: str) -> tuple[float, float, float]:
     num_same = sum(common.values())
 
     if num_same == 0:
-        return 0
+        return (0, 0, 0)
 
-    precision = num_same / len(actual_tokens)
-    recall = num_same / len(expected_tokens)
+    precision = 1.0 * num_same / len(actual_tokens)
+    recall = 1.0 * num_same / len(expected_tokens)
 
     f1 = (2 * precision * recall) / (precision + recall)
 

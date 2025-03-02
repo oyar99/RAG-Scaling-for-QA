@@ -73,6 +73,17 @@ class Dataset(ABC):
             dict[str, str]: A dictionary where the key is a dataset sample instance and the value its system prompt
         """
 
+    @abstractmethod
+    def get_question(self, question_id: str) -> QuestionAnswer:
+        """Gets a question from the dataset.
+
+        Args:
+            question_id (str): the id of the question to be retrieved
+
+        Returns:
+            QuestionAnswer: the question if found, None otherwise
+        """
+
     def get_questions(self) -> dict[str, list[QuestionAnswer]]:
         """Get the questions from the Hotpot dataset.
 

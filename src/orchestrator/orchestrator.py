@@ -32,8 +32,10 @@ class Orchestrator:
         Generates predictions for the given conversation.
         """
         if self._config.execution == 'predict':
+            Logger().info("Running predictor")
             predictor(self._config, self.dataset)
         elif self._config.execution == 'eval':
+            Logger().info("Running predictor")
             evaluator(self._config, self.dataset)
         else:
             Logger().error(

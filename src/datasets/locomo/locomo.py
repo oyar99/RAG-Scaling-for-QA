@@ -3,6 +3,7 @@
 from collections import defaultdict
 import json
 import re
+from typing import Optional
 
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
@@ -99,6 +100,7 @@ class Locomo(Dataset):
     def __init__(self, args):
         self._args = args
         self._dataset = None
+        self._dataset_map = None
         super().__init__()
         Logger().info("Initialized an instance of the Locomo dataset")
 
@@ -135,10 +137,38 @@ class Locomo(Dataset):
                 sample['sample']['qa']) > 0][:self._args.limit]
 
             self._dataset = dataset
+            self._dataset_map = {
+                sample['sample_id']: sample['sample']
+                for sample in dataset
+            }
             Logger().info(
                 f"Locomo dataset read successfully. Total samples: {len(dataset)}")
 
             return dataset
+
+    def get_question(self, question_id: str) -> Optional[QuestionAnswer]:
+        """Gets a question from the dataset.
+
+        Args:
+            question_id (str): the id of the question to be retrieved
+
+        Returns:
+            Optional[QuestionAnswer]: the question if found, None otherwise
+        """
+        if not self._dataset:
+            Logger().error("Dataset not read. Please read the dataset before getting questions.")
+            raise ValueError(
+                "Dataset not read. Please read the dataset before getting questions.")
+
+        match = re.match(r'^(conv-.\d+)-(\d+)$',
+                         question_id)
+        sample_id = match.group(1)
+        message_id = match.group(2)
+
+        if sample_id not in self._dataset_map:
+            return None
+
+        return self._dataset_map[sample_id]['qa'][int(message_id)-1]
 
     def build_system_prompt(self) -> dict[str, str]:
         """Builds a system prompt for QA tasks
