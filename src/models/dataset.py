@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 
+from logger.logger import Logger
 from models.question_answer import QuestionAnswer
 
 
@@ -50,6 +51,9 @@ class Dataset(ABC):
         ABC: an abstract base class
     """
 
+    def __init__(self):
+        self._dataset = None
+
     @abstractmethod
     def read(self) -> list[DatasetSample]:
         """Reads a dataset and converts it to a list of DatasetSample instances.
@@ -69,10 +73,23 @@ class Dataset(ABC):
             dict[str, str]: A dictionary where the key is a dataset sample instance and the value its system prompt
         """
 
-    @abstractmethod
     def get_questions(self) -> dict[str, list[QuestionAnswer]]:
-        """Returns a list of questions from the dataset.
+        """Get the questions from the Hotpot dataset.
 
         Returns:
-            list[QuestionAnswer]: the list of questions
+            dict[str, list[QuestionAnswer]]: the questions
         """
+        if not self._dataset:
+            Logger().error("Dataset not read. Please read the dataset before getting questions.")
+            raise ValueError(
+                "Dataset not read. Please read the dataset before getting questions.")
+
+        questions = {
+            sample['sample_id']: sample['sample']['qa']
+            for sample in self._dataset
+        }
+
+        total_questions = sum(len(qas) for qas in questions.values())
+        Logger().info(f"Total questions retrieved: {total_questions}")
+
+        return questions

@@ -1,4 +1,4 @@
 [FORMAT]
 max-line-length=120
 
-disable=fixme
+disable=fixme,import-error

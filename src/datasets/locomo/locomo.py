@@ -180,26 +180,3 @@ class Locomo(Dataset):
         Logger().info("System prompts built successfully")
 
         return system_prompt
-
-    def get_questions(self) -> dict[str, list[QuestionAnswer]]:
-        """Gets the questions from the dataset.
-
-        Returns:
-            list[QuestionAnswer]: the list of questions
-        """
-        if not self._dataset:
-            Logger().error("Dataset not read. Please read the dataset before getting questions.")
-            raise ValueError(
-                "Dataset not read. Please read the dataset before getting questions.")
-
-        Logger().info("Getting questions from the dataset")
-
-        questions = {
-            sample['sample_id']: sample['sample']['qa']
-            for sample in self._dataset
-        }
-
-        total_questions = sum(len(qas) for qas in questions.values())
-        Logger().info(f"Total questions retrieved: {total_questions}")
-
-        return questions
