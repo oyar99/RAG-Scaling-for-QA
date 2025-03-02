@@ -51,7 +51,7 @@ class Dataset(ABC):
     """
 
     @abstractmethod
-    def read(self, args) -> list[DatasetSample]:
+    def read(self) -> list[DatasetSample]:
         """Reads a dataset and converts it to a list of DatasetSample instances.
 
         Args:
