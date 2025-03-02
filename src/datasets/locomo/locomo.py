@@ -120,6 +120,7 @@ class Locomo(Dataset):
     def __init__(self, args):
         self._args = args
         self._dataset = None
+        super().__init__()
         Logger().info("Initialized an instance of the Locomo dataset")
 
     def read(self) -> list[DatasetSample]:
