@@ -6,7 +6,7 @@ import re
 
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
-from models.question_answer import QuestionAnswer
+from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.question_utils import filter_questions
 from utils.token_utils import estimate_num_tokens
 
@@ -124,13 +124,15 @@ class Locomo(Dataset):
                             question=qa['question'],
                             answer=qa.get('answer') or qa.get(
                                 'adversarial_answer'),
-                            category=qa['category']
+                            category=QuestionCategory(qa['category'])
                         ) for i, qa in enumerate(conversation_sample['qa'])], self._args.questions, self._args.category)
                     )
                 )
                 for conversation_sample in json.load(locomo_dataset)
                 if conversation_id is None or conversation_sample['_id'] == conversation_id
-            ][:self._args.limit]
+            ]
+            dataset = [sample for sample in dataset if len(
+                sample['sample']['qa']) > 0][:self._args.limit]
 
             self._dataset = dataset
             Logger().info(

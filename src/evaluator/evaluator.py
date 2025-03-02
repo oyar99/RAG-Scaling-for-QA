@@ -4,19 +4,24 @@ import os
 import json
 import re
 from typing import Optional
-from datasets.locomo.locomo import Locomo
 from evaluator.exact_match_evaluator import eval_exact_match
 from evaluator.f1_evaluator import eval_f1_score
 from evaluator.bert_evaluator import eval_bert_score
 from logger.logger import Logger
+from models.dataset import Dataset
 
 
-def evaluator(args) -> None:
+def evaluator(args, dataset: Dataset) -> None:
     """
     Evaluates the exact match between the ground truth answers and the model's answers.
 
     Args:
         args (Namespace): the arguments passed to the script
+        
+        dataset (Dataset): the dataset to be processed
+        
+    Raises:
+        ValueError: if the evaluation file is not provided
     """
 
     # Need to override these parameters to ensure that question ids which
@@ -24,23 +29,19 @@ def evaluator(args) -> None:
     # TODO: Figure out better solution. See https://github.com/oyar99/HybridLongMemGPT/issues/4
     args.questions = None
     args.category = None
-    locomo = Locomo(args)
-    dataset = locomo.read()
-
-    Logger().info(
-        f"Locomo dataset read successfully. Total samples: {len(dataset)}")
+    d = dataset.read()
 
     Logger().info("Running evaluation")
 
     if args.evaluation is None:
         Logger().error("Evaluation file not provided. Please provide the evaluation file path using the -ev flag.")
-        return
+        raise ValueError("Evaluation file not provided")
 
     with open(args.evaluation, "r", encoding="utf-8") as evaluation_file:
         evaluation = [json.loads(line) for line in evaluation_file]
 
         dataset_map = {sample['sample_id']: sample['sample']
-                       for sample in dataset}
+                       for sample in d}
 
         def extract_qa_pair(eval_item) -> Optional[tuple[str, str]]:
             Logger().debug(
@@ -102,9 +103,9 @@ def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
     output_name = os.path.join(output_dir, f'eval-{Logger().get_run_id()}.out')
 
     with open(output_name, "w", encoding="utf-8") as output_file:
-        output_file.write(f"Exact match score: {em}")
-        output_file.write(f"F1 score: {f1}")
-        output_file.write(f"Precision: {precision}")
-        output_file.write(f"Recall: {recall}")
+        output_file.write(f"Exact match score: {em}\n")
+        output_file.write(f"F1 score: {f1}\n")
+        output_file.write(f"Precision: {precision}\n")
+        output_file.write(f"Recall: {recall}\n")
         if bert_score:
-            output_file.write(f"BERT score: {bert_score}")
+            output_file.write(f"BERT score: {bert_score}\n")

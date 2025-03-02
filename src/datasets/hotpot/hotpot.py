@@ -40,6 +40,7 @@ class Hotpot(Dataset):
         """
         Logger().info("Reading the Hotpot dataset")
         conversation_id = self._args.conversation
+
         with open("datasets\\hotpot\\hotpot_dev_distractor_v1.json", encoding="utf-8") as hotpot_dataset:
             dataset = [
                 DatasetSample(
@@ -58,7 +59,9 @@ class Hotpot(Dataset):
                 )
                 for sample in json.load(hotpot_dataset)
                 if conversation_id is None or sample['_id'] == conversation_id
-            ][:self._args.limit]
+            ]
+            dataset = [sample for sample in dataset if len(
+                sample['sample']['qa']) > 0][:self._args.limit]
 
             self._dataset = dataset
             Logger().info(
@@ -82,7 +85,7 @@ class Hotpot(Dataset):
 
         system_prompt = {
             sample['sample_id']: QA_PROMPT.format(
-                passages='\n'.join(sample['context']))
+                passages='\n'.join(sample['sample']['context']))
             for sample in self._dataset
         }
 

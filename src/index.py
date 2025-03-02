@@ -2,9 +2,8 @@
 import argparse
 from dotenv import load_dotenv
 
-from evaluator.evaluator import evaluator
 from logger.logger import Logger
-from predictor.predictor import predictor
+from orchestrator.orchestrator import Orchestrator
 
 
 def parse_args():
@@ -61,10 +60,7 @@ def main():
     args = parse_args()
     load_dotenv()
 
-    if args.execution == 'eval':
-        evaluator(args)
-    elif args.execution == 'predict':
-        predictor(args)
+    Orchestrator(args).run()
 
 
 if __name__ == "__main__":

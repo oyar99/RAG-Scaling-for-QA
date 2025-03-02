@@ -1,4 +1,4 @@
 [FORMAT]
 max-line-length=120
 
-disable=fixme,import-error
+disable=fixme,import-error,no-name-in-module

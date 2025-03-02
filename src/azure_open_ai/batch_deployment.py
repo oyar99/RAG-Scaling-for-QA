@@ -40,7 +40,7 @@ Please review the questions and ensure they are not too verbose.")
         )
         raise RuntimeError("Program terminated forcefully.")
 
-
+# pylint: disable-next=too-many-locals
 def queue_qa_batch_job(
     model: str,
     dataset: Dataset,

@@ -1,8 +1,8 @@
 """A module to create a question-answer class."""
-from enum import Enum
+from enum import IntEnum
 
 
-class QuestionCategory(Enum):
+class QuestionCategory(IntEnum):
     """An enum to represent the question category.
 
     Args:

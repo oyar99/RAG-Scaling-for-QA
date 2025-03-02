@@ -16,7 +16,7 @@ def filter_questions(questions: list[QuestionAnswer], limit: int = None, categor
     """
     filtered_questions = [
         question for question in questions
-        if (category is None and category != QuestionCategory.ADVERSARIAL) or question['category'] == category
+        if (category is None and category != QuestionCategory.ADVERSARIAL) or int(question['category']) == category
     ]
 
     return filtered_questions[:limit]
