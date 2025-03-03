@@ -30,7 +30,7 @@ class Logger(metaclass=Singleton):
         log_dir = os.path.join(os.path.normpath(
             os.getcwd() + os.sep + os.pardir), 'logs')
         log_fname = os.path.join(log_dir, f'app-{self._run_id}.log')
-        fh = logging.FileHandler(log_fname)
+        fh = logging.FileHandler(log_fname, encoding='utf-8')
         fh.setLevel(log_level)
         fh.setFormatter(formatter)
         self._logger.addHandler(fh)

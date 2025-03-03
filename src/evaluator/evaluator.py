@@ -49,6 +49,7 @@ def evaluator(args, dataset: Dataset) -> None:
                     f"Sample id {eval_item['custom_id']} not found in the dataset. Skipping evaluation ...")
                 return None
 
+            Logger().debug(f"Question found: {question['question']}")
             qa_pair = (str(question['answer']),
                        str(eval_item['response']['body']['choices'][0]['message']['content']))
 
