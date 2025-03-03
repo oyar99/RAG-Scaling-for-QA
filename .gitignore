@@ -167,3 +167,7 @@ output/
 # Ignore hotpot dataset files as they are too large
 src/datasets/hotpot/hotpot_dev_distractor_v1.json
 src/datasets/hotpot/hotpot_corpus.json
+
+# Ignore 2wikimultihopqa dataset files as they are too large
+src/datasets/twowikimultihopqa/dev.json
+src/datasets/twowikimultihopqa/corpus.json
