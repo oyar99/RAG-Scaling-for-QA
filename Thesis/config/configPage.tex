@@ -13,22 +13,16 @@
 
 % CONFIGURE PAGE HEADERS
 \fancyhead{} % clear all header fields 
-\fancyhead[RO,LE]{\thepage} 
+\fancyhead[RO,L]{\thepage} 
 \fancyhead[LO]{\headerChapterTitle} 
-\fancyhead[RE]{\headerSectionTitle} 
+\fancyhead[R]{\headerSectionTitle} 
 \fancyfoot{} % clear all footer fields 
 \fancyfoot[C]{} 
-
-\renewcommand{\headrulewidth}{0.8pt} 
 
 % Format the table of contents
 \renewcommand{\contentsname}{Table of Contents} 
 \renewcommand{\cfttoctitlefont}{ \hfill \huge}
 \renewcommand{\cftloftitlefont}{ \hfill \huge }
-\renewcommand{\cftlsttitlefont}{ \hfill \huge }
 \renewcommand{\cftlottitlefont}{ \hfill \huge }
 
-\newcommand{\shortChapterTitle}{\leftmark}
-\newcommand{\headerSectionTitle}{\nouppercase{\rightmark}}
-\newcommand{\headerChapterTitle}{\nouppercase{\shortChapterTitle}}
 
