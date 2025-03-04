@@ -58,12 +58,12 @@ def main():
     Entry point of the script
     """
     args = parse_args()
-    load_dotenv()
 
     Orchestrator(args).run()
 
 
 if __name__ == "__main__":
+    load_dotenv()
     Logger().info(
         f"Starting program with execution id: {Logger().get_run_id()}")
     main()

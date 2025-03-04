@@ -13,9 +13,8 @@ class Logger(metaclass=Singleton):
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
-        log_level = os.getenv("LOG_LEVEL", "DEBUG").upper()
-        self._logger.setLevel(log_level)
-
+        log_level = os.getenv("SCRIPT_LOG_LEVEL", "INFO").upper()
+        self._logger.setLevel(level=log_level)
         self._run_id = str(uuid.uuid4())
 
         # Create console handler
