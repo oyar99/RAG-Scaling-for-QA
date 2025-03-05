@@ -5,9 +5,3 @@
 ```sh
 .\download.sh
 ```
-
-The corpus of the dataset can be extracted running the script under the `utils` directory.
-
-```sh
-python .\utils\generate_corpus.py
-```

@@ -14,6 +14,8 @@ We evaluate the **three systems** against well-known benchmark datasets for **QA
 
 - **_2WikiMultihopQA_**: A QA dataset to evaluate Multi-Hop questions that contains comprehensive information of reasoning paths required to arriave at the correct answer. This dataset can be found under `src/datasets/twowikimultihopqa` directory. See [2WikiMultihopQA](https://github.com/Alab-NII/2wikimultihop?tab=readme-ov-file) for more details on the dataset.
 
+- **_MuSiQue**: A Multi-Hop QA dataset with 2-4 hop questions constructeed via single-hop question composition. This dataset can be found under `src/datasets/musique` directory. See [MuSiQue](https://github.com/stonybrooknlp/musique) for more details on the dataset.
+
 ## Questions
 
 Each dataset includes a subset of **five different types of questions**, with a particular focus on **Multi-Hop questions**:
