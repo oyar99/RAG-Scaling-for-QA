@@ -1,21 +1,17 @@
 """Utility script to generate a corpus from the MuSiQue dataset."""
 
-import json
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+# pylint: disable-next=wrong-import-position
+from datasets.utils.dataset_utils import generate_corpus
 
 if __name__ == "__main__":
     # Read the MusiQue dataset
-
-    with open('musique_dev.json', 'r', encoding='utf-8') as f:
-        dataset = json.load(f)
-
-        paragraphs = [
-            {'title': paragraph['title'], 'text': paragraph['paragraph_text']}
-            for item in dataset
-            for paragraph in item['paragraphs']
-        ]
-
-        print(f'Generated {len(paragraphs)} paragraphs.')
-
-        # Save the paragraphs to a new file
-        with open('musique_corpus.json', 'w', encoding='utf-8') as outfile:
-            json.dump(paragraphs, outfile, indent=4)
+    generate_corpus(
+        input_path='musique_dev.json',
+        output_path='musique_corpus.json',
+        context_extractor=lambda context: {
+            'title': context['title'], 'text': context['paragraph_text']},
+        context_key='paragraphs'
+    )

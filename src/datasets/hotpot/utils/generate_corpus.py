@@ -1,21 +1,15 @@
 """Utility script to generate a corpus from the HotpotQA dataset."""
 
-import json
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+# pylint: disable-next=wrong-import-position
+from datasets.utils.dataset_utils import generate_corpus
 
 if __name__ == "__main__":
     # Read the hotpot dataset
-
-    with open('hotpot_dev_distractor_v1.json', 'r', encoding='utf-8') as f:
-        dataset = json.load(f)
-
-        paragraphs = [
-            {'title': context[0], 'text': ' '.join(context[1])}
-            for item in dataset
-            for context in item['context']
-        ]
-
-        print(f'Generated {len(paragraphs)} paragraphs.')
-
-        # Save the paragraphs to a new file
-        with open('hotpot_corpus.json', 'w', encoding='utf-8') as outfile:
-            json.dump(paragraphs, outfile, indent=4)
+    generate_corpus(
+        input_path='hotpot_dev_distractor_v1.json',
+        output_path='hotpot_corpus.json',
+        context_extractor=lambda context: { 'title': context[0], 'text': ' '.join(context[1]) }
+    )
