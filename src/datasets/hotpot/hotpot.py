@@ -74,30 +74,6 @@ class Hotpot(Dataset):
 
             return dataset
 
-    def get_question(self, question_id: str) -> QuestionAnswer:
-        """
-        Gets a question from the dataset.
-
-        Args:
-            question_id (str): the unique identifier of the question
-
-        Returns:
-            QuestionAnswer: the question
-        """
-        if not self._dataset_map:
-            Logger().error("Dataset not read. Please read the dataset before getting questions.")
-            raise ValueError(
-                "Dataset not read. Please read the dataset before getting questions.")
-
-        if question_id not in self._dataset_map:
-            Logger().error(
-                f"Question id {question_id} not found in the dataset.")
-            raise ValueError(
-                f"Question id {question_id} not found in the dataset.")
-
-        # Question_id is the same as the sample_id in this dataset
-        return next((qa for qa in self._dataset_map[question_id]['qa'] if qa['question_id'] == question_id), None)
-
     def build_system_prompt(self) -> dict[str, str]:
         """
         Builds the system prompt for the Hotpot dataset.
