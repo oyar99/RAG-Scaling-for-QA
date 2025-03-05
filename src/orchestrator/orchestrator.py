@@ -3,6 +3,7 @@
 from typing import Type
 from datasets.hotpot.hotpot import Hotpot
 from datasets.locomo.locomo import Locomo
+from datasets.musique.musique import MuSiQue
 from datasets.twowikimultihopqa.two_wiki import TwoWiki
 from evaluator.evaluator import evaluator
 from logger.logger import Logger
@@ -21,6 +22,7 @@ class Orchestrator:
             'locomo': Locomo,
             'hotpot': Hotpot,
             '2wiki': TwoWiki,
+            'musique': MuSiQue,
         }
 
         if args.dataset not in datasets:

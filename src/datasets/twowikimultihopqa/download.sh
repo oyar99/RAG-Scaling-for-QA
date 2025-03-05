@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # download the data
 curl -L -o data.zip https://www.dropbox.com/s/npidmtadreo6df2/data.zip?dl=1
 
@@ -10,3 +12,6 @@ cat "data/data/dev.json" | python -m json.tool > "dev.json"
 # remove the data
 rm data.zip
 rm -r data/
+
+# generate corpus
+python utils/generate_corpus.py

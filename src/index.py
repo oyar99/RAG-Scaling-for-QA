@@ -21,7 +21,7 @@ def parse_args():
                         help='mode of execution (required)')
 
     # Dataset processing arguments
-    parser.add_argument('-d', '--dataset', choices=['locomo', 'hotpot', '2wiki'], required=True,
+    parser.add_argument('-d', '--dataset', choices=['locomo', 'hotpot', '2wiki', 'musique'], required=True,
                         help='dataset to be processed (required)')
     parser.add_argument('-c', '--conversation', type=str,
                         help='conversation id to be extracted from the dataset - (optional)')

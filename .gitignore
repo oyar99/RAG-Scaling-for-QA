@@ -171,3 +171,8 @@ src/datasets/hotpot/hotpot_corpus.json
 # Ignore 2wikimultihopqa dataset files as they are too large
 src/datasets/twowikimultihopqa/dev.json
 src/datasets/twowikimultihopqa/corpus.json
+
+# Ignore musique dataset files as they are too large
+src/datasets/musique/musique_dev.json
+src/datasets/musique/musique_corpus.json
+src/datasets/musique/data/
