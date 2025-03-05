@@ -53,6 +53,7 @@ class Dataset(ABC):
 
     def __init__(self):
         self._dataset = None
+        self._dataset_map = None
 
     @abstractmethod
     def read(self) -> list[DatasetSample]:
@@ -73,16 +74,29 @@ class Dataset(ABC):
             dict[str, str]: A dictionary where the key is a dataset sample instance and the value its system prompt
         """
 
-    @abstractmethod
     def get_question(self, question_id: str) -> QuestionAnswer:
-        """Gets a question from the dataset.
+        """
+        Gets a question from the dataset.
 
         Args:
-            question_id (str): the id of the question to be retrieved
+            question_id (str): the unique identifier of the question
 
         Returns:
-            QuestionAnswer: the question if found, None otherwise
+            QuestionAnswer: the question
         """
+        if not self._dataset_map:
+            Logger().error("Dataset not read. Please read the dataset before getting questions.")
+            raise ValueError(
+                "Dataset not read. Please read the dataset before getting questions.")
+
+        if question_id not in self._dataset_map:
+            Logger().error(
+                f"Question id {question_id} not found in the dataset.")
+            raise ValueError(
+                f"Question id {question_id} not found in the dataset.")
+
+        # Question_id is the same as the sample_id in this dataset
+        return next((qa for qa in self._dataset_map[question_id]['qa'] if qa['question_id'] == question_id), None)
 
     def get_questions(self) -> dict[str, list[QuestionAnswer]]:
         """Get the questions from the Hotpot dataset.
