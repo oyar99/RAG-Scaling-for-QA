@@ -49,6 +49,8 @@ def f1_score(expected: str, actual: str) -> tuple[float, float, float]:
     num_same = sum(common.values())
 
     if num_same == 0:
+        Logger().debug(
+        f"F1 score: {0} - Expected: {expected} - Actual: {actual}")
         return (0, 0, 0)
 
     precision = 1.0 * num_same / len(actual_tokens)
