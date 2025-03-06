@@ -6,19 +6,6 @@ from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
 from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.question_utils import filter_questions
 
-QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with relevant \
-passages, followed by a question. Your task is to provide an EXACT answer, using only words \
-found in the passages when possible. If the answer can be a single word (e.g., Yes, No, a date, or an object), please \
-provide just that word. For example if the question is:
-
-Q: "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?"
-
-Your answer should be: "No"
-
-Below are the passages.
-
-{passages}
-'''
 
 # pylint: disable-next=too-few-public-methods
 class TwoWiki(Dataset):
