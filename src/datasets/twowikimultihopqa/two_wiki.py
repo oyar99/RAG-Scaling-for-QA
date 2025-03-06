@@ -25,6 +25,7 @@ class TwoWiki(Dataset):
         Logger().info("Reading the 2WikiMultihopQA dataset")
         conversation_id = self._args.conversation
 
+        # pylint: disable=duplicate-code
         with open("datasets\\twowikimultihopqa\\dev.json", encoding="utf-8") as two_wiki_dataset:
             dataset = [
                 DatasetSample(
@@ -48,3 +49,4 @@ class TwoWiki(Dataset):
                 f"2Wiki dataset read successfully. Total samples: {len(dataset)}")
 
             return dataset
+        # pylint: enable=duplicate-code

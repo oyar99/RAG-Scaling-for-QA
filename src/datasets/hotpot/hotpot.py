@@ -25,6 +25,7 @@ class Hotpot(Dataset):
         Logger().info("Reading the Hotpot dataset")
         conversation_id = self._args.conversation
 
+        # pylint: disable=duplicate-code
         with open("datasets\\hotpot\\hotpot_dev_distractor_v1.json", encoding="utf-8") as hotpot_dataset:
             dataset = [
                 DatasetSample(
@@ -49,3 +50,4 @@ class Hotpot(Dataset):
                 f"Hotpot dataset read successfully. Total samples: {len(dataset)}")
 
             return dataset
+        # pylint: enable=duplicate-code
