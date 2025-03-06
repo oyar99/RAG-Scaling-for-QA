@@ -20,21 +20,12 @@ Below are the passages.
 {passages}
 '''
 
-"""
-TODO: Right now this is pretty much the same implementation as HotpotQA. However, 
-I don't want to merge them just yet because I might have to use the additional evidences provided by 2wiki later on. 
-See https://github.com/oyar99/HybridLongMemGPT/issues/9
-"""
-
-
+# pylint: disable-next=too-few-public-methods
 class TwoWiki(Dataset):
     """Hotpot dataset class."""
 
     def __init__(self, args):
-        self._args = args
-        self._dataset = None
-        self._dataset_map = None
-        super().__init__()
+        super().__init__(args)
         Logger().info("Initialized an instance of the 2Wiki dataset")
 
     def read(self) -> list[DatasetSample]:
@@ -65,40 +56,8 @@ class TwoWiki(Dataset):
                 for sample in json.load(two_wiki_dataset)
                 if conversation_id is None or sample['_id'] == conversation_id
             ]
-            dataset = [sample for sample in dataset if len(
-                sample['sample']['qa']) > 0][:self._args.limit]
-
-            self._dataset = dataset
-            self._dataset_map = {
-                sample['sample_id']: sample['sample']
-                for sample in dataset
-            }
-
+            super().process_dataset(dataset)
             Logger().info(
                 f"2Wiki dataset read successfully. Total samples: {len(dataset)}")
 
             return dataset
-
-    def build_system_prompt(self) -> dict[str, str]:
-        """
-        Builds the system prompt for the Hotpot dataset.
-
-        Returns:
-            dict[str, str]: the system prompt
-        """
-        if not self._dataset:
-            Logger().error("Dataset not read. Please read the dataset before building system prompts.")
-            raise ValueError(
-                "Dataset not read. Please read the dataset before building system prompts.")
-
-        Logger().info("Building system prompts")
-
-        system_prompt = {
-            sample['sample_id']: QA_PROMPT.format(
-                passages='\n'.join(sample['sample']['context']))
-            for sample in self._dataset
-        }
-
-        Logger().info("System prompts built successfully")
-
-        return system_prompt

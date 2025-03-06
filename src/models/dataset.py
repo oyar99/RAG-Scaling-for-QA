@@ -50,8 +50,22 @@ class Dataset(ABC):
     Args:
         ABC: an abstract base class
     """
+    QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with relevant \
+passages, followed by a question. Your task is to provide an EXACT answer, using only words \
+found in the passages when possible. If the answer can be a single word (e.g., Yes, No, a date, or an object), please \
+provide just that word. For example if the question is:
 
-    def __init__(self):
+Q: "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?"
+
+Your answer should be: "No"
+
+Below are the passages.
+
+{context}
+'''
+
+    def __init__(self, args):
+        self._args = args
         self._dataset = None
         self._dataset_map = None
 
@@ -66,13 +80,20 @@ class Dataset(ABC):
             list[DatasetSample]: the dataset as a list of DatasetSample instances
         """
 
-    @abstractmethod
-    def build_system_prompt(self) -> dict[str, str]:
-        """Builds a system prompt for QA tasks
+    def process_dataset(self, dataset: list[DatasetSample]) -> None:
+        """Saves the dataset and its map for quick question retrieval in memory
 
-        Returns:
-            dict[str, str]: A dictionary where the key is a dataset sample instance and the value its system prompt
+        Args:
+            dataset (list[DatasetSample]): the dataset to be saved
         """
+        dataset = [sample for sample in dataset if len(
+            sample['sample']['qa']) > 0][:self._args.limit]
+
+        self._dataset = dataset
+        self._dataset_map = {
+            sample['sample_id']: sample['sample']
+            for sample in dataset
+        }
 
     def get_question(self, question_id: str) -> QuestionAnswer:
         """
@@ -118,3 +139,27 @@ class Dataset(ABC):
         Logger().info(f"Total questions retrieved: {total_questions}")
 
         return questions
+
+    def build_system_prompt(self) -> dict[str, str]:
+        """
+        Builds the system prompt for QA tasks.
+
+        Returns:
+            dict[str, str]: A dictionary where the key is a dataset sample instance and the value its system prompt
+        """
+        if not self._dataset:
+            Logger().error("Dataset not read. Please read the dataset before building system prompts.")
+            raise ValueError(
+                "Dataset not read. Please read the dataset before building system prompts.")
+
+        Logger().info("Building system prompts")
+
+        system_prompt = {
+            sample['sample_id']: self.QA_PROMPT.format(
+                context='\n'.join(sample['sample']['context']))
+            for sample in self._dataset
+        }
+
+        Logger().info("System prompts built successfully")
+
+        return system_prompt
