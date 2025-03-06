@@ -12,7 +12,7 @@ We evaluate the **three systems** against well-known benchmark datasets for **QA
 
 - **_HotpotQA_**: A QA dataset featuring **natural, multi-hop questions**. This dataset has been **forked into this repository** under the `src/datasets/hotpot` directory, with instructions on how to initialize it correctly.
 
-- **_2WikiMultihopQA_**: A QA dataset to evaluate Multi-Hop questions that contains comprehensive information of reasoning paths required to arriave at the correct answer. This dataset can be found under `src/datasets/twowikimultihopqa` directory. See [2WikiMultihopQA](https://github.com/Alab-NII/2wikimultihop?tab=readme-ov-file) for more details on the dataset.
+- **_2WikiMultihopQA_**: A QA dataset to evaluate Multi-Hop questions that contains comprehensive information of reasoning paths required to arrive at the correct answer. This dataset can be found under `src/datasets/twowikimultihopqa` directory. See [2WikiMultihopQA](https://github.com/Alab-NII/2wikimultihop?tab=readme-ov-file) for more details on the dataset.
 
 - **_MuSiQue_**: A Multi-Hop QA dataset with 2-4 hop questions constructeed via single-hop question composition. This dataset can be found under `src/datasets/musique` directory. See [MuSiQue](https://github.com/stonybrooknlp/musique) for more details on the dataset.
 
