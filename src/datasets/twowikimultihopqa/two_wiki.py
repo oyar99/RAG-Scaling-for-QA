@@ -1,4 +1,4 @@
-"""Hotpot dataset module."""
+"""2Wiki dataset module."""
 
 import json
 from logger.logger import Logger
@@ -7,9 +7,8 @@ from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.question_utils import filter_questions
 
 
-# pylint: disable-next=too-few-public-methods
 class TwoWiki(Dataset):
-    """Hotpot dataset class."""
+    """2Wiki dataset class."""
 
     def __init__(self, args):
         super().__init__(args)
@@ -17,7 +16,7 @@ class TwoWiki(Dataset):
 
     def read(self) -> list[DatasetSample]:
         """
-        Reads the Hotpot dataset.
+        Reads the 2Wiki dataset.
 
         Returns:
             list[DatasetSample]: the dataset samples
@@ -33,6 +32,9 @@ class TwoWiki(Dataset):
                     sample=DatasetSampleInstance(
                         context=([' '.join(doc[1])
                                  for doc in sample['context']]),
+                        docs=([' '.join(doc[1])
+                               for doc in sample['context']
+                               if any(doc[0] == fact[0] for fact in sample['supporting_facts'])]),
                         qa=filter_questions([QuestionAnswer(
                             question_id=sample['_id'],
                             question=sample['question'],
@@ -50,3 +52,22 @@ class TwoWiki(Dataset):
 
             return dataset
         # pylint: enable=duplicate-code
+
+    def read_corpus(self) -> list[str]:
+        """
+        Reads the 2Wiki dataset and returns the corpus.
+
+        Returns:
+            list[str]: the corpus
+        """
+        Logger().info("Reading the 2Wiki dataset corpus")
+        with open("datasets\\twowikimultihopqa\\corpus.json", encoding="utf-8") as twowiki_corpus:
+            corpus = json.load(twowiki_corpus)
+            corpus = [
+                doc['text']
+                for doc in corpus
+            ]
+            Logger().info(
+                f"2Wiki dataset corpus read successfully. Total documents: {len(corpus)}")
+
+            return corpus

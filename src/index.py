@@ -43,6 +43,10 @@ Ignored if conversation id is provided (optional)')
     parser.add_argument('-np', '--noop', type=int, default=0,
                         help='do not run actual prediction (optional)')
 
+    parser.add_argument('-r', '--retrieval', type=int, default=0,
+                        help='enable document indexing and retrieval. \
+If not specified, each context from the dataset will be provided to the model (optional).')
+
     # Evaluation mode arguments
     parser.add_argument('-ev', '--evaluation', type=str,
                         help='evaluation file path (required in evaluation mode)')

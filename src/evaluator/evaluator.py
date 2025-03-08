@@ -6,6 +6,7 @@ from typing import Optional
 from evaluator.exact_match_evaluator import eval_exact_match
 from evaluator.f1_evaluator import eval_f1_score
 from evaluator.bert_evaluator import eval_bert_score
+from evaluator.retrieval_evaluator import eval_retrieval_recall
 from logger.logger import Logger
 from models.dataset import Dataset
 
@@ -16,9 +17,9 @@ def evaluator(args, dataset: Dataset) -> None:
 
     Args:
         args (Namespace): the arguments passed to the script
-        
+
         dataset (Dataset): the dataset to be processed
-        
+
     Raises:
         ValueError: if the evaluation file is not provided
     """
@@ -39,6 +40,31 @@ def evaluator(args, dataset: Dataset) -> None:
     with open(args.evaluation, "r", encoding="utf-8") as evaluation_file:
         evaluation = [json.loads(line) for line in evaluation_file]
 
+        def extract_doc_pair(eval_item) -> Optional[tuple[list[str], list[str]]]:
+            Logger().debug(
+                f"Extracting docs pair for evaluation item: {eval_item['custom_id']}")
+            question = dataset.get_question(eval_item['custom_id'])
+
+            if question is None:
+                Logger().warn(
+                    f"Sample id {eval_item['custom_id']} not found in the dataset. Skipping evaluation ...")
+                return None
+
+            Logger().debug(f"Question found: {question['question']}")
+
+            expected_docs = dataset.get_supporting_docs(eval_item['custom_id'])
+            actual_docs = [result['content'] for result in eval_item['result']]
+
+            doc_pairs = (
+                expected_docs,
+                actual_docs,
+            )
+
+            Logger().debug(
+                f"Retrieval extracted: (question, truth, predicted): {question['question']}{doc_pairs}")
+
+            return doc_pairs
+
         def extract_qa_pair(eval_item) -> Optional[tuple[str, str]]:
             Logger().debug(
                 f"Extracting QA pair for evaluation item: {eval_item['custom_id']}")
@@ -50,6 +76,7 @@ def evaluator(args, dataset: Dataset) -> None:
                 return None
 
             Logger().debug(f"Question found: {question['question']}")
+
             qa_pair = (str(question['answer']),
                        str(eval_item['response']['body']['choices'][0]['message']['content']))
 
@@ -57,9 +84,37 @@ def evaluator(args, dataset: Dataset) -> None:
                 f"QA extracted: (question, truth, predicted): {question['question']}{qa_pair}")
             return qa_pair
 
-        qa_pairs = [pair for pair in (extract_qa_pair(
-            eval_item) for eval_item in evaluation) if pair is not None]
-        evaluate(qa_pairs, args)
+        if args.retrieval:
+            doc_pairs = [pair for pair in (extract_doc_pair(
+                eval_item) for eval_item in evaluation) if pair is not None]
+            evaluate_retrieval(doc_pairs)
+        else:
+            qa_pairs = [pair for pair in (extract_qa_pair(
+                eval_item) for eval_item in evaluation) if pair is not None]
+            evaluate(qa_pairs, args)
+
+
+def evaluate_retrieval(doc_pairs: list[tuple[list[str], list[str]]]) -> None:
+    """
+    Evaluates the recall score between the ground truth supporting documents and the model's documents.
+
+    Args:
+        doc_pairs (list[tuple[list[str], list[str]]]): the ground truth documents and the model's documents
+    """
+    Logger().info("Evaluating retrieval score")
+
+    recall_at_k = eval_retrieval_recall(doc_pairs)
+
+    for k, recall in recall_at_k.items():
+        Logger().info(f"Recall at {k}: {recall}")
+
+    output_dir = os.path.join(os.path.normpath(
+        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'retrieval')
+    output_name = os.path.join(output_dir, f'eval-{Logger().get_run_id()}.out')
+
+    with open(output_name, "w", encoding="utf-8") as output_file:
+        for k, recall in recall_at_k.items():
+            output_file.write(f"Recall at {k}: {recall}\n")
 
 
 def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
@@ -70,11 +125,7 @@ def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
         qa_pairs (list[tuple[str, str]]): the ground truth answers and the model's answers
 
         args (Namespace): the arguments passed to the script
-
-    Returns:
-        float: the evaluation score
     """
-
     Logger().info("Evaluating exact match score")
 
     em = eval_exact_match(qa_pairs)
@@ -91,7 +142,7 @@ def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
     Logger().info(f"Recall: {recall}")
 
     output_dir = os.path.join(os.path.normpath(
-        os.getcwd() + os.sep + os.pardir), 'output')
+        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'qa')
     output_name = os.path.join(output_dir, f'eval-{Logger().get_run_id()}.out')
 
     with open(output_name, "w", encoding="utf-8") as output_file:

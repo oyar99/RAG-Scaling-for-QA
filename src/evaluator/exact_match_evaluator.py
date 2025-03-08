@@ -2,7 +2,7 @@
 """Evaluator for exact match score."""
 
 
-from evaluator.normalizer import normalize_answer
+from utils.tokenizer import normalize
 from logger.logger import Logger
 
 
@@ -31,7 +31,7 @@ def exact_match(expected: str, actual: str) -> float:
     Returns:
         float: the exact match score
     """
-    em = 1.0 if normalize_answer(expected) == normalize_answer(actual) else 0.0
+    em = 1.0 if normalize(expected) == normalize(actual) else 0.0
 
     Logger().debug(
         f"Exact match score: {em} - Expected: {expected} - Actual: {actual}")

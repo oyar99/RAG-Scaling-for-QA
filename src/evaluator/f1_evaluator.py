@@ -7,7 +7,7 @@ See https://mrqa.github.io/
 """
 
 from collections import Counter
-from evaluator.normalizer import normalize_answer
+from utils.tokenizer import tokenize
 from logger.logger import Logger
 
 
@@ -42,8 +42,8 @@ def f1_score(expected: str, actual: str) -> tuple[float, float, float]:
     Returns:
         float: the F1 score
     """
-    expected_tokens = normalize_answer(expected).split()
-    actual_tokens = normalize_answer(actual).split()
+    expected_tokens = tokenize(expected)
+    actual_tokens = tokenize(actual)
 
     common = Counter(expected_tokens) & Counter(actual_tokens)
     num_same = sum(common.values())

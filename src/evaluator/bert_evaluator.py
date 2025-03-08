@@ -2,8 +2,8 @@
 
 from bert_score import score
 
-from evaluator.normalizer import normalize_answer
 from logger.logger import Logger
+from utils.tokenizer import normalize
 
 
 def eval_bert_score(qa_pairs: list[tuple[str, str]]) -> float:
@@ -30,8 +30,8 @@ def bert_score(expected: str, actual: str) -> float:
     Returns:
         float: the BERT score
     """
-    expected_tokens = normalize_answer(expected)
-    actual_tokens = normalize_answer(actual)
+    expected_tokens = normalize(expected)
+    actual_tokens = normalize(actual)
 
     # pylint: disable-next=unbalanced-tuple-unpacking
     (_, _, f1) = score([actual_tokens], [expected_tokens],
