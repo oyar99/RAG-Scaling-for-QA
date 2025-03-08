@@ -29,10 +29,6 @@ class MuSiQue(Dataset):
                 DatasetSample(
                     sample_id=sample['id'],
                     sample=DatasetSampleInstance(
-                        # TODO: Context should be determined by a retrieval system, so need to be provided as a param
-                        # of this bootstrapper
-                        context=([doc['paragraph_text']
-                                 for doc in sample['paragraphs']]),
                         docs=([doc['paragraph_text']
                                for doc in sample['paragraphs'] if doc['is_supporting']]),
                         qa=filter_questions([QuestionAnswer(

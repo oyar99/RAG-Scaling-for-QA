@@ -37,15 +37,14 @@ Ignored if conversation id is provided (optional)')
     parser.add_argument('-m', '--model', type=str,
                         help='model deployment identifier (required in predict mode)')
 
+    parser.add_argument('-a', '--agent', choices=['default', 'bm25'], default='default',
+                        help='agent to be used (required in predict mode)')
+
     parser.add_argument('-dt', '--dis-trunc', type=int, default=0,
                         help='disable truncation (optional)')
 
     parser.add_argument('-np', '--noop', type=int, default=0,
                         help='do not run actual prediction (optional)')
-
-    parser.add_argument('-r', '--retrieval', type=int, default=0,
-                        help='enable document indexing and retrieval. \
-If not specified, each context from the dataset will be provided to the model (optional).')
 
     # Evaluation mode arguments
     parser.add_argument('-ev', '--evaluation', type=str,
@@ -53,6 +52,9 @@ If not specified, each context from the dataset will be provided to the model (o
 
     parser.add_argument('-bt', '--bert-eval', type=int,
                         default=0, help='run bert evaluation (optional)')
+
+    parser.add_argument('-r', '--retrieval', type=int, default=0,
+                        help='run retrieval evaluation (optional)')
 
     return parser.parse_args()
 

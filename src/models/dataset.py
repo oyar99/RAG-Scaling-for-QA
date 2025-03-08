@@ -10,11 +10,11 @@ class DatasetSampleInstance(dict):
     """A dataset sample instance is a representation of a QA problem instance.
     """
 
-    def __init__(self, context: list[str], docs: list[str], qa: list[QuestionAnswer]):
-        dict.__init__(self, context=context, docs=docs, qa=qa)
+    def __init__(self, docs: list[str], qa: list[QuestionAnswer]):
+        dict.__init__(self, docs=docs, qa=qa)
 
     def __repr__(self):
-        return f"""DatasetSampleInstance(context={self.get('context')}),docs={self.get('docs')}\
+        return f"""DatasetSampleInstance(docs={self.get('docs')}\
     qa={self.get('qa')})"""
 
 
@@ -25,7 +25,6 @@ class DatasetSample(dict):
 
     - sample_id: the unique identifier of the sample
     - sample: a nested dictionary representing an instance of a QA problem
-        - context: a list of docs (strings) representing the context of the QA problem
         - docs: a list of documents (strings) representing the actual docs that support the ground truth answer
         - qa: a list of questions and answers
             - question: a string representing the question
@@ -65,7 +64,10 @@ Below are the passages.
 {context}
 '''
 
-    def __init__(self, args):
+    def __init__(
+        self,
+        args,
+    ):
         self._args = args
         self._dataset = None
         self._dataset_map = None
@@ -170,27 +172,3 @@ Below are the passages.
         Logger().info(f"Total questions retrieved: {total_questions}")
 
         return questions
-
-    def build_system_prompt(self) -> dict[str, str]:
-        """
-        Builds the system prompt for QA tasks.
-
-        Returns:
-            dict[str, str]: A dictionary where the key is a dataset sample instance and the value its system prompt
-        """
-        if not self._dataset:
-            Logger().error("Dataset not read. Please read the dataset before building system prompts.")
-            raise ValueError(
-                "Dataset not read. Please read the dataset before building system prompts.")
-
-        Logger().info("Building system prompts")
-
-        system_prompt = {
-            sample['sample_id']: self.QA_PROMPT.format(
-                context='\n'.join(sample['sample']['context']))
-            for sample in self._dataset
-        }
-
-        Logger().info("System prompts built successfully")
-
-        return system_prompt

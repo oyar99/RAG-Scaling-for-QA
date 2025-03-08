@@ -2,11 +2,13 @@
 
 import json
 import io
+import os
 import time
 from typing import Optional
 from openai.types import Batch
 from logger.logger import Logger
 from azure_open_ai.openai_client import OpenAIClient
+from models.agent import Agent
 from models.dataset import Dataset
 
 from utils.byte_utils import format_size
@@ -44,6 +46,7 @@ Please review the questions and ensure they are not too verbose.")
 def queue_qa_batch_job(
     model: str,
     dataset: Dataset,
+    agent: Agent,
     job_args: dict = None,
     stop: bool = False
 ) -> Optional[Batch]:
@@ -53,6 +56,7 @@ def queue_qa_batch_job(
     Args:
         model (str): the deployment model name
         dataset (Dataset): the dataset to use for the job
+        agent (Agent): the agent to use for the job
         job_args (dict, optional): a dictionary of job arguments. Defaults to None. Possible arguments are:
             temperature (float, optional): the sampling temperature to use. Defaults to 0.0.
             max_tokens (int, optional): the maximum number of tokens that can be generated in the completion.
@@ -88,18 +92,34 @@ def queue_qa_batch_job(
     cost = 0.0
 
     questions = dataset.get_questions()
-    system_prompt = dataset.build_system_prompt()
 
-    for sample_id, question_set in questions.items():
-        for question in question_set:
-            token_count = estimate_num_tokens(
-                system_prompt[sample_id] + question["question"], model)
+    prompts = {}
 
-            cost += estimate_cost(token_count, model)
+    output_dir = os.path.join(os.path.normpath(
+        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'retrieval_jobs')
+    output_name = os.path.join(
+        output_dir, f'retrieval_results_{Logger().get_run_id()}.jsonl')
+    with open(output_name, 'a', encoding='utf-8') as f:
+        for _, question_set in questions.items():
+            for question in question_set:
+                result = agent.reason(question['question'])
 
-            if token_count > 15000:
-                Logger().warn(
-                    f"Question {question['question_id']} exceeds 15,000 tokens. Truncation is recommended.")
+                result_json = {
+                    'custom_id': question["question_id"],
+                    'question': question['question'],
+                    'result': result.get_sources()
+                }
+                f.write(json.dumps(result_json) + '\n')
+
+                token_count = estimate_num_tokens(
+                    result.get_notes() + question["question"], model)
+
+                prompts[question["question_id"]] = result.get_notes()
+                cost += estimate_cost(token_count, model)
+
+                if token_count > 15000:
+                    Logger().warn(
+                        f"Question {question['question_id']} exceeds 15,000 tokens. Truncation is recommended.")
 
     guard_job(cost, stop)
 
@@ -116,7 +136,7 @@ def queue_qa_batch_job(
                 "model": model,
                 "messages": [
                     {"role": "system",
-                     "content": system_prompt[sample_id]},
+                     "content": prompts[question["question_id"]]},
                     {"role": "user", "content": question["question"]}
                 ],
                 "temperature": job_args['temperature'],
@@ -125,7 +145,7 @@ def queue_qa_batch_job(
                 "max_tokens": job_args['max_tokens']
             },
         }
-        for sample_id, question_set in questions.items()
+        for _, question_set in questions.items()
         for question in question_set
     ]
 

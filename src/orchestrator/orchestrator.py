@@ -1,12 +1,15 @@
 """Orchestrator module to run the predictor and evaluator."""
 
 from typing import Type
+from agents.bm25.bm25 import BM25
+from agents.default.default import Default
 from datasets.hotpot.hotpot import Hotpot
 from datasets.locomo.locomo import Locomo
 from datasets.musique.musique import MuSiQue
 from datasets.twowikimultihopqa.two_wiki import TwoWiki
 from evaluator.evaluator import evaluator
 from logger.logger import Logger
+from models.agent import Agent
 from models.dataset import Dataset
 from predictor.predictor import predictor
 
@@ -29,6 +32,16 @@ class Orchestrator:
             Logger().error(f"Dataset {args.dataset} not supported")
             raise ValueError(f"Dataset {args.dataset} not supported")
 
+        agents: dict[str, Type[Agent]] = {
+            'default': Default,
+            'bm25': BM25,
+        }
+
+        if args.agent not in agents:
+            Logger().error(f"Agent {args.agent} not supported")
+            raise ValueError(f"Agent {args.agent} not supported")
+
+        self.agent = agents[args.agent](args)
         self.dataset = datasets[args.dataset](args)
 
     def run(self):
@@ -37,7 +50,7 @@ class Orchestrator:
         """
         if self._config.execution == 'predict':
             Logger().info("Running predictor")
-            predictor(self._config, self.dataset)
+            predictor(self._config, self.dataset, self.agent)
         elif self._config.execution == 'eval':
             Logger().info("Running predictor")
             evaluator(self._config, self.dataset)

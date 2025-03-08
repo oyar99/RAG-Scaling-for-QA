@@ -1,7 +1,7 @@
 
 """Retrieval Evaluator Module"""
 
-K_LIST = [1, 2, 5, 10, 100]
+K_LIST = [1, 2, 5, 10, 20]
 
 
 def eval_retrieval_recall(doc_pairs: list[tuple[list[str], list[str]]]) -> dict[float]:

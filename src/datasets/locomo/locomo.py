@@ -114,10 +114,6 @@ Below is the conversation.
                 DatasetSample(
                     sample_id=conversation_sample['sample_id'],
                     sample=DatasetSampleInstance(
-                        # TODO: Store messages separately with their corresponding ids for retrieval evaluation
-                        # See https://github.com/oyar99/HybridLongMemGPT/issues/3
-                        context=[_parse_conversation(
-                            conversation_sample['conversation'], self._args)],
                         qa=filter_questions([QuestionAnswer(
                             question_id=f'{conversation_sample["sample_id"]}-{i + 1}',
                             question=qa['question'],
@@ -135,6 +131,19 @@ Below is the conversation.
                 f"Locomo dataset read successfully. Total samples: {len(dataset)}")
 
             return dataset
+
+    def read_corpus(self) -> list[str]:
+        """Reads the LoCoMo dataset corpus.
+        This method is not implemented for LoCoMo dataset yet.
+
+        Raises:
+            NotImplementedError: _description_
+
+        Returns:
+            list[str]: _description_
+        """
+        raise NotImplementedError(
+            "Read Corpus is not implemented for LoCoMo dataset yet")
 
     # Mark as override
     def get_question(self, question_id: str) -> Optional[QuestionAnswer]:

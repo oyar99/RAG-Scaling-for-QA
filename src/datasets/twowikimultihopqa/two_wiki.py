@@ -30,8 +30,6 @@ class TwoWiki(Dataset):
                 DatasetSample(
                     sample_id=sample['_id'],
                     sample=DatasetSampleInstance(
-                        context=([' '.join(doc[1])
-                                 for doc in sample['context']]),
                         docs=([' '.join(doc[1])
                                for doc in sample['context']
                                if any(doc[0] == fact[0] for fact in sample['supporting_facts'])]),
