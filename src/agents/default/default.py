@@ -46,11 +46,11 @@ class Default(Agent):
         notebook = NoteBook()
 
         notes = self._qa_prompt.format(
-            context='\n'.join(doc for doc in self._index))
+            context='\n'.join(doc['content'] for doc in self._index))
 
         notebook.update_notes(notes)
         notebook.update_sources([RetrievedResult(
-            corpus_id=doc_id, content=doc, score=None)
-            for doc_id, doc in enumerate(self._index)])
+            doc_id=doc['doc_id'], content=doc['content'], score=None)
+            for doc in self._index])
 
         return notebook
