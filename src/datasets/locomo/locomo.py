@@ -114,6 +114,7 @@ Below is the conversation.
                 DatasetSample(
                     sample_id=conversation_sample['sample_id'],
                     sample=DatasetSampleInstance(
+                        docs=[],
                         qa=filter_questions([QuestionAnswer(
                             question_id=f'{conversation_sample["sample_id"]}-{i + 1}',
                             question=qa['question'],

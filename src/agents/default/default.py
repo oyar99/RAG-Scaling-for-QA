@@ -10,9 +10,7 @@ class Default(Agent):
     """Default System"""
 
     def __init__(self, args):
-        self._args = args
-        self._index = None
-        self._corpus = None
+        super().__init__(args)
         self._qa_prompt = None
 
     def index(self, dataset: Dataset) -> None:
@@ -38,10 +36,12 @@ class Default(Agent):
         Returns:
             NoteBook: the notebook containing the documents
         """
+        # pylint: disable=duplicate-code
         if not self._index or not self._corpus:
             Logger().error("Index not created. Please index the dataset before retrieving documents.")
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
+        # pylint: enable=duplicate-code
 
         notebook = NoteBook()
 

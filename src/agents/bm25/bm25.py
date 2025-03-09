@@ -12,9 +12,7 @@ class BM25(Agent):
     """BM25 RAG system for document retrieval using BM25 algorithm."""
 
     def __init__(self, args):
-        self._args = args
-        self._index = None
-        self._corpus = None
+        super().__init__(args)
         self._qa_prompt = None
 
     def index(self, dataset: Dataset) -> None:
@@ -37,7 +35,7 @@ class BM25(Agent):
 
         Logger().info("Successfully indexed documents")
 
-    def reason(self, query: str) -> list[RetrievedResult]:
+    def reason(self, question: str) -> list[RetrievedResult]:
         """Retrieve the top k documents for the given query.
 
         Args:
@@ -46,17 +44,19 @@ class BM25(Agent):
         Returns:
             list[tuple[int, float]]: List of tuples containing document index and score.
         """
+        # pylint: disable=duplicate-code
         if not self._index or not self._corpus:
             Logger().error("Index not created. Please index the dataset before retrieving documents.")
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
+        # pylint: enable=duplicate-code
 
         notebook = NoteBook()
         k = 20
 
-        Logger().debug(f"Retrieving top {k} documents for query: {query}")
+        Logger().debug(f"Retrieving top {k} documents for query: {question}")
         # Tokenize the query
-        tokenized_query = tokenize(query, ngrams=2, remove_stopwords=True)
+        tokenized_query = tokenize(question, ngrams=2, remove_stopwords=True)
 
         # Get scores for the query
         scores = self._index.get_scores(tokenized_query)
