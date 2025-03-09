@@ -40,9 +40,6 @@ Ignored if conversation id is provided (optional)')
     parser.add_argument('-a', '--agent', choices=['default', 'bm25'], default='default',
                         help='agent to be used (required in predict mode)')
 
-    parser.add_argument('-dt', '--dis-trunc', type=int, default=0,
-                        help='disable truncation (optional)')
-
     parser.add_argument('-np', '--noop', type=int, default=0,
                         help='do not run actual prediction (optional)')
 

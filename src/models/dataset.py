@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 
 from logger.logger import Logger
+from models.document import Document
 from models.question_answer import QuestionAnswer
 
 
@@ -10,12 +11,11 @@ class DatasetSampleInstance(dict):
     """A dataset sample instance is a representation of a QA problem instance.
     """
 
-    def __init__(self, docs: list[str], qa: list[QuestionAnswer]):
-        dict.__init__(self, docs=docs, qa=qa)
+    def __init__(self, qa: list[QuestionAnswer]):
+        dict.__init__(self, qa=qa)
 
     def __repr__(self):
-        return f"""DatasetSampleInstance(docs={self.get('docs')}\
-    qa={self.get('qa')})"""
+        return f"""DatasetSampleInstance(qa={self.get('qa')}"""
 
 
 class DatasetSample(dict):
@@ -84,11 +84,11 @@ Below are the passages.
         """
 
     @abstractmethod
-    def read_corpus(self) -> list[str]:
+    def read_corpus(self) -> list[Document]:
         """Reads a dataset and converts it to a list of documents.
 
         Returns:
-            list[str]: a list of documents from the dataset
+            list[Document]: a list of documents from the dataset
         """
 
     def process_dataset(self, dataset: list[DatasetSample]) -> None:
@@ -129,7 +129,7 @@ Below are the passages.
 
         return next((qa for qa in self._dataset_map[question_id]['qa'] if qa['question_id'] == question_id), None)
 
-    def get_supporting_docs(self, question_id: str) -> list[str]:
+    def get_supporting_docs(self, question_id: str) -> list[Document]:
         """
         Gets the list of docs that support the given question
 
@@ -137,20 +137,11 @@ Below are the passages.
             question_id (str): the unique identifier of the question
 
         Returns:
-            list[str]: list of docs that support the answer to the given question
+            list[Document]: list of docs that support the answer to the given question
         """
-        if not self._dataset_map:
-            Logger().error("Dataset not read. Please read the dataset before getting questions.")
-            raise ValueError(
-                "Dataset not read. Please read the dataset before getting questions.")
+        question = self.get_question(question_id)
 
-        if question_id not in self._dataset_map:
-            Logger().error(
-                f"Question id {question_id} not found in the dataset.")
-            raise ValueError(
-                f"Question id {question_id} not found in the dataset.")
-
-        return self._dataset_map[question_id]['docs']
+        return question.get('docs') if question else []
 
     def get_questions(self) -> dict[str, list[QuestionAnswer]]:
         """Get the questions from the Hotpot dataset.

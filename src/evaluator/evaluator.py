@@ -9,6 +9,7 @@ from evaluator.bert_evaluator import eval_bert_score
 from evaluator.retrieval_evaluator import eval_retrieval_recall
 from logger.logger import Logger
 from models.dataset import Dataset
+from models.document import Document
 
 
 def evaluator(args, dataset: Dataset) -> None:
@@ -40,7 +41,7 @@ def evaluator(args, dataset: Dataset) -> None:
     with open(args.evaluation, "r", encoding="utf-8") as evaluation_file:
         evaluation = [json.loads(line) for line in evaluation_file]
 
-        def extract_doc_pair(eval_item) -> Optional[tuple[list[str], list[str]]]:
+        def extract_doc_pair(eval_item) -> Optional[tuple[list[Document], list[Document]]]:
             Logger().debug(
                 f"Extracting docs pair for evaluation item: {eval_item['custom_id']}")
             question = dataset.get_question(eval_item['custom_id'])
@@ -53,7 +54,10 @@ def evaluator(args, dataset: Dataset) -> None:
             Logger().debug(f"Question found: {question['question']}")
 
             expected_docs = dataset.get_supporting_docs(eval_item['custom_id'])
-            actual_docs = [result['content'] for result in eval_item['result']]
+            actual_docs = [Document(
+                doc_id=result['doc_id'],
+                content=result['content']
+            ) for result in eval_item['result']]
 
             doc_pairs = (
                 expected_docs,
@@ -94,12 +98,12 @@ def evaluator(args, dataset: Dataset) -> None:
             evaluate(qa_pairs, args)
 
 
-def evaluate_retrieval(doc_pairs: list[tuple[list[str], list[str]]]) -> None:
+def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -> None:
     """
     Evaluates the recall score between the ground truth supporting documents and the model's documents.
 
     Args:
-        doc_pairs (list[tuple[list[str], list[str]]]): the ground truth documents and the model's documents
+        doc_pairs (list[tuple[list[Document], list[Document]]]): the ground truth documents and the model's documents
     """
     Logger().info("Evaluating retrieval score")
 

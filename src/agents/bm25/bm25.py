@@ -26,7 +26,7 @@ class BM25(Agent):
 
         # Tokenize the documents
         tokenized_docs = [
-            tokenize(doc, ngrams=2, remove_stopwords=True) for doc in corpus]
+            tokenize(doc['content'], ngrams=2, remove_stopwords=True, use_stemmer=True) for doc in corpus]
 
         # Index the documents using BM25L
         self._index = BM25Okapi(tokenized_docs)
@@ -56,7 +56,8 @@ class BM25(Agent):
 
         Logger().debug(f"Retrieving top {k} documents for query: {question}")
         # Tokenize the query
-        tokenized_query = tokenize(question, ngrams=2, remove_stopwords=True)
+        tokenized_query = tokenize(
+            question, ngrams=2, remove_stopwords=True, use_stemmer=True)
 
         # Get scores for the query
         scores = self._index.get_scores(tokenized_query)
@@ -65,7 +66,10 @@ class BM25(Agent):
         top_k = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)[:k]
 
         retrieved_docs = [RetrievedResult(
-            corpus_id=idx, content=self._corpus[idx], score=score) for idx, score in top_k]
+            doc_id=self._corpus[idx]['doc_id'],
+            content=self._corpus[idx]['content'],
+            score=score
+        ) for idx, score in top_k]
 
         Logger().debug(f"Retrieved {len(retrieved_docs)} documents")
 

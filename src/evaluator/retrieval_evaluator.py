@@ -1,20 +1,23 @@
 
 """Retrieval Evaluator Module"""
 
+from models.document import Document
+
+
 K_LIST = [1, 2, 5, 10, 20]
 
 
-def eval_retrieval_recall(doc_pairs: list[tuple[list[str], list[str]]]) -> dict[float]:
+def eval_retrieval_recall(doc_pairs: list[tuple[list[Document], list[Document]]]) -> dict[int, float]:
     """
     Evaluates the recall between the ground truth documents and the model's retrieved documents.
 
 
     Args:
-        doc_pairs (list[tuple[list[str], list[str]]]): \
+        doc_pairs (list[tuple[list[Document], list[Document]]]): \
 A list of pairs with the ground documents and the retrieved documents.
 
     Returns:
-        dict[float]: the recall score across various Ks
+        dict[int, float]: the recall score across various Ks
     """
     recall_at_k = [recall_score(gt, a) for (gt, a) in doc_pairs]
 
@@ -26,16 +29,16 @@ A list of pairs with the ground documents and the retrieved documents.
     return avg_recall_at_k
 
 
-def recall_score(expected_docs: list[str], actual_docs: list[str]) -> dict[float]:
+def recall_score(expected_docs: list[Document], actual_docs: list[Document]) -> dict[int, float]:
     """
     Evaluates the recall between the ground truth documents and the model's retrieved documents.
 
     Args:
-        expected_docs (list[str]): the ground truth documents
-        actual_docs (list[RetrievedResult]): the model's retrieved documents
+        expected_docs (list[Document]): the ground truth documents
+        actual_docs (list[Document]): the model's retrieved documents
 
     Returns:
-        float: the recall score across various Ks
+        dict[int, float]: the recall score across various Ks
     """
     assert expected_docs, "Expected documents list is empty."
     assert actual_docs, "Actual documents list is empty."
@@ -43,7 +46,9 @@ def recall_score(expected_docs: list[str], actual_docs: list[str]) -> dict[float
     recall_at_k = {}
     for k in K_LIST:
         top_k_docs = actual_docs[:k]
-        correct_at_k = sum(1 for doc in top_k_docs if doc in expected_docs)
+
+        correct_at_k = sum(1 for doc in top_k_docs if doc['doc_id'] in [
+                           expected_doc['doc_id'] for expected_doc in expected_docs])
         recall_at_k[k] = correct_at_k / len(expected_docs)
 
     return recall_at_k

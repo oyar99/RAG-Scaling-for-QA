@@ -2,10 +2,11 @@
 import re
 import string
 from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
+from nltk.tokenize import word_tokenize
 
 
-
-def normalize(text: str, is_remove_stopwords: bool = False) -> str:
+def normalize(text: str, is_remove_stopwords: bool = False, use_stemer: bool = False) -> str:
     """
     Normalizes the input text by lowercasing, removing punctuation, articles,
     and extra whitespace.
@@ -39,10 +40,16 @@ def normalize(text: str, is_remove_stopwords: bool = False) -> str:
         stop_words = set(stopwords.words('english'))
         return " ".join(word for word in text.split() if word not in stop_words)
 
-    return remove_stopwords(join_empty_space(remove_articles(remove_punc(lower(text)))))
+    def stem(text: str):
+        if not use_stemer:
+            return text
+        stemmer = SnowballStemmer("english", ignore_stopwords=True)
+        return " ".join(stemmer.stem(word) for word in word_tokenize(text))
+
+    return stem(remove_stopwords(join_empty_space(remove_articles(remove_punc(lower(text))))))
 
 
-def tokenize(text: str, ngrams: int = 1, remove_stopwords: bool = False) -> list[str]:
+def tokenize(text: str, ngrams: int = 1, remove_stopwords: bool = False, use_stemmer: bool = False) -> list[str]:
     """
     Tokenizes the input text into a list of tokens.
 
@@ -54,7 +61,8 @@ def tokenize(text: str, ngrams: int = 1, remove_stopwords: bool = False) -> list
     Returns:
         list: A list of tokens.
     """
-    unigrams = normalize(text, remove_stopwords).split()
+    unigrams = normalize(
+        text, is_remove_stopwords=remove_stopwords, use_stemer=use_stemmer).split()
 
     all_ngrams = [
         " ".join(unigrams[i:i + n])

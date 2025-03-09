@@ -3,6 +3,7 @@
 import json
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
+from models.document import Document
 from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.question_utils import filter_questions
 
@@ -29,9 +30,9 @@ class MuSiQue(Dataset):
                 DatasetSample(
                     sample_id=sample['id'],
                     sample=DatasetSampleInstance(
-                        docs=([doc['paragraph_text']
-                               for doc in sample['paragraphs'] if doc['is_supporting']]),
                         qa=filter_questions([QuestionAnswer(
+                            docs=[Document(doc_id=doc['paragraph_text'], content=doc['paragraph_text'])
+                                  for doc in sample['paragraphs'] if doc['is_supporting']],
                             question_id=sample['id'],
                             question=sample['question'],
                             answer=sample['answer'],
@@ -59,7 +60,7 @@ class MuSiQue(Dataset):
         with open("datasets\\musique\\musique_corpus.json", encoding="utf-8") as musique_corpus:
             corpus = json.load(musique_corpus)
             corpus = [
-                doc['text']
+                Document(doc_id=doc['text'], content=doc['text'])
                 for doc in corpus
             ]
             Logger().info(

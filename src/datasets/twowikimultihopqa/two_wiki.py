@@ -3,6 +3,7 @@
 import json
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
+from models.document import Document
 from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.question_utils import filter_questions
 
@@ -30,10 +31,10 @@ class TwoWiki(Dataset):
                 DatasetSample(
                     sample_id=sample['_id'],
                     sample=DatasetSampleInstance(
-                        docs=([' '.join(doc[1])
-                               for doc in sample['context']
-                               if any(doc[0] == fact[0] for fact in sample['supporting_facts'])]),
                         qa=filter_questions([QuestionAnswer(
+                            docs=[Document(doc_id=' '.join(doc[1]), content=' '.join(doc[1]))
+                                  for doc in sample['context']
+                                  if any(doc[0] == fact[0] for fact in sample['supporting_facts'])],
                             question_id=sample['_id'],
                             question=sample['question'],
                             answer=sample['answer'],
@@ -51,18 +52,18 @@ class TwoWiki(Dataset):
             return dataset
         # pylint: enable=duplicate-code
 
-    def read_corpus(self) -> list[str]:
+    def read_corpus(self) -> list[Document]:
         """
         Reads the 2Wiki dataset and returns the corpus.
 
         Returns:
-            list[str]: the corpus
+            list[Document]: the corpus
         """
         Logger().info("Reading the 2Wiki dataset corpus")
         with open("datasets\\twowikimultihopqa\\corpus.json", encoding="utf-8") as twowiki_corpus:
             corpus = json.load(twowiki_corpus)
             corpus = [
-                doc['text']
+                Document(doc_id=doc['text'], content=doc['text'])
                 for doc in corpus
             ]
             Logger().info(

@@ -1,6 +1,8 @@
 """A module to create a question-answer class."""
 from enum import IntEnum
 
+from models.document import Document
+
 
 class QuestionCategory(IntEnum):
     """An enum to represent the question category.
@@ -21,10 +23,11 @@ class QuestionAnswer(dict):
         dict: inherits from dict
     """
 
-    def __init__(self, question_id: str, question: str, answer: str, category: QuestionCategory):
+    # pylint: disable-next=too-many-positional-arguments,too-many-arguments
+    def __init__(self, question_id: str, question: str, answer: str, category: QuestionCategory, docs: list[Document]):
         dict.__init__(self, question_id=question_id,
-                      question=question, answer=answer, category=category)
+                      question=question, answer=answer, category=category, docs=docs)
 
     def __repr__(self):
         return f"""Question(question_id={self.get('question_id')}, question={self.get('question')}),\
-    answer={self.get('answer')}, category={self.get('category')})"""
+    answer={self.get('answer')}, category={self.get('category')}), docs={self.get('docs')}"""

@@ -1,81 +1,14 @@
 """Locomo dataset module."""
 
-from collections import defaultdict
 import json
 import re
 from typing import Optional
 
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
+from models.document import Document
 from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.question_utils import filter_questions
-from utils.token_utils import estimate_num_tokens
-
-
-def _parse_conversation(conversation, args) -> str:
-    """Parses the conversation object in a human-readable format.
-
-    Args:
-        conversation (dict): the conversation object between two users
-
-        args (Namespace): the arguments passed to the script
-
-    Returns:
-        str: a human readable string representation of the conversation
-    """
-    if args.execution == 'eval':
-        Logger().warn("Context is not processed in evaluation mode")
-        return ""
-
-    pattern = re.compile(r"^session_\d+$")
-
-    parsed_messages = [
-        {'speaker': message['speaker'],
-            'text': message['text'], 'session': key}
-        for key, session in conversation.items() if pattern.match(key)
-        for message in session
-    ]
-
-    grouped_messages = defaultdict(list)
-    for message in parsed_messages:
-        grouped_messages[message['session']].append(message)
-
-    conversation = "\n".join(
-        [
-            f"DATE: {conversation[f'{session}_date_time']}\nCONVERSATION:\n" + "\n".join(
-                [f"{message['speaker']} said: {message['text']}" for message in messages]
-            )
-            for session, messages in grouped_messages.items()
-        ]
-    )
-
-    if args.dis_trunc:
-        return conversation
-
-    return _truncate_conversation(conversation, args.model)
-
-
-def _truncate_conversation(conversation: str, model: str) -> str:
-    """Truncates the conversation to 16,000 tokens.
-
-    Args:
-        conversation (str): the conversation to be truncated
-
-        model (str): the model deployment identifier
-
-    Returns:
-        str: the truncated conversation
-    """
-    token_count = estimate_num_tokens(conversation, model)
-
-    Logger().info(
-        f"Conversation consists of approximately {token_count} tokens.")
-
-    if token_count > 16000:
-        Logger().warn("Conversation exceeds 16,000 tokens. Truncating..., This may affect the model's performance.")
-        conversation = conversation[-16000:]
-
-    return conversation
 
 
 class Locomo(Dataset):
@@ -90,9 +23,9 @@ Q: "what book did Carlos buy on his birthday?"
 
 Your answer should be: "Becoming Nicole"
 
-The conversation takes place over multiple days and the date of each conversation is written at the beginning of the conversation:
+The conversation takes place over multiple days and the date of each conversation is appended at the end of each message.
 
-Below is the conversation.
+Below are the relevant messages in the conversation.
 
 {context}
 '''
@@ -114,8 +47,15 @@ Below is the conversation.
                 DatasetSample(
                     sample_id=conversation_sample['sample_id'],
                     sample=DatasetSampleInstance(
-                        docs=[],
                         qa=filter_questions([QuestionAnswer(
+                            docs=[Document(
+                                doc_id=ev,
+                                content=conversation_sample['conversation'][f"session_{ev.split(':')[0][1:]}"][int(
+                                    ev.split(':')[1]) - 1]['text'])
+                                  for ev in qa['evidence']
+                                  if f"session_{ev.split(':')[0][1:]}" in conversation_sample['conversation'] and int(
+                                      ev.split(':')[1]) - 1 <
+                                  len(conversation_sample['conversation'][f"session_{ev.split(':')[0][1:]}"])],
                             question_id=f'{conversation_sample["sample_id"]}-{i + 1}',
                             question=qa['question'],
                             answer=qa.get('answer') or qa.get(
@@ -125,7 +65,7 @@ Below is the conversation.
                     )
                 )
                 for conversation_sample in json.load(locomo_dataset)
-                if conversation_id is None or conversation_sample['_id'] == conversation_id
+                if conversation_id is None or conversation_sample['sample_id'] == conversation_id
             ]
             super().process_dataset(dataset)
             Logger().info(
@@ -133,18 +73,34 @@ Below is the conversation.
 
             return dataset
 
-    def read_corpus(self) -> list[str]:
+    def read_corpus(self) -> list[Document]:
         """Reads the LoCoMo dataset corpus.
-        This method is not implemented for LoCoMo dataset yet.
-
-        Raises:
-            NotImplementedError: _description_
 
         Returns:
-            list[str]: _description_
+            list[str]: list of docs (messages) from the corpus
         """
-        raise NotImplementedError(
-            "Read Corpus is not implemented for LoCoMo dataset yet")
+        Logger().info("Reading the LoCoMo dataset corpus")
+        with open("datasets\\locomo\\locomo10.json", encoding="utf-8") as locomo_corpus:
+            corpus = json.load(locomo_corpus)
+
+            pattern = re.compile(r"^session_\d+$")
+            conversation_id = self._args.conversation
+
+            corpus = [
+                Document(
+                    doc_id=message['dia_id'],
+                    content=f"At {conversation_sample['conversation'][f'{key}_date_time']} {message['speaker']} said: \
+{message['text']}"
+                )
+                for conversation_sample in corpus[:self._args.limit]
+                if conversation_id is None or conversation_sample['sample_id'] == conversation_id
+                for key, session in conversation_sample['conversation'].items() if pattern.match(key)
+                for message in session
+            ]
+            Logger().info(
+                f"LoCoMo dataset corpus read successfully. Total documents: {len(corpus)}")
+
+            return corpus
 
     # Mark as override
     def get_question(self, question_id: str) -> Optional[QuestionAnswer]:
@@ -167,6 +123,9 @@ Below is the conversation.
         message_id = match.group(2)
 
         if sample_id not in self._dataset_map:
-            return None
+            Logger().error(
+                f"Sample id {sample_id} not found in the dataset.")
+            raise ValueError(
+                f"Sample id {sample_id} not found in the dataset.")
 
         return self._dataset_map[sample_id]['qa'][int(message_id)-1]
