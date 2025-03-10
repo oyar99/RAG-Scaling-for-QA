@@ -15,7 +15,7 @@ def eval_exact_match(qa_pairs: list[tuple[str, str]]) -> float:
         answers (list[str]): the model's answers
 
     Returns:
-        float: the exact match score
+        em (float): the exact match score
     """
     return sum(exact_match(gt, a) for (gt, a) in qa_pairs) / len(qa_pairs)
 
@@ -29,7 +29,7 @@ def exact_match(expected: str, actual: str) -> float:
         actual (str): the model's answer
 
     Returns:
-        float: the exact match score
+        em (float): the exact match score
     """
     em = 1.0 if normalize(expected) == normalize(actual) else 0.0
 

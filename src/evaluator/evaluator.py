@@ -14,11 +14,11 @@ from models.document import Document
 
 def evaluator(args, dataset: Dataset) -> None:
     """
-    Evaluates the exact match between the ground truth answers and the model's answers.
+    Orchestrates the evaluation of the model's performance on the dataset.
+    It evaluates the model's performance based on the provided arguments and dataset.
 
     Args:
         args (Namespace): the arguments passed to the script
-
         dataset (Dataset): the dataset to be processed
 
     Raises:
@@ -100,7 +100,8 @@ def evaluator(args, dataset: Dataset) -> None:
 
 def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -> None:
     """
-    Evaluates the recall score between the ground truth supporting documents and the model's documents.
+    Evaluates retrieval performance based on the provided document pairs.
+    Evaluates the recall score across various Ks.
 
     Args:
         doc_pairs (list[tuple[list[Document], list[Document]]]): the ground truth documents and the model's documents
@@ -123,7 +124,8 @@ def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -
 
 def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
     """
-    Evaluates the exact match between the ground truth answers and the model's answers.
+    Evaluates question answering performance based on the provided question-answer pairs.
+    Evaluates the exact match score, F1 score, precision, recall, and BERT score (if applicable).
 
     Args:
         qa_pairs (list[tuple[str, str]]): the ground truth answers and the model's answers

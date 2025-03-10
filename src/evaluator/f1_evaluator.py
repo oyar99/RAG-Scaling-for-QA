@@ -19,7 +19,7 @@ def eval_f1_score(qa_pairs: list[tuple[str, str]]) -> tuple[float, float, float]
         qa_pairs (list[tuple[str, str]]): the ground truth answers and the model's answers
 
     Returns:
-        float: the F1 score
+        f1_score (float): A tuple with the averaged F1 score, precision, and recall for all pairs
     """
     f1_scores = [f1_score(gt, a) for (gt, a) in qa_pairs]
     f1, precision, recall = zip(*f1_scores)
@@ -40,7 +40,7 @@ def f1_score(expected: str, actual: str) -> tuple[float, float, float]:
         actual (str): the model's answer
 
     Returns:
-        float: the F1 score
+        f1_score (float): A tuple with the F1 score, precision, and recall for the pair
     """
     expected_tokens = tokenize(expected)
     actual_tokens = tokenize(actual)

@@ -16,10 +16,12 @@ from utils.token_utils import estimate_cost, estimate_num_tokens
 
 
 def guard_job(cost: int, stop: bool = False) -> None:
-    """Guard the job based on the estimated cost.
+    """
+    Guard the job based on the estimated cost.
 
     Args:
         cost (int): the estimated cost of the job
+        stop (bool, optional): whether to stop the job if the cost exceeds a certain threshold. Defaults to False.
 
     Raises:
         RuntimeError: if the cost exceeds $2.0

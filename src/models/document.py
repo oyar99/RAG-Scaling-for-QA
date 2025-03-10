@@ -1,10 +1,15 @@
 """Document class."""
 
+
 class Document(dict):
-    """A Document class that inherits from dict.
+    """
+    Document class to store the document information.
+    It inherits from dict and initializes the dictionary with the given parameters.
 
     Args:
-        dict: inherits from dict
+        dict (Any): dictionary to store the document information
+        doc_id (int): the id of the document
+        content (str): the content of the document
     """
 
     def __init__(self, doc_id: int, content: str):
@@ -13,4 +18,3 @@ class Document(dict):
 
     def __repr__(self):
         return f"""Document(doc_id={self.get('doc_id')}, content={self.get('content')})"""
-    

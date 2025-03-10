@@ -1,4 +1,4 @@
-"""An agent module"""
+"""An agent module."""
 
 from abc import ABC, abstractmethod
 from models.dataset import Dataset
@@ -6,26 +6,48 @@ from models.retrieved_result import RetrievedResult
 
 
 class NoteBook:
-    """A notebook class for storing notes and any other bookeeping stuff the agent needs."""
+    """
+    A notebook class for storing notes and any other bookeeping stuff the agent needs.
+    """
 
     def __init__(self):
         self._sources = []
         self._notes = None
 
     def update_notes(self, notes: str) -> None:
-        """Updates the notebook."""
+        """
+        Updates the notebook with the given notes.
+
+        Args:
+            notes (str): the notes to be added to the notebook
+        """
         self._notes = notes
 
     def get_notes(self) -> str:
-        """Returns the notebook."""
+        """
+        Gets the notes from the notebook.
+
+        Returns:
+            str: the notes in the notebook
+        """
         return self._notes
 
     def update_sources(self, sources: list[RetrievedResult]) -> None:
-        """Updates the sources."""
+        """
+        Updates the notebook with the given sources.
+
+        Args:
+            sources (list[RetrievedResult]): the sources to be added to the notebook
+        """
         self._sources = sources
 
     def get_sources(self) -> list[RetrievedResult]:
-        """Returns the sources."""
+        """
+        Gets the sources from the notebook.
+
+        Returns:
+            list[RetrievedResult]: the sources in the notebook
+        """
         return self._sources
 
 
@@ -75,5 +97,5 @@ class Agent(ABC):
             question (str): the given question
 
         Returns:
-            Notebook: the detailed findings to help answer this question (context)
+            notebook (Notebook): the detailed findings to help answer this question (context)
         """

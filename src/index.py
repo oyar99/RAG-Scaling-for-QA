@@ -1,20 +1,22 @@
-"""Evaluation baseline benchmark for the Locomo dataset."""
+"""Evaluating agent-based architectures for retrieval and answer generation tasks."""
 import argparse
+from typing import Any
 from dotenv import load_dotenv
 
 from logger.logger import Logger
 from orchestrator.orchestrator import Orchestrator
 
 
-def parse_args():
-    """Parses the command line arguments.
+def parse_args() -> dict[str, Any]:
+    """
+    Parses the command line arguments.
 
     Returns:
-        dict: the parsed arguments
+        dict[str, Any]: parsed arguments
     """
     parser = argparse.ArgumentParser(
-        prog='locomo-baseline-eval',
-        description='Evaluate the Locomo benchmark using the baseline system'
+        prog='agent-eval-mem',
+        description='Evaluate various agent-based architectures for retrieval and answer generation tasks'
     )
 
     parser.add_argument('-e', '--execution', choices=['eval', 'predict'], required=True,
@@ -30,7 +32,7 @@ def parse_args():
     parser.add_argument('-ct', '--category', type=int,
                         help='category to be extracted from the dataset (optional)')
     parser.add_argument('-l', '--limit', type=int,
-                        help='limit the number of samples to process.\
+                        help='limit the number of samples to process. \
 Ignored if conversation id is provided (optional)')
 
     # Predict mode arguments
@@ -40,17 +42,17 @@ Ignored if conversation id is provided (optional)')
     parser.add_argument('-a', '--agent', choices=['default', 'bm25'], default='default',
                         help='agent to be used (required in predict mode)')
 
-    parser.add_argument('-np', '--noop', type=int, default=0,
+    parser.add_argument('-np', '--noop', action='store_true',
                         help='do not run actual prediction (optional)')
 
     # Evaluation mode arguments
     parser.add_argument('-ev', '--evaluation', type=str,
                         help='evaluation file path (required in evaluation mode)')
 
-    parser.add_argument('-bt', '--bert-eval', type=int,
-                        default=0, help='run bert evaluation (optional)')
+    parser.add_argument('-bt', '--bert-eval', action='store_true',
+                        help='run bert evaluation (optional)')
 
-    parser.add_argument('-r', '--retrieval', type=int, default=0,
+    parser.add_argument('-r', '--retrieval', action='store_true',
                         help='run retrieval evaluation (optional)')
 
     return parser.parse_args()
@@ -58,7 +60,7 @@ Ignored if conversation id is provided (optional)')
 
 def main():
     """
-    Entry point of the script
+    Entry point to evaluate agent-based architectures for retrieval and answer generation tasks.
     """
     args = parse_args()
 

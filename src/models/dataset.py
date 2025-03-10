@@ -8,7 +8,12 @@ from models.question_answer import QuestionAnswer
 
 
 class DatasetSampleInstance(dict):
-    """A dataset sample instance is a representation of a QA problem instance.
+    """
+    A dataset sample instance is a representation of a QA problem instance.
+
+    Args:
+        dict (Any): dictionary to store the QA problem instance
+        qa (list[QuestionAnswer]): a list of questions and answers
     """
 
     def __init__(self, qa: list[QuestionAnswer]):
@@ -19,21 +24,13 @@ class DatasetSampleInstance(dict):
 
 
 class DatasetSample(dict):
-    """A dataset sample is a representation of a QA problem instance.
-
-    A dataset sample is a dictionary with the following keys:
-
-    - sample_id: the unique identifier of the sample
-    - sample: a nested dictionary representing an instance of a QA problem
-        - docs: a list of documents (strings) representing the actual docs that support the ground truth answer
-        - qa: a list of questions and answers
-            - question: a string representing the question
-            - answer: a string representing the answer
-            - category: an integer representing the category of the question
-            - question_id: a string representing the unique identifier of the question
+    """
+    A dataset sample is a representation of a QA problem instance.
 
     Args:
-        dict: inherits from dict
+        dict (Any): inherits from dict
+        sample_id (str): the unique identifier of the sample
+        sample (DatasetSampleInstance): a nested dictionary representing an instance of a QA problem
     """
 
     def __init__(self, sample_id: str, sample: DatasetSampleInstance):
@@ -45,7 +42,8 @@ class DatasetSample(dict):
 
 
 class Dataset(ABC):
-    """An abstract class representing a dataset.
+    """
+    An abstract class representing a dataset.
 
     Args:
         ABC: an abstract base class
@@ -74,28 +72,28 @@ Below are the passages.
 
     @abstractmethod
     def read(self) -> list[DatasetSample]:
-        """Reads a dataset and converts it to a list of DatasetSample instances.
-
-        Args:
-            args (Namespace): the arguments passed to the script
+        """
+        Reads a dataset and converts it to a list of DatasetSample instances.
 
         Returns:
-            list[DatasetSample]: the dataset as a list of DatasetSample instances
+            dataset (list[DatasetSample]): the dataset as a list of DatasetSample instances
         """
 
     @abstractmethod
     def read_corpus(self) -> list[Document]:
-        """Reads a dataset and converts it to a list of documents.
+        """
+        Reads a dataset and converts it to a list of documents.
 
         Returns:
-            list[Document]: a list of documents from the dataset
+            corpus (list[Document]): a list of documents from the dataset
         """
 
     def process_dataset(self, dataset: list[DatasetSample]) -> None:
-        """Saves the dataset and its map for quick question retrieval in memory
+        """
+        Creates a quick lookup table for the dataset and performs any necessary processing.
 
         Args:
-            dataset (list[DatasetSample]): the dataset to be saved
+            dataset (list[DatasetSample]): the dataset to use for processing
         """
         dataset = [sample for sample in dataset if len(
             sample['sample']['qa']) > 0][:self._args.limit]
@@ -111,10 +109,13 @@ Below are the passages.
         Gets a question from the dataset.
 
         Args:
-            question_id (str): the unique identifier of the question
+            question_id (str): the unique identifier of the question to retrieve
+            
+        Raises:
+            ValueError: if the dataset has not been read or the question id is not found in the dataset
 
         Returns:
-            QuestionAnswer: the question
+            question (QuestionAnswer): the retrieved question
         """
         if not self._dataset_map:
             Logger().error("Dataset not read. Please read the dataset before getting questions.")
@@ -134,20 +135,28 @@ Below are the passages.
         Gets the list of docs that support the given question
 
         Args:
-            question_id (str): the unique identifier of the question
+            question_id (str): the unique identifier of the question for which to retrieve the supporting docs
+            
+        Raises:
+            ValueError: if the dataset has not been read or the question id is not found in the dataset
 
         Returns:
-            list[Document]: list of docs that support the answer to the given question
+            docs (list[Document]): list of docs that support the answer to the given question
         """
         question = self.get_question(question_id)
 
         return question.get('docs') if question else []
 
     def get_questions(self) -> dict[str, list[QuestionAnswer]]:
-        """Get the questions from the Hotpot dataset.
+        """
+        Get all questions from the dataset as a dictionary where the keys are the sample ids 
+        and the values are lists of QuestionAnswer instances.
+        
+        Raises:
+            ValueError: if the dataset has not been read
 
         Returns:
-            dict[str, list[QuestionAnswer]]: the questions
+            questions (dict[str, list[QuestionAnswer]]): the questions
         """
         if not self._dataset:
             Logger().error("Dataset not read. Please read the dataset before getting questions.")

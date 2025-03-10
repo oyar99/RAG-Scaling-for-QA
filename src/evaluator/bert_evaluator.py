@@ -14,7 +14,7 @@ def eval_bert_score(qa_pairs: list[tuple[str, str]]) -> float:
         qa_pairs (list[tuple[str, str]]): the ground truth answers and the model's answers
 
     Returns:
-        float: the BERT score
+        bert_score (float): the BERT score
     """
     return sum(bert_score(gt, a) for (gt, a) in qa_pairs) / len(qa_pairs)
 
@@ -28,7 +28,7 @@ def bert_score(expected: str, actual: str) -> float:
         actual (str): the model's answer
 
     Returns:
-        float: the BERT score
+        bert_score (float): the BERT score
     """
     expected_tokens = normalize(expected)
     actual_tokens = normalize(actual)

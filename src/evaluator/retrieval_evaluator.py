@@ -1,5 +1,5 @@
 
-"""Retrieval Evaluator Module"""
+"""Retrieval Evaluator Module."""
 
 from models.document import Document
 
@@ -11,13 +11,12 @@ def eval_retrieval_recall(doc_pairs: list[tuple[list[Document], list[Document]]]
     """
     Evaluates the recall between the ground truth documents and the model's retrieved documents.
 
-
     Args:
         doc_pairs (list[tuple[list[Document], list[Document]]]): \
 A list of pairs with the ground documents and the retrieved documents.
 
     Returns:
-        dict[int, float]: the recall score across various Ks
+        recall_at_k (dict[int, float]): the recall score across various Ks
     """
     recall_at_k = [recall_score(gt, a) for (gt, a) in doc_pairs]
 
@@ -38,7 +37,7 @@ def recall_score(expected_docs: list[Document], actual_docs: list[Document]) -> 
         actual_docs (list[Document]): the model's retrieved documents
 
     Returns:
-        dict[int, float]: the recall score across various Ks
+        recall_at_k (dict[int, float]): the recall score across various Ks
     """
     assert expected_docs, "Expected documents list is empty."
     assert actual_docs, "Actual documents list is empty."

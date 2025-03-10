@@ -2,7 +2,7 @@
 
 import json
 import re
-from typing import Optional
+from typing import Optional, override
 
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
@@ -35,10 +35,11 @@ Below are the relevant messages in the conversation.
         Logger().info("Initialized an instance of the Locomo dataset")
 
     def read(self) -> list[DatasetSample]:
-        """Reads the Locomo dataset.
+        """
+        Reads the Locomo dataset.
 
         Returns:
-            list[DatasetSample]: the Locomo dataset
+            dataset (list[DatasetSample]): the Locomo dataset
         """
         Logger().info("Reading Locomo dataset")
         conversation_id = self._args.conversation
@@ -74,10 +75,11 @@ Below are the relevant messages in the conversation.
             return dataset
 
     def read_corpus(self) -> list[Document]:
-        """Reads the LoCoMo dataset corpus.
+        """
+        Reads the LoCoMo dataset corpus.
 
         Returns:
-            list[str]: list of docs (messages) from the corpus
+            corpus (list[str]): list of docs (messages) from the corpus
         """
         Logger().info("Reading the LoCoMo dataset corpus")
         with open("datasets\\locomo\\locomo10.json", encoding="utf-8") as locomo_corpus:
@@ -102,15 +104,19 @@ Below are the relevant messages in the conversation.
 
             return corpus
 
-    # Mark as override
+    @override
     def get_question(self, question_id: str) -> Optional[QuestionAnswer]:
-        """Gets a question from the dataset.
+        """
+        Gets a question from the dataset.
 
         Args:
             question_id (str): the id of the question to be retrieved
+            
+        Raises:
+            ValueError: if the dataset is not read or the question id is not found in the dataset
 
         Returns:
-            Optional[QuestionAnswer]: the question if found, None otherwise
+            question (Optional[QuestionAnswer]): the question if found, None otherwise
         """
         if not self._dataset:
             Logger().error("Dataset not read. Please read the dataset before getting questions.")

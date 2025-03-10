@@ -1,4 +1,4 @@
-"""BM25 RAG system for document retrieval using BM25L algorithm."""
+"""BM25 RAG system for document retrieval using BM25 algorithm."""
 
 from rank_bm25 import BM25Okapi
 from logger.logger import Logger
@@ -12,8 +12,10 @@ class BM25(Agent):
     """BM25 RAG system for document retrieval using BM25 algorithm."""
 
     def __init__(self, args):
-        super().__init__(args)
+        self._index = None
+        self._corpus = None
         self._qa_prompt = None
+        super().__init__(args)
 
     def index(self, dataset: Dataset) -> None:
         """Index the documents using BM25 algorithm.
@@ -35,14 +37,15 @@ class BM25(Agent):
 
         Logger().info("Successfully indexed documents")
 
-    def reason(self, question: str) -> list[RetrievedResult]:
-        """Retrieve the top k documents for the given query.
+    def reason(self, question: str) -> NoteBook:
+        """
+        Retrieve the top k documents for the given question.
 
         Args:
-            query (str): The query string.
+            question (str): The question
 
         Returns:
-            list[tuple[int, float]]: List of tuples containing document index and score.
+            notebook (NoteBook): The notebook containing the retrieved documents and notes gathered by the agent
         """
         # pylint: disable=duplicate-code
         if not self._index or not self._corpus:

@@ -1,4 +1,4 @@
-"""Tokenizer module"""
+"""Tokenizer module."""
 import re
 import string
 from nltk.corpus import stopwords
@@ -6,10 +6,14 @@ from nltk.stem import SnowballStemmer
 from nltk.tokenize import word_tokenize
 
 
-def normalize(text: str, is_remove_stopwords: bool = False, use_stemer: bool = False) -> str:
+def normalize(
+    text: str,
+    is_remove_stopwords: bool = False,
+    use_stemer: bool = False
+) -> str:
     """
-    Normalizes the input text by lowercasing, removing punctuation, articles,
-    and extra whitespace.
+    Normalizes the input text by lowercasing, removing punctuation, articles, extra whitespace, and 
+    optionally removing stopwords and applying stemming.
 
     Adapted from the MRQA-Shared-Task-2019
 
@@ -19,7 +23,7 @@ def normalize(text: str, is_remove_stopwords: bool = False, use_stemer: bool = F
         text (str): The input text to normalize.
 
     Returns:
-        str: The normalized text.
+        normalized_text (str): The normalized text.
     """
     def remove_articles(text: str):
         return re.sub(r"\b(a|an|the)\b", " ", text)
@@ -49,17 +53,23 @@ def normalize(text: str, is_remove_stopwords: bool = False, use_stemer: bool = F
     return stem(remove_stopwords(join_empty_space(remove_articles(remove_punc(lower(text))))))
 
 
-def tokenize(text: str, ngrams: int = 1, remove_stopwords: bool = False, use_stemmer: bool = False) -> list[str]:
+def tokenize(
+    text: str,
+    ngrams: int = 1,
+    remove_stopwords: bool = False,
+    use_stemmer: bool = False
+) -> list[str]:
     """
     Tokenizes the input text into a list of tokens.
 
     Args:
         text (str): The input text to tokenize.
-
-        ngrams (int): The number of n-grams to generate up to 5.
+        ngrams (int): The size of the ngrams to generate. Default is 1 and the maximum is 5.
+        remove_stopwords (bool): Whether to remove stopwords. Default is False.
+        use_stemmer (bool): Whether to apply stemming. Default is False.
 
     Returns:
-        list: A list of tokens.
+        tokens (list[str]): A list of tokens.
     """
     unigrams = normalize(
         text, is_remove_stopwords=remove_stopwords, use_stemer=use_stemmer).split()

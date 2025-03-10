@@ -1,12 +1,18 @@
 """A module to format a size in bytes into a human-readable string."""
+
+
 def format_size(size: int) -> str:
-    """Formats a intenger representing a size in bytes into a human-readable string.
+    """
+    Formats a integer representing a size in bytes into a human-readable string.
+    For example, 1024 bytes will be formatted as "1.00KB".
+    It supports representing sizes in bytes, kilobytes, megabytes, and gigabytes.
+    The size is rounded to two decimal places and the appropriate unit is appended.
 
     Args:
         size (int): the size in bytes
 
     Returns:
-        str: a human-readable string representation of the size
+        formatted_size (str): a human-readable string representation of the size
     """
     for unit in ['B', 'KB', 'MB', 'GB']:
         if size < 1024.0:

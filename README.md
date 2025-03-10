@@ -28,7 +28,7 @@ Each dataset includes a subset of **five different types of questions**, with a 
 
 ## Requirements
 
-We recommend using **Python 3.9** and creating a virtual environment.
+We recommend using **Python 3.13** and creating a virtual environment.
 
 Verify the installed Python version:
 

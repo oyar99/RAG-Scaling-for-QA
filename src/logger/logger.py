@@ -1,4 +1,4 @@
-"""Logger module for logging messages to console and file."""
+"""Logger module."""
 import logging
 import os
 import uuid
@@ -8,7 +8,8 @@ from utils.singleton import Singleton
 
 class Logger(metaclass=Singleton):
     """
-    A class that provides a logger instance.
+    A logger to log messages to both console and file.
+    This class is a singleton, meaning that only one instance of it can exist at a time.
     """
 
     def __init__(self):
@@ -35,7 +36,8 @@ class Logger(metaclass=Singleton):
         self._logger.addHandler(fh)
 
     def info(self, message: str) -> None:
-        """Logs a message at the INFO level.
+        """
+        Logs a message at the INFO level.
 
         Args:
             message (str): message to be logged
@@ -43,7 +45,8 @@ class Logger(metaclass=Singleton):
         self._logger.info(message)
 
     def warn(self, message: str) -> None:
-        """Logs a message at the WARN level.
+        """
+        Logs a message at the WARN level.
 
         Args:
             message (str): message to be logged
@@ -51,7 +54,8 @@ class Logger(metaclass=Singleton):
         self._logger.warning(message)
 
     def debug(self, message: str) -> None:
-        """Logs a message at the VERBOSE level.
+        """
+        Logs a message at the DEBUG level.
 
         Args:
             message (str): message to be logged
@@ -59,7 +63,8 @@ class Logger(metaclass=Singleton):
         self._logger.debug(message)
 
     def error(self, message: str) -> None:
-        """Logs a message at the ERROR level.
+        """
+        Logs a message at the ERROR level.
 
         Args:
             message (str): message to be logged
@@ -67,9 +72,10 @@ class Logger(metaclass=Singleton):
         self._logger.error(message)
 
     def get_run_id(self) -> str:
-        """Returns the run id.
+        """
+        Gets the execution run id.
 
         Returns:
-            str: run id
+            run_id (str): run id
         """
         return self._run_id

@@ -20,7 +20,7 @@ class Hotpot(Dataset):
         Reads the Hotpot dataset.
 
         Returns:
-            list[DatasetSample]: the dataset samples
+            dataset (list[DatasetSample]): the dataset samples
         """
         Logger().info("Reading the Hotpot dataset")
         conversation_id = self._args.conversation
@@ -58,7 +58,7 @@ class Hotpot(Dataset):
         Reads the Hotpot dataset and returns the corpus.
 
         Returns:
-            list[Document]: the corpus
+            corpus (list[Document]): the corpus
         """
         Logger().info("Reading the Hotpot dataset corpus")
         with open("datasets\\hotpot\\hotpot_corpus.json", encoding="utf-8") as hotpot_corpus:

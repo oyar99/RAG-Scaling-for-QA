@@ -1,10 +1,16 @@
 """RetrievedResult class."""
 
+
 class RetrievedResult(dict):
-    """A RetrievedResult class that inherits from dict.
+    """
+    RetrievedResult class to store the retrieved results.
+    It inherits from dict and initializes the dictionary with the given parameters.
 
     Args:
-        dict: inherits from dict
+        dict (Any): dictionary to store the retrieved results
+        doc_id (int): the id of the document
+        content (str): the content of the document
+        score (float): the relevance score of the document
     """
 
     def __init__(self, doc_id: int, content: str, score: float):
@@ -14,4 +20,3 @@ class RetrievedResult(dict):
     def __repr__(self):
         return f"""RetrievedResult(doc_id={self.get('doc_id')}, content={self.get('content')}),\
     score={self.get('score')})"""
-    

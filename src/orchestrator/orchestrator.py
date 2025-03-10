@@ -15,7 +15,9 @@ from predictor.predictor import predictor
 
 # pylint: disable-next=too-few-public-methods
 class Orchestrator:
-    """An orchestrator class to run the predictor and evaluator.
+    """
+    Orchestrator class to run the predictor and evaluator.
+    It initializes the agent and dataset based on the provided arguments.
     """
 
     def __init__(self, args):
@@ -46,7 +48,10 @@ class Orchestrator:
 
     def run(self):
         """
-        Generates predictions for the given conversation.
+        Generates predictions for the given dataset using the specified agent.
+
+        Raises:
+            ValueError: if the execution mode is not supported
         """
         if self._config.execution == 'predict':
             Logger().info("Running predictor")

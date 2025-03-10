@@ -1,4 +1,4 @@
-"""Musique dataset class"""
+"""Musique dataset class."""
 
 import json
 from logger.logger import Logger
@@ -20,7 +20,7 @@ class MuSiQue(Dataset):
         Reads the MuSiQue dataset.
 
         Returns:
-            list[DatasetSample]: the dataset samples
+            dataset (list[DatasetSample]): the dataset samples
         """
         Logger().info("Reading the MuSiQue dataset")
         conversation_id = self._args.conversation
@@ -54,7 +54,7 @@ class MuSiQue(Dataset):
         Reads the MuSiQue dataset and returns the corpus.
 
         Returns:
-            list[str]: the corpus
+            corpus (list[str]): the corpus
         """
         Logger().info("Reading the MuSiQue dataset corpus")
         with open("datasets\\musique\\musique_corpus.json", encoding="utf-8") as musique_corpus:

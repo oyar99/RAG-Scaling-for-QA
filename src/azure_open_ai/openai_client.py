@@ -15,7 +15,8 @@ class OpenAIClient(metaclass=Singleton):
         self.initialize_client()
 
     def initialize_client(self):
-        """Initializes the Azure OpenAI client if it is not already initialized.
+        """
+        Initializes the Azure OpenAI client if it is not already initialized.
         
         Raises:
             ValueError: if any of the required environment variables are not set
@@ -33,9 +34,10 @@ class OpenAIClient(metaclass=Singleton):
             )
 
     def get_client(self):
-        """Returns the Azure OpenAI client.
+        """
+        Returns the Azure OpenAI client.
 
         Returns:
-            AzureOpenAI: A singleton instance of the Azure OpenAI client.
+            client (AzureOpenAI): A singleton instance of the Azure OpenAI client.
         """
         return self._client

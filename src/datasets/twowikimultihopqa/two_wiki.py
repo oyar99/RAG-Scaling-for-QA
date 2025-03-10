@@ -20,7 +20,7 @@ class TwoWiki(Dataset):
         Reads the 2Wiki dataset.
 
         Returns:
-            list[DatasetSample]: the dataset samples
+            dataset (list[DatasetSample]): the dataset samples
         """
         Logger().info("Reading the 2WikiMultihopQA dataset")
         conversation_id = self._args.conversation
@@ -57,7 +57,7 @@ class TwoWiki(Dataset):
         Reads the 2Wiki dataset and returns the corpus.
 
         Returns:
-            list[Document]: the corpus
+            corpus (list[Document]): the corpus
         """
         Logger().info("Reading the 2Wiki dataset corpus")
         with open("datasets\\twowikimultihopqa\\corpus.json", encoding="utf-8") as twowiki_corpus:

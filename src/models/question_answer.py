@@ -5,10 +5,12 @@ from models.document import Document
 
 
 class QuestionCategory(IntEnum):
-    """An enum to represent the question category.
+    """
+    Enum class to represent the category of a question.
+    The categories are represented as integer values.
 
     Args:
-        Enum: inherits from Enum
+        IntEnum: inherits from IntEnum
     """
     MULTI_HOP = 1
     TEMPORAL = 2
@@ -17,10 +19,17 @@ class QuestionCategory(IntEnum):
     ADVERSARIAL = 5
 
 class QuestionAnswer(dict):
-    """A question class that inherits from dict.
+    """
+    QuestionAnswer class to store the question and answer.
+    It inherits from dict and initializes the dictionary with the given parameters.
 
     Args:
-        dict: inherits from dict
+        dict (Any): dictionary to store the question and answer
+        question_id (str): the id of the question
+        question (str): the question text
+        answer (str): the answer text
+        category (QuestionCategory): the category of the question
+        docs (list[Document]): list of documents that support the answer to the question
     """
 
     # pylint: disable-next=too-many-positional-arguments,too-many-arguments
