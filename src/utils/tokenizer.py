@@ -4,6 +4,7 @@ import string
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 from nltk.tokenize import word_tokenize
+import nltk
 
 
 def normalize(
@@ -41,12 +42,20 @@ def normalize(
     def remove_stopwords(text: str):
         if not is_remove_stopwords:
             return text
+        try:
+            nltk.data.find('corpora/stopwords')
+        except LookupError:
+            nltk.download('stopwords')
         stop_words = set(stopwords.words('english'))
         return " ".join(word for word in text.split() if word not in stop_words)
 
     def stem(text: str):
         if not use_stemer:
             return text
+        try:
+            nltk.data.find('tokenizers/punkt_tab')
+        except LookupError:
+            nltk.download('punkt_tab')
         stemmer = SnowballStemmer("english", ignore_stopwords=True)
         return " ".join(stemmer.stem(word) for word in word_tokenize(text))
 
