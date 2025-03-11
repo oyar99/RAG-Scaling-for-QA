@@ -17,6 +17,9 @@ class QuestionCategory(IntEnum):
     OPEN_DOMAIN = 3
     SINGLE_HOP = 4
     ADVERSARIAL = 5
+    COMPARISON = 6
+    NONE = 7
+
 
 class QuestionAnswer(dict):
     """
@@ -33,7 +36,14 @@ class QuestionAnswer(dict):
     """
 
     # pylint: disable-next=too-many-positional-arguments,too-many-arguments
-    def __init__(self, question_id: str, question: str, answer: list[str], category: QuestionCategory, docs: list[Document]):
+    def __init__(
+        self,
+        question_id: str,
+        question: str,
+        answer: list[str],
+        category: QuestionCategory,
+        docs: list[Document]
+    ):
         dict.__init__(self, question_id=question_id,
                       question=question, answer=answer, category=category, docs=docs)
 

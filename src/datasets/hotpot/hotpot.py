@@ -39,7 +39,9 @@ class Hotpot(Dataset):
                             question=sample['question'],
                             answer=[sample['answer']],
                             category=QuestionCategory.MULTI_HOP
-                            if sample['type'] == 'bridge' else QuestionCategory.OPEN_DOMAIN
+                            if sample['type'] == 'bridge' else (
+                                QuestionCategory.COMPARISON if sample['type'] == 'comparison' else QuestionCategory.NONE
+                            )
                         )], self._args.questions, self._args.category)
                     )
                 )

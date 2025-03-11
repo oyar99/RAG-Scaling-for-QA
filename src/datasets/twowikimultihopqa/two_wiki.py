@@ -38,7 +38,11 @@ class TwoWiki(Dataset):
                             question_id=sample['_id'],
                             question=sample['question'],
                             answer=[sample['answer']],
-                            category=QuestionCategory.MULTI_HOP
+                            category=QuestionCategory.COMPARISON
+                            if sample['type'] in ('comparison', 'bridge_comparison') else (
+                                QuestionCategory.MULTI_HOP
+                                if sample['type'] in ('inference', 'compositional') else QuestionCategory.NONE
+                            )
                         )], self._args.questions, self._args.category)
                     )
                 )

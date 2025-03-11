@@ -47,7 +47,7 @@ Each sample includes a question, the context (20 paragraphs), supporting facts, 
 
 The dataset's questions follow six distinct reasoning graph structures, all of which can be broadly categorized as:
 
-1) Multi-Hop question: A question that requires effective multi-hop reasoning, ranging from 2-hop to 4-hop inference.
+1) __Multi-Hop question__: A question that requires effective multi-hop reasoning, ranging from 2-hop to 4-hop inference.
 (e.g., "Who was the sibling of Nannina de' Medici?")
 
 The dataset can be downloaded directly into this repository by running:

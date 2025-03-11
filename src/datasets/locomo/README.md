@@ -57,17 +57,17 @@ The QA task can be evaluated using the `index.py` with the appropriate command l
 
 There are 5 different types of questions. Each question has a corresponding category from the below list.
 
-1) Multi-Hop: A question that requires the model to do multi-hop reasoning to arrive at the correct answer.
+1) __Multi-Hop__: A question that requires the model to do multi-hop reasoning to arrive at the correct answer.
 (e.g., "Which city have both Jean and John visited?")
 
-2) Temporal: A question that requires the model to reason about dates and times.
+2) __Temporal__: A question that requires the model to reason about dates and times.
 (e.g., "When did Maria donate her car?")
 
-3) Open Domain: A broad question about the conversation that require an actual understanding of the context.
+3) __Open Domain__: A broad question about the conversation that require an actual understanding of the context.
 (e.g., "Would John be open to moving to another country?")
 
-4) Single-Hop: A question that requires the model to do a single-hop reasoning step to answer.
+4) __Single-Hop__: A question that requires the model to do a single-hop reasoning step to answer.
 (e.g., "What did Maria donate to a homeless shelter in December 2023?")
 
-5) Adversarial: A question that may not be answerable because it's not explicitely or implicitely mentioned in the conversation.
+5) __Adversarial__: A question that may not be answerable because it's not explicitely or implicitely mentioned in the conversation.
 (e.g., Q: "What country is Melanie's grandma from?" / A: "Not mentioned")

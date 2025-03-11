@@ -2,9 +2,9 @@
 
 [_2WikiMultihopQA_](https://github.com/Alab-NII/2wikimultihop) is an evaluation benchmark for Multi-Hop QA originally presented in the paper [Constructing A Multi-hop QA Dataset for Comprehensive Evaluation of Reasoning Steps](https://aclanthology.org/2020.coling-main.580/).
 
-The dataset is constructed using hand-crafted templates with predefined logical rules, leveraging data from Wikipedia and Wikidata. Compared to __HotpotQA__, [_2WikiMultihopQA_](https://github.com/Alab-NII/2wikimultihop) includes evidence information for each sample in the form of triples (subject entity, property, object entity), designed to evaluate the reasoning and inference capabilities of language models. [_2WikiMultihopQA_](https://github.com/Alab-NII/2wikimultihop) is also more challenging than __HotpotQA__, as it aims to develop questions that do _require_ multi-hop reasoning. In contrast, studies have shown that many samples in __HotpotQA__ can be answered correctly without actual reasoning.
+The dataset is constructed using hand-crafted templates with predefined logical rules, leveraging data from Wikipedia and Wikidata. Compared to _HotpotQA_, [_2WikiMultihopQA_](https://github.com/Alab-NII/2wikimultihop) includes evidence information for each sample in the form of triples (subject entity, property, object entity), designed to evaluate the reasoning and inference capabilities of language models. [_2WikiMultihopQA_](https://github.com/Alab-NII/2wikimultihop) is also more challenging than _HotpotQA_, as it aims to develop questions that do _require_ multi-hop reasoning. In contrast, studies have shown that many samples in _HotpotQA_ can be answered correctly without actual reasoning.
 
-Each sample is stored as a JSON object following a similar format as __HotpotQA__ as follows:
+Each sample includes a question, the context (10 paragraphs, including distractor passages), supporting facts, evidence triples, and the gold answer. The data is stored as JSON objects with a similar format as _HotpotQA_.
 
 ```json
 {
@@ -43,15 +43,15 @@ Each sample is stored as a JSON object following a similar format as __HotpotQA_
 
 There are 4 different types of questions.
 
-1) Comparison question: A question that compares two or more entities with regards to a particular feature of that entity.
+1) __Comparison question__: A question that compares two or more entities with regards to a particular feature of the entities.
 (e.g., "Which film came out first, Blind Shaft or The Mask Of Fu Manchu?")
 
-2) Inference question: A question obtained by infering a triple (e, r, e_2) given two triples from the knowledge base.
+2) __Inference question__: A question obtained by infering a triple (e, r, e_2) given two triples from the knowledge base.
 (e.g., "Who is the maternal grandfather of Antiochus X Eusebes?")
 
-3) Compositional question: A question obtained by composing two triples from the knowledge base without applying implicit inference. (e.g., "Where was the director of film Thomas Jefferson (Film) born?")
+3) __Compositional question__: A question obtained by composing two triples from the knowledge base without applying implicit inference. (e.g., "Where was the director of film Thomas Jefferson (Film) born?")
 
-4) Bridge-comparison question: A question that combines comparison with compositional questions.
+4) __Bridge-comparison question__: A question that combines comparison with compositional questions.
 (e.g., "Which film has the director who died earlier, Tangled Destinies or The Daltons' Women?")
 
 The dataset can be downloaded directly into this repository by running the following command:
@@ -59,5 +59,3 @@ The dataset can be downloaded directly into this repository by running the follo
 ```sh
 .\download.sh
 ```
-
-Please note this dataset has the same structure as HotpotQA.
