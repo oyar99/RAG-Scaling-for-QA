@@ -27,13 +27,13 @@ class QuestionAnswer(dict):
         dict (Any): dictionary to store the question and answer
         question_id (str): the id of the question
         question (str): the question text
-        answer (str): the answer text
+        answer (list[str]): the list of possible answers
         category (QuestionCategory): the category of the question
         docs (list[Document]): list of documents that support the answer to the question
     """
 
     # pylint: disable-next=too-many-positional-arguments,too-many-arguments
-    def __init__(self, question_id: str, question: str, answer: str, category: QuestionCategory, docs: list[Document]):
+    def __init__(self, question_id: str, question: str, answer: list[str], category: QuestionCategory, docs: list[Document]):
         dict.__init__(self, question_id=question_id,
                       question=question, answer=answer, category=category, docs=docs)
 

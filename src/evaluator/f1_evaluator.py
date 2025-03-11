@@ -11,12 +11,12 @@ from utils.tokenizer import tokenize
 from logger.logger import Logger
 
 
-def eval_f1_score(qa_pairs: list[tuple[str, str]]) -> tuple[float, float, float]:
+def eval_f1_score(qa_pairs: list[tuple[list[str], str]]) -> tuple[float, float, float]:
     """
     Evaluates the F1 score between the ground truth answers and the model's answers.
 
     Args:
-        qa_pairs (list[tuple[str, str]]): the ground truth answers and the model's answers
+        qa_pairs (list[tuple[list[str], str]]): the ground truth answers and the model's answers
 
     Returns:
         f1_score (float): A tuple with the averaged F1 score, precision, and recall for all pairs
@@ -31,7 +31,7 @@ def eval_f1_score(qa_pairs: list[tuple[str, str]]) -> tuple[float, float, float]
     return avg_f1, avg_precision, avg_recall
 
 
-def f1_score(expected: str, actual: str) -> tuple[float, float, float]:
+def f1_score(expected: list[str], actual: str) -> tuple[float, float, float]:
     """
     Evaluates the F1 score between the ground truth answer and the model's answer.
 
@@ -42,21 +42,24 @@ def f1_score(expected: str, actual: str) -> tuple[float, float, float]:
     Returns:
         f1_score (float): A tuple with the F1 score, precision, and recall for the pair
     """
-    expected_tokens = tokenize(expected)
-    actual_tokens = tokenize(actual)
+    def compute_score(e: str, a: str):
+        expected_tokens = tokenize(e)
+        actual_tokens = tokenize(a)
 
-    common = Counter(expected_tokens) & Counter(actual_tokens)
-    num_same = sum(common.values())
+        common = Counter(expected_tokens) & Counter(actual_tokens)
+        num_same = sum(common.values())
 
-    if num_same == 0:
-        Logger().debug(
-        f"F1 score: {0} - Expected: {expected} - Actual: {actual}")
-        return (0, 0, 0)
+        if num_same == 0:
+            return (0, 0, 0)
 
-    precision = 1.0 * num_same / len(actual_tokens)
-    recall = 1.0 * num_same / len(expected_tokens)
+        precision = 1.0 * num_same / len(actual_tokens)
+        recall = 1.0 * num_same / len(expected_tokens)
 
-    f1 = (2 * precision * recall) / (precision + recall)
+        f1 = (2 * precision * recall) / (precision + recall)
+
+        return f1, precision, recall
+
+    f1, precision, recall = max(compute_score(e, actual)[0] for e in expected)
 
     Logger().debug(
         f"F1 score: {f1} - Expected: {expected} - Actual: {actual}")

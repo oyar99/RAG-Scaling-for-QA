@@ -69,7 +69,7 @@ def evaluator(args, dataset: Dataset) -> None:
 
             return doc_pairs
 
-        def extract_qa_pair(eval_item) -> Optional[tuple[str, str]]:
+        def extract_qa_pair(eval_item) -> Optional[tuple[list[str], str]]:
             Logger().debug(
                 f"Extracting QA pair for evaluation item: {eval_item['custom_id']}")
             question = dataset.get_question(eval_item['custom_id'])
@@ -122,13 +122,13 @@ def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -
             output_file.write(f"Recall at {k}: {recall}\n")
 
 
-def evaluate(qa_pairs: list[tuple[str, str]], args) -> None:
+def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     """
     Evaluates question answering performance based on the provided question-answer pairs.
     Evaluates the exact match score, F1 score, precision, recall, and BERT score (if applicable).
 
     Args:
-        qa_pairs (list[tuple[str, str]]): the ground truth answers and the model's answers
+        qa_pairs (list[tuple[list[str], str]]): the ground truth answers and the model's answers
 
         args (Namespace): the arguments passed to the script
     """

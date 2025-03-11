@@ -59,8 +59,8 @@ Below are the relevant messages in the conversation.
                                   len(conversation_sample['conversation'][f"session_{ev.split(':')[0][1:]}"])],
                             question_id=f'{conversation_sample["sample_id"]}-{i + 1}',
                             question=qa['question'],
-                            answer=qa.get('answer') or qa.get(
-                                'adversarial_answer'),
+                            answer=[qa.get('answer') or qa.get(
+                                'adversarial_answer')],
                             category=QuestionCategory(qa['category'])
                         ) for i, qa in enumerate(conversation_sample['qa'])], self._args.questions, self._args.category)
                     )

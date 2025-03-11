@@ -35,7 +35,7 @@ class MuSiQue(Dataset):
                                   for doc in sample['paragraphs'] if doc['is_supporting']],
                             question_id=sample['id'],
                             question=sample['question'],
-                            answer=sample['answer'],
+                            answer=[sample['answer']] + sample['answer_aliases'],
                             category=QuestionCategory.MULTI_HOP
                         )], self._args.questions, self._args.category)
                     )

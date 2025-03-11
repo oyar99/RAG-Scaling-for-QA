@@ -37,7 +37,7 @@ class TwoWiki(Dataset):
                                   if any(doc[0] == fact[0] for fact in sample['supporting_facts'])],
                             question_id=sample['_id'],
                             question=sample['question'],
-                            answer=sample['answer'],
+                            answer=[sample['answer']],
                             category=QuestionCategory.MULTI_HOP
                         )], self._args.questions, self._args.category)
                     )
