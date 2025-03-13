@@ -81,7 +81,7 @@ def evaluator(args, dataset: Dataset) -> None:
 
             Logger().debug(f"Question found: {question['question']}")
 
-            qa_pair = (str(question['answer']),
+            qa_pair = (question['answer'],
                        str(eval_item['response']['body']['choices'][0]['message']['content']))
 
             Logger().debug(

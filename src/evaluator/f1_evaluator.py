@@ -42,7 +42,7 @@ def f1_score(expected: list[str], actual: str) -> tuple[float, float, float]:
     Returns:
         f1_score (float): A tuple with the F1 score, precision, and recall for the pair
     """
-    def compute_score(e: str, a: str):
+    def compute_score(e: str, a: str) -> tuple[float, float, float]:
         expected_tokens = tokenize(e)
         actual_tokens = tokenize(a)
 
@@ -59,7 +59,8 @@ def f1_score(expected: list[str], actual: str) -> tuple[float, float, float]:
 
         return f1, precision, recall
 
-    f1, precision, recall = max(compute_score(e, actual)[0] for e in expected)
+    f1, precision, recall = max((compute_score(e, actual)
+                                for e in expected), key=lambda x: x[0])
 
     Logger().debug(
         f"F1 score: {f1} - Expected: {expected} - Actual: {actual}")

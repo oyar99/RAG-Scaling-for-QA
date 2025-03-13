@@ -37,7 +37,7 @@ class Hotpot(Dataset):
                                   if any(doc[0] == fact[0] for fact in sample['supporting_facts'])],
                             question_id=sample['_id'],
                             question=sample['question'],
-                            answer=[sample['answer']],
+                            answer=[str(sample['answer'])],
                             category=QuestionCategory.MULTI_HOP
                             if sample['type'] == 'bridge' else (
                                 QuestionCategory.COMPARISON if sample['type'] == 'comparison' else QuestionCategory.NONE
