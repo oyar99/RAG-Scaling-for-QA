@@ -1,11 +1,30 @@
 """BM25 RAG system for document retrieval using BM25 algorithm."""
 
-from rank_bm25 import BM25Okapi
+from rank_bm25 import BM25Okapi as BM25Ranker
 from logger.logger import Logger
 from models.agent import Agent, NoteBook
 from models.dataset import Dataset
+from models.document import Document
 from models.retrieved_result import RetrievedResult
-from utils.tokenizer import tokenize
+from utils.tokenizer import PreprocessingMethod, tokenize
+
+
+def tokenize_doc(doc: Document) -> list[str]:
+    """
+    Tokenize the document.
+
+    Args:
+        doc (str): the document to tokenize
+
+    Returns:
+        _type_: _description_
+    """
+    return tokenize(
+        doc['content'],
+        ngrams=2,
+        remove_stopwords=True,
+        preprocessing_method=PreprocessingMethod.STEMMING
+    )
 
 
 class BM25(Agent):
@@ -26,12 +45,13 @@ class BM25(Agent):
         Logger().info("Indexing documents using BM25 agent")
         corpus = dataset.read_corpus()
 
-        # Tokenize the documents
-        tokenized_docs = [
-            tokenize(doc['content'], ngrams=2, remove_stopwords=True, use_stemmer=True) for doc in corpus]
-
-        # Index the documents using BM25L
-        self._index = BM25Okapi(tokenized_docs)
+        # Index the documents using BM25
+        self._index = BM25Ranker(
+            corpus,
+            tokenizer=tokenize_doc,
+            b=0.25,
+            k1=1.2
+        )
         self._corpus = corpus
         self._qa_prompt = dataset.QA_PROMPT
 
@@ -60,7 +80,11 @@ class BM25(Agent):
         Logger().debug(f"Retrieving top {k} documents for query: {question}")
         # Tokenize the query
         tokenized_query = tokenize(
-            question, ngrams=2, remove_stopwords=True, use_stemmer=True)
+            question,
+            ngrams=2,
+            remove_stopwords=True,
+            preprocessing_method=PreprocessingMethod.STEMMING
+        )
 
         # Get scores for the query
         scores = self._index.get_scores(tokenized_query)

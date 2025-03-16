@@ -1,12 +1,3 @@
-{
-  "recommendations": [
-    "GitHub.copilot",
-    "GitHub.copilot-chat",
-    "ms-python.pylint",
-    "ms-python.python",
-    "ms-python.vscode-pylance",
-    "ms-python.debugpy",
-    "ms-python.autopep8",
-    "njpwerner.autodocstring"
-  ]
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:b36e8ba65a0645898a388263592389677678cda6d71510fa6c8672ee227e8ed1
+size 240
