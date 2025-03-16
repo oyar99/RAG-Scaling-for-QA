@@ -88,7 +88,7 @@ Below are the passages.
             corpus (list[Document]): a list of documents from the dataset
         """
 
-    def process_dataset(self, dataset: list[DatasetSample]) -> None:
+    def process_dataset(self, dataset: list[DatasetSample]) -> list[DatasetSample]:
         """
         Creates a quick lookup table for the dataset and performs any necessary processing.
 
@@ -97,6 +97,16 @@ Below are the passages.
         """
         dataset = [sample for sample in dataset if len(
             sample['sample']['qa']) > 0][:self._args.limit]
+        dataset = [
+            {
+                **sample,
+                'sample': {
+                    **sample['sample'],
+                    'qa': [qa for qa in sample['sample']['qa'] if len(qa.get('docs', [])) > 0]
+                }
+            }
+            for sample in dataset
+        ]
 
         self._dataset = dataset
         self._dataset_map = {
@@ -104,13 +114,15 @@ Below are the passages.
             for sample in dataset
         }
 
+        return dataset
+
     def get_question(self, question_id: str) -> QuestionAnswer:
         """
         Gets a question from the dataset.
 
         Args:
             question_id (str): the unique identifier of the question to retrieve
-            
+
         Raises:
             ValueError: if the dataset has not been read or the question id is not found in the dataset
 
@@ -136,7 +148,7 @@ Below are the passages.
 
         Args:
             question_id (str): the unique identifier of the question for which to retrieve the supporting docs
-            
+
         Raises:
             ValueError: if the dataset has not been read or the question id is not found in the dataset
 
@@ -151,7 +163,7 @@ Below are the passages.
         """
         Get all questions from the dataset as a dictionary where the keys are the sample ids 
         and the values are lists of QuestionAnswer instances.
-        
+
         Raises:
             ValueError: if the dataset has not been read
 

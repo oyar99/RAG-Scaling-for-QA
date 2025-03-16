@@ -1,6 +1,7 @@
 """Locomo dataset module."""
 
 import json
+import hashlib
 import re
 from typing import Optional, override
 
@@ -9,6 +10,21 @@ from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
 from models.document import Document
 from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.question_utils import filter_questions
+
+
+def get_question_hash(question: str) -> str:
+    """
+    Gets the question suffix id.
+
+    Args:
+        question (str): the question to be retrieved
+
+    Returns:
+        question_suffix_id (str): the question suffix id
+    """
+    sha256_hash = hashlib.sha256()
+    sha256_hash.update(question.encode('utf-8'))
+    return sha256_hash.hexdigest()
 
 
 class Locomo(Dataset):
@@ -34,6 +50,7 @@ Below are the relevant messages in the conversation.
         super().__init__(args)
         Logger().info("Initialized an instance of the Locomo dataset")
 
+    @override
     def read(self) -> list[DatasetSample]:
         """
         Reads the Locomo dataset.
@@ -57,7 +74,7 @@ Below are the relevant messages in the conversation.
                                   if f"session_{ev.split(':')[0][1:]}" in conversation_sample['conversation'] and int(
                                       ev.split(':')[1]) - 1 <
                                   len(conversation_sample['conversation'][f"session_{ev.split(':')[0][1:]}"])],
-                            question_id=f'{conversation_sample["sample_id"]}-{i + 1}',
+                            question_id=f'{conversation_sample["sample_id"]}-{get_question_hash(qa['question'])}',
                             question=qa['question'],
                             answer=[str(qa.get('answer')) or str(qa.get(
                                 'adversarial_answer'))],
@@ -68,12 +85,13 @@ Below are the relevant messages in the conversation.
                 for conversation_sample in json.load(locomo_dataset)
                 if conversation_id is None or conversation_sample['sample_id'] == conversation_id
             ]
-            super().process_dataset(dataset)
+            dataset = super().process_dataset(dataset)
             Logger().info(
                 f"Locomo dataset read successfully. Total samples: {len(dataset)}")
 
             return dataset
 
+    @override
     def read_corpus(self) -> list[Document]:
         """
         Reads the LoCoMo dataset corpus.
@@ -111,7 +129,7 @@ Below are the relevant messages in the conversation.
 
         Args:
             question_id (str): the id of the question to be retrieved
-            
+
         Raises:
             ValueError: if the dataset is not read or the question id is not found in the dataset
 
@@ -123,7 +141,7 @@ Below are the relevant messages in the conversation.
             raise ValueError(
                 "Dataset not read. Please read the dataset before getting questions.")
 
-        match = re.match(r'^(conv-.\d+)-(\d+)$',
+        match = re.match(r'^(conv-.\d+)-(.*)$',
                          question_id)
         sample_id = match.group(1)
         message_id = match.group(2)
@@ -134,4 +152,7 @@ Below are the relevant messages in the conversation.
             raise ValueError(
                 f"Sample id {sample_id} not found in the dataset.")
 
-        return self._dataset_map[sample_id]['qa'][int(message_id)-1]
+        return next((
+            qa for qa in self._dataset_map[sample_id]['qa']
+            if get_question_hash(qa['question']) == message_id), None
+        )

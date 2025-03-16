@@ -43,7 +43,7 @@ class MuSiQue(Dataset):
                 for sample in json.load(musique_dataset)
                 if conversation_id is None or sample['id'] == conversation_id
             ]
-            super().process_dataset(dataset)
+            dataset = super().process_dataset(dataset)
             Logger().info(
                 f"MuSiQue dataset read successfully. Total samples: {len(dataset)}")
 

@@ -48,7 +48,7 @@ class Hotpot(Dataset):
                 for sample in json.load(hotpot_dataset)
                 if conversation_id is None or sample['_id'] == conversation_id
             ]
-            super().process_dataset(dataset)
+            dataset = super().process_dataset(dataset)
             Logger().info(
                 f"Hotpot dataset read successfully. Total samples: {len(dataset)}")
 

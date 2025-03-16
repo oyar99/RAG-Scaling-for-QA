@@ -25,11 +25,6 @@ def evaluator(args, dataset: Dataset) -> None:
         ValueError: if the evaluation file is not provided
     """
 
-    # Need to override these parameters to ensure that question ids which
-    # depend on the original index can be correctly mapped for LoCoMo dataset
-    # TODO: Figure out better solution. See https://github.com/oyar99/HybridLongMemGPT/issues/4
-    args.questions = None
-    args.category = None
     _ = dataset.read()
 
     Logger().info("Running evaluation")
