@@ -11,5 +11,5 @@ if __name__ == "__main__":
     generate_corpus(
         input_path='hotpot_dev_distractor_v1.json',
         output_path='hotpot_corpus.json',
-        context_extractor=lambda context: { 'title': context[0], 'text': ' '.join(context[1]) }
+        context_extractor=lambda context: { 'title': context[0], 'text': ''.join(context[1]) }
     )
