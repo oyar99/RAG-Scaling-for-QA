@@ -49,8 +49,8 @@ class BM25(Agent):
         self._index = BM25Ranker(
             corpus,
             tokenizer=tokenize_doc,
-            b=0.25,
-            k1=1.2
+            b=0.75,
+            k1=0.5
         )
         self._corpus = corpus
         self._qa_prompt = dataset.QA_PROMPT

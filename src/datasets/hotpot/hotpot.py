@@ -1,6 +1,7 @@
 """Hotpot dataset module."""
 
 import json
+import os
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
 from models.document import Document
@@ -26,7 +27,8 @@ class Hotpot(Dataset):
         conversation_id = self._args.conversation
 
         # pylint: disable=duplicate-code
-        with open("datasets\\hotpot\\hotpot_dev_distractor_v1.json", encoding="utf-8") as hotpot_dataset:
+        file_path = os.path.join("datasets", "hotpot", "hotpot_dev_distractor_v1.json")
+        with open(file_path, encoding="utf-8") as hotpot_dataset:
             dataset = [
                 DatasetSample(
                     sample_id=sample['_id'],
@@ -63,7 +65,8 @@ class Hotpot(Dataset):
             corpus (list[Document]): the corpus
         """
         Logger().info("Reading the Hotpot dataset corpus")
-        with open("datasets\\hotpot\\hotpot_corpus.json", encoding="utf-8") as hotpot_corpus:
+        file_path = os.path.join("datasets", "hotpot", "hotpot_corpus.json")
+        with open(file_path, encoding="utf-8") as hotpot_corpus:
             corpus = json.load(hotpot_corpus)
             corpus = [
                 Document(doc_id=doc['text'], content=doc['text'])
