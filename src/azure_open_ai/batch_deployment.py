@@ -1,7 +1,9 @@
 """Module to queue a batch job for Question Answering using Azure OpenAI."""
 
+from itertools import repeat
 import json
 import io
+from multiprocessing import Pool, cpu_count
 import os
 import time
 from typing import Optional
@@ -11,6 +13,7 @@ from azure_open_ai.openai_client import OpenAIClient
 from models.agent import Agent
 from models.dataset import Dataset
 
+from models.question_answer import QuestionAnswer
 from utils.byte_utils import format_size
 from utils.token_utils import estimate_cost, estimate_num_tokens
 
@@ -43,6 +46,30 @@ Please review the questions and ensure they are not too verbose.")
             "Cost likely exceeds $0.25. Stopping execution ..."
         )
         raise RuntimeError("Program terminated forcefully.")
+
+
+def reason(question: QuestionAnswer, agent: Agent) -> tuple[dict, str]:
+    """
+    Reasoning function for processing a question using an agent.
+
+    Args:
+        question (QuestionAnswer): the question to process
+        agent (Agent): the agent to use for processing the question
+
+    Returns:
+        str: the result of the reasoning process in JSON format as a string
+    """
+    result = agent.reason(question['question'])
+
+    result_json = {
+        'custom_id': question["question_id"],
+        'question': question['question'],
+        'result': result.get_sources()
+    }
+
+    prompt = result.get_notes() + question["question"]
+
+    return (result_json, prompt)
 
 # pylint: disable-next=too-many-locals
 def queue_qa_batch_job(
@@ -101,27 +128,26 @@ def queue_qa_batch_job(
         os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'retrieval_jobs')
     output_name = os.path.join(
         output_dir, f'retrieval_results_{Logger().get_run_id()}.jsonl')
-    with open(output_name, 'a', encoding='utf-8') as f:
-        for _, question_set in questions.items():
-            for question in question_set:
-                result = agent.reason(question['question'])
 
-                result_json = {
-                    'custom_id': question["question_id"],
-                    'question': question['question'],
-                    'result': result.get_sources()
-                }
-                f.write(json.dumps(result_json) + '\n')
+    results = []
 
-                token_count = estimate_num_tokens(
-                    result.get_notes() + question["question"], model)
+    with Pool(cpu_count()) as pool:
+        all_questions = [q for _, question_set in questions.items()
+                         for q in question_set]
+        results = pool.starmap(reason, zip(all_questions, repeat(agent)))
 
-                prompts[question["question_id"]] = result.get_notes()
-                cost += estimate_cost(token_count, model)
+    with open(output_name, 'w', encoding='utf-8') as f:
+        for result_json, _ in results:
+            r = json.dumps(result_json)
+            f.write(r + '\n')
 
-                if token_count > 15000:
-                    Logger().warn(
-                        f"Question {question['question_id']} exceeds 15,000 tokens. Truncation is recommended.")
+    for result_json, prompt in results:
+        prompts[result_json['custom_id']] = prompt
+        token_count = estimate_num_tokens(prompt, model)
+        cost += estimate_cost(token_count, model)
+        if token_count > 15000:
+            Logger().warn(
+                "Prompt for question exceeds 15,000 tokens. Truncation is recommended.")
 
     guard_job(cost, stop)
 
