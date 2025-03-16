@@ -1,6 +1,7 @@
 """Musique dataset class."""
 
 import json
+import os
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
 from models.document import Document
@@ -25,7 +26,7 @@ class MuSiQue(Dataset):
         Logger().info("Reading the MuSiQue dataset")
         conversation_id = self._args.conversation
 
-        with open("datasets\\musique\\musique_dev.json", encoding="utf-8") as musique_dataset:
+        with open(os.path.join("datasets", "musique", "musique_dev.json"), encoding="utf-8") as musique_dataset:
             dataset = [
                 DatasetSample(
                     sample_id=sample['id'],
@@ -56,8 +57,8 @@ class MuSiQue(Dataset):
         Returns:
             corpus (list[str]): the corpus
         """
-        Logger().info("Reading the MuSiQue dataset corpus")
-        with open("datasets\\musique\\musique_corpus.json", encoding="utf-8") as musique_corpus:
+        file_path = os.path.join("datasets", "musique", "musique_corpus.json")
+        with open(file_path, encoding="utf-8") as musique_corpus:
             corpus = json.load(musique_corpus)
             corpus = [
                 Document(doc_id=doc['text'], content=doc['text'])
