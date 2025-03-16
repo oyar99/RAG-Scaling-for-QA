@@ -48,6 +48,10 @@ Activate the virtual environment.
 .\env\Scripts\activate
 ```
 
+```bash
+source env/bin/activate
+```
+
 Install required packages.
 
 ```bash

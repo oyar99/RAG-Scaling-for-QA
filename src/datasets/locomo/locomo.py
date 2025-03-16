@@ -74,7 +74,7 @@ Below are the relevant messages in the conversation.
                                   if f"session_{ev.split(':')[0][1:]}" in conversation_sample['conversation'] and int(
                                       ev.split(':')[1]) - 1 <
                                   len(conversation_sample['conversation'][f"session_{ev.split(':')[0][1:]}"])],
-                            question_id=f'{conversation_sample["sample_id"]}-{get_question_hash(qa['question'])}',
+                            question_id=f'{conversation_sample["sample_id"]}-{get_question_hash(qa["question"])}',
                             question=qa['question'],
                             answer=[str(qa.get('answer')) or str(qa.get(
                                 'adversarial_answer'))],
