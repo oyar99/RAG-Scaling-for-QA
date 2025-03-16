@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "ms-python.pylint",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "ms-python.autopep8",
+    "njpwerner.autodocstring"
+  ]
+}

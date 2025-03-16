@@ -1,6 +1,7 @@
 """2Wiki dataset module."""
 
 import json
+import os
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
 from models.document import Document
@@ -26,7 +27,8 @@ class TwoWiki(Dataset):
         conversation_id = self._args.conversation
 
         # pylint: disable=duplicate-code
-        with open("datasets\\twowikimultihopqa\\dev.json", encoding="utf-8") as two_wiki_dataset:
+        file_path = os.path.join("datasets", "twowikimultihopqa", "dev.json")
+        with open(file_path, encoding="utf-8") as two_wiki_dataset:
             dataset = [
                 DatasetSample(
                     sample_id=sample['_id'],
@@ -64,7 +66,8 @@ class TwoWiki(Dataset):
             corpus (list[Document]): the corpus
         """
         Logger().info("Reading the 2Wiki dataset corpus")
-        with open("datasets\\twowikimultihopqa\\corpus.json", encoding="utf-8") as twowiki_corpus:
+        file_path = os.path.join("datasets", "twowikimultihopqa", "corpus.json")
+        with open(file_path, encoding="utf-8") as twowiki_corpus:
             corpus = json.load(twowiki_corpus)
             corpus = [
                 Document(doc_id=doc['text'], content=doc['text'])
