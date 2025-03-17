@@ -51,6 +51,7 @@ Please review the questions and ensure they are not too verbose.")
 def reason(question: QuestionAnswer, agent: Agent) -> tuple[dict, str]:
     """
     Reasoning function for processing a question using an agent.
+    This function is designed to be run in parallel using multiprocessing.
 
     Args:
         question (QuestionAnswer): the question to process
@@ -134,6 +135,7 @@ def queue_qa_batch_job(
     with Pool(cpu_count()) as pool:
         all_questions = [q for _, question_set in questions.items()
                          for q in question_set]
+        # Below process does not support logging
         results = pool.starmap(reason, zip(all_questions, repeat(agent)))
 
     with open(output_name, 'w', encoding='utf-8') as f:

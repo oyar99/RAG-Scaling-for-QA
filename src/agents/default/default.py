@@ -1,6 +1,5 @@
 """Default system for document retrieval that chooses docs directly from the dataset."""
 
-from logger.logger import Logger
 from models.agent import Agent, NoteBook
 from models.dataset import Dataset
 from models.retrieved_result import RetrievedResult
@@ -40,7 +39,6 @@ class Default(Agent):
         """
         # pylint: disable=duplicate-code
         if not self._index or not self._corpus:
-            Logger().error("Index not created. Please index the dataset before retrieving documents.")
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
         # pylint: enable=duplicate-code

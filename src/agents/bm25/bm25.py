@@ -69,7 +69,6 @@ class BM25(Agent):
         """
         # pylint: disable=duplicate-code
         if not self._index or not self._corpus:
-            Logger().error("Index not created. Please index the dataset before retrieving documents.")
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
         # pylint: enable=duplicate-code
@@ -77,7 +76,6 @@ class BM25(Agent):
         notebook = NoteBook()
         k = 20
 
-        Logger().debug(f"Retrieving top {k} documents for query: {question}")
         # Tokenize the query
         tokenized_query = tokenize(
             question,
@@ -97,8 +95,6 @@ class BM25(Agent):
             content=self._corpus[idx]['content'],
             score=score
         ) for idx, score in top_k]
-
-        Logger().debug(f"Retrieved {len(retrieved_docs)} documents")
 
         notebook.update_sources(retrieved_docs)
 

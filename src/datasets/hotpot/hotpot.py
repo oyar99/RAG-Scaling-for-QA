@@ -34,7 +34,7 @@ class Hotpot(Dataset):
                     sample_id=sample['_id'],
                     sample=DatasetSampleInstance(
                         qa=filter_questions([QuestionAnswer(
-                            docs=[Document(doc_id=' '.join(doc[1]), content=''.join(doc[1]))
+                            docs=[Document(doc_id=''.join(doc[1]), content=''.join(doc[1]))
                                   for doc in sample['context']
                                   if any(doc[0] == fact[0] for fact in sample['supporting_facts'])],
                             question_id=sample['_id'],
