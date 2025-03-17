@@ -2,8 +2,9 @@
 
 import json
 import hashlib
+import os
 import re
-from typing import Optional, override
+from typing import Optional
 
 from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
@@ -50,7 +51,7 @@ Below are the relevant messages in the conversation.
         super().__init__(args)
         Logger().info("Initialized an instance of the Locomo dataset")
 
-    @override
+    # @override
     def read(self) -> list[DatasetSample]:
         """
         Reads the Locomo dataset.
@@ -60,7 +61,8 @@ Below are the relevant messages in the conversation.
         """
         Logger().info("Reading Locomo dataset")
         conversation_id = self._args.conversation
-        with open("datasets\\locomo\\locomo10.json", "r", encoding="utf-8") as locomo_dataset:
+        file_path = os.path.join("datasets", "locomo", "locomo10.json")
+        with open(file_path, "r", encoding="utf-8") as locomo_dataset:
             dataset = [
                 DatasetSample(
                     sample_id=conversation_sample['sample_id'],
@@ -91,7 +93,7 @@ Below are the relevant messages in the conversation.
 
             return dataset
 
-    @override
+    # @override
     def read_corpus(self) -> list[Document]:
         """
         Reads the LoCoMo dataset corpus.
@@ -100,7 +102,8 @@ Below are the relevant messages in the conversation.
             corpus (list[str]): list of docs (messages) from the corpus
         """
         Logger().info("Reading the LoCoMo dataset corpus")
-        with open("datasets\\locomo\\locomo10.json", encoding="utf-8") as locomo_corpus:
+        file_path = os.path.join("datasets", "locomo", "locomo10.json")
+        with open(file_path, encoding="utf-8") as locomo_corpus:
             corpus = json.load(locomo_corpus)
 
             pattern = re.compile(r"^session_\d+$")
@@ -122,7 +125,7 @@ Below are the relevant messages in the conversation.
 
             return corpus
 
-    @override
+    # @override
     def get_question(self, question_id: str) -> Optional[QuestionAnswer]:
         """
         Gets a question from the dataset.
