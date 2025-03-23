@@ -164,15 +164,18 @@ cython_debug/
 # Output evaluation files
 output/
 
+# Temp files created by the script
+temp/
+
 # Ignore hotpot dataset files as they are too large
-src/datasets/hotpot/hotpot_dev_distractor_v1.json
-src/datasets/hotpot/hotpot_corpus.json
+src/data/hotpot/hotpot_dev_distractor_v1.json
+src/data/hotpot/hotpot_corpus.json
 
 # Ignore 2wikimultihopqa dataset files as they are too large
-src/datasets/twowikimultihopqa/dev.json
-src/datasets/twowikimultihopqa/corpus.json
+src/data/twowikimultihopqa/dev.json
+src/data/twowikimultihopqa/corpus.json
 
 # Ignore musique dataset files as they are too large
-src/datasets/musique/musique_dev.json
-src/datasets/musique/musique_corpus.json
-src/datasets/musique/data/
+src/data/musique/musique_dev.json
+src/data/musique/musique_corpus.json
+src/data/musique/data/
