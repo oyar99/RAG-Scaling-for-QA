@@ -17,8 +17,6 @@ class ColbertV2(Agent):
         self._index = None
         self._corpus = None
         self._qa_prompt = None
-        self._doc_mapper = None
-        self._doc_reverse_mapper = None
         super().__init__(args)
 
     def index(self, dataset: Dataset) -> None:
@@ -98,7 +96,7 @@ class ColbertV2(Agent):
                 ) for doc_id, score in result
             ]
 
-            # Create a notebook for each query
+            # pylint: disable=duplicate-code
             notebook = NoteBook()
             notebook.update_sources(retrieved_docs)
 
@@ -110,5 +108,6 @@ class ColbertV2(Agent):
 
             notebook.update_notes(notes)
             notebooks.append(notebook)
+            # pylint: enable=duplicate-code
 
         return notebooks
