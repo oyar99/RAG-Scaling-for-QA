@@ -40,12 +40,12 @@ def guard_job(results: list[tuple[dict, str]], model: str) -> None:
 
     if cost > 0.25:
         Logger().warn(
-            "Estimated cost exceeds $0.1. \
+            "Estimated cost exceeds $0.25. \
 Please review the questions and ensure they are not too verbose.")
 
     if cost > 0.5:
         Logger().error(
-            "Cost likely exceeds $0.25. Stopping execution ..."
+            "Cost likely exceeds $0.5. Stopping execution ..."
         )
         raise RuntimeError("Program terminated forcefully.")
 

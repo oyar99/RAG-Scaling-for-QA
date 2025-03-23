@@ -55,6 +55,8 @@ expected and actual answer pairs
         raise ValueError(
             "model must be a non-empty string.")
 
+    cost = 0.0
+
     for question, expected, actual in question_answers:
         prompt = EVALUATION_PROMPT.format(
             question=question,
@@ -65,6 +67,8 @@ expected and actual answer pairs
         if token_count > 1000:
             Logger().warn(
                 "Prompt for evaluation exceeds 1,000 tokens. Truncation is recommended.")
+
+    Logger().info(f"Estimated cost: {cost}")
 
     jobs = [
         {

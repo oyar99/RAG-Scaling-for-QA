@@ -66,7 +66,12 @@ def evaluator(args, dataset: Dataset) -> None:
             return doc_pairs
 
         def extract_qa_pair(eval_item) -> Optional[tuple[list[str], str]]:
-            question, answer, actual = extract_qa_pair_with_question(eval_item)
+            pair = extract_qa_pair_with_question(eval_item)
+
+            if pair is None:
+                return None
+
+            question, answer, actual = pair
 
             qa_pair = (answer, actual)
 
@@ -85,6 +90,11 @@ def evaluator(args, dataset: Dataset) -> None:
                 return None
 
             Logger().debug(f"Question found: {question['question']}")
+
+            if 'content' not in eval_item['response']['body']['choices'][0]['message']:
+                Logger().warn(
+                    "Content not found in the response. Skipping evaluation ...")
+                return None
 
             qa_pair = (question['question'], question['answer'], str(
                 eval_item['response']['body']['choices'][0]['message']['content']))
