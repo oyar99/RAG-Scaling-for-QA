@@ -15,7 +15,7 @@ from utils.byte_utils import format_size
 from utils.token_utils import estimate_cost, estimate_num_tokens
 
 
-def guard_job(cost: int, stop: bool = False) -> None:
+def guard_job(cost: int) -> None:
     """
     Guard the job based on the estimated cost.
 
@@ -38,7 +38,7 @@ def guard_job(cost: int, stop: bool = False) -> None:
             "Estimated cost exceeds $0.1. \
 Please review the questions and ensure they are not too verbose.")
 
-    if cost > 0.25 and not stop:
+    if cost > 0.25:
         Logger().error(
             "Cost likely exceeds $0.25. Stopping execution ..."
         )
@@ -73,11 +73,6 @@ def queue_qa_batch_job(
         ValueError: if any of the input parameters are invalid
         RuntimeError: if the file upload fails
     """
-
-    if not isinstance(model, str) or len(model) <= 0:
-        raise ValueError(
-            "model must be a non-empty string.")
-
     if not isinstance(dataset, Dataset):
         raise ValueError("dataset must be an instance of Dataset.")
 
@@ -108,7 +103,8 @@ def queue_qa_batch_job(
     all_questions = [q for _, question_set in questions.items()
                      for q in question_set]
 
-    notebooks = agent.multiprocessing_reason(questions=[q['question'] for q in all_questions])
+    notebooks = agent.multiprocessing_reason(
+        questions=[q['question'] for q in all_questions])
 
     results = [({'custom_id': question["question_id"],
                  'question': question['question'],
@@ -120,6 +116,10 @@ def queue_qa_batch_job(
             r = json.dumps(result_json)
             f.write(r + '\n')
 
+    if stop:
+        Logger().warn("Returning without queuing job.")
+        return None
+
     for result_json, prompt in results:
         prompts[result_json['custom_id']] = prompt
         token_count = estimate_num_tokens(prompt, model)
@@ -128,11 +128,11 @@ def queue_qa_batch_job(
             Logger().warn(
                 "Prompt for question exceeds 15,000 tokens. Truncation is recommended.")
 
-    guard_job(cost, stop)
+    guard_job(cost)
 
-    if stop:
-        Logger().warn("Returning without queuing job.")
-        return None
+    if not isinstance(model, str) or len(model) <= 0:
+        raise ValueError(
+            "model must be a non-empty string.")
 
     jobs = [
         {

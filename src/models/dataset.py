@@ -65,10 +65,13 @@ Below are the passages.
     def __init__(
         self,
         args,
+        name=None,
     ):
         self._args = args
         self._dataset = None
         self._dataset_map = None
+
+        self.name = name
 
     @abstractmethod
     def read(self) -> list[DatasetSample]:

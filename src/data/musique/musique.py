@@ -6,6 +6,7 @@ from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
 from models.document import Document
 from models.question_answer import QuestionAnswer, QuestionCategory
+from utils.hash_utils import get_content_hash
 from utils.question_utils import filter_questions
 
 
@@ -13,7 +14,7 @@ class MuSiQue(Dataset):
     """MuSiQue dataset class"""
 
     def __init__(self, args):
-        super().__init__(args)
+        super().__init__(args, name="MuSiQue")
         Logger().info("Initialized an instance of the MuSiQue dataset")
 
     def read(self) -> list[DatasetSample]:
@@ -26,17 +27,20 @@ class MuSiQue(Dataset):
         Logger().info("Reading the MuSiQue dataset")
         conversation_id = self._args.conversation
 
-        with open(os.path.join("datasets", "musique", "musique_dev.json"), encoding="utf-8") as musique_dataset:
+        with open(os.path.join("data", "musique", "musique_dev.json"), encoding="utf-8") as musique_dataset:
             dataset = [
                 DatasetSample(
                     sample_id=sample['id'],
                     sample=DatasetSampleInstance(
                         qa=filter_questions([QuestionAnswer(
-                            docs=[Document(doc_id=doc['paragraph_text'], content=doc['paragraph_text'])
-                                  for doc in sample['paragraphs'] if doc['is_supporting']],
+                            docs=[Document(
+                                doc_id=get_content_hash(doc['paragraph_text']),
+                                content=doc['paragraph_text'])
+                                for doc in sample['paragraphs'] if doc['is_supporting']],
                             question_id=sample['id'],
                             question=sample['question'],
-                            answer=[str(sample['answer'])] + sample['answer_aliases'],
+                            answer=[str(sample['answer'])] +
+                            sample['answer_aliases'],
                             category=QuestionCategory.MULTI_HOP
                         )], self._args.questions, self._args.category)
                     )
@@ -57,11 +61,11 @@ class MuSiQue(Dataset):
         Returns:
             corpus (list[str]): the corpus
         """
-        file_path = os.path.join("datasets", "musique", "musique_corpus.json")
+        file_path = os.path.join("data", "musique", "musique_corpus.json")
         with open(file_path, encoding="utf-8") as musique_corpus:
             corpus = json.load(musique_corpus)
             corpus = [
-                Document(doc_id=doc['text'], content=doc['text'])
+                Document(doc_id=get_content_hash(doc['text']), content=doc['text'])
                 for doc in corpus
             ]
             Logger().info(

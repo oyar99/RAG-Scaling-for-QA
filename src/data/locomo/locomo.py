@@ -1,7 +1,6 @@
 """Locomo dataset module."""
 
 import json
-import hashlib
 import os
 import re
 from typing import Optional
@@ -10,22 +9,8 @@ from logger.logger import Logger
 from models.dataset import Dataset, DatasetSample, DatasetSampleInstance
 from models.document import Document
 from models.question_answer import QuestionAnswer, QuestionCategory
+from utils.hash_utils import get_content_hash
 from utils.question_utils import filter_questions
-
-
-def get_question_hash(question: str) -> str:
-    """
-    Gets the question suffix id.
-
-    Args:
-        question (str): the question to be retrieved
-
-    Returns:
-        question_suffix_id (str): the question suffix id
-    """
-    sha256_hash = hashlib.sha256()
-    sha256_hash.update(question.encode('utf-8'))
-    return sha256_hash.hexdigest()
 
 
 class Locomo(Dataset):
@@ -48,7 +33,7 @@ Below are the relevant messages in the conversation.
 '''
 
     def __init__(self, args):
-        super().__init__(args)
+        super().__init__(args, name="locomo")
         Logger().info("Initialized an instance of the Locomo dataset")
 
     # @override
@@ -61,7 +46,7 @@ Below are the relevant messages in the conversation.
         """
         Logger().info("Reading Locomo dataset")
         conversation_id = self._args.conversation
-        file_path = os.path.join("datasets", "locomo", "locomo10.json")
+        file_path = os.path.join("data", "locomo", "locomo10.json")
         with open(file_path, "r", encoding="utf-8") as locomo_dataset:
             dataset = [
                 DatasetSample(
@@ -76,7 +61,7 @@ Below are the relevant messages in the conversation.
                                   if f"session_{ev.split(':')[0][1:]}" in conversation_sample['conversation'] and int(
                                       ev.split(':')[1]) - 1 <
                                   len(conversation_sample['conversation'][f"session_{ev.split(':')[0][1:]}"])],
-                            question_id=f'{conversation_sample["sample_id"]}-{get_question_hash(qa["question"])}',
+                            question_id=f'{conversation_sample["sample_id"]}-{get_content_hash(qa["question"])}',
                             question=qa['question'],
                             answer=[str(qa.get('answer')) or str(qa.get(
                                 'adversarial_answer'))],
@@ -102,7 +87,7 @@ Below are the relevant messages in the conversation.
             corpus (list[str]): list of docs (messages) from the corpus
         """
         Logger().info("Reading the LoCoMo dataset corpus")
-        file_path = os.path.join("datasets", "locomo", "locomo10.json")
+        file_path = os.path.join("data", "locomo", "locomo10.json")
         with open(file_path, encoding="utf-8") as locomo_corpus:
             corpus = json.load(locomo_corpus)
 
@@ -157,5 +142,5 @@ Below are the relevant messages in the conversation.
 
         return next((
             qa for qa in self._dataset_map[sample_id]['qa']
-            if get_question_hash(qa['question']) == message_id), None
+            if get_content_hash(qa['question']) == message_id), None
         )

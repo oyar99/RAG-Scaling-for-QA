@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 # pylint: disable-next=wrong-import-position
-from datasets.utils.dataset_utils import generate_corpus
+from data.utils.dataset_utils import generate_corpus
 
 if __name__ == "__main__":
     # Read the hotpot dataset

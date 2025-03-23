@@ -5,10 +5,10 @@ from agents.bm25.bm25 import BM25
 from agents.colbertv2.colbertv2 import ColbertV2
 from agents.default.default import Default
 from agents.dense.dense import Dense
-from datasets.hotpot.hotpot import Hotpot
-from datasets.locomo.locomo import Locomo
-from datasets.musique.musique import MuSiQue
-from datasets.twowikimultihopqa.two_wiki import TwoWiki
+from data.hotpot.hotpot import Hotpot
+from data.locomo.locomo import Locomo
+from data.musique.musique import MuSiQue
+from data.twowikimultihopqa.two_wiki import TwoWiki
 from evaluator.evaluator import evaluator
 from logger.logger import Logger
 from models.agent import Agent

@@ -18,7 +18,7 @@ def predictor(args, dataset: Dataset, agent: Agent) -> None:
     Raises:
         ValueError: if the model deployment identifier is not provided
     """
-    if args.model is None:
+    if args.model is None and not args.noop:
         Logger().error(
             """Model deployment identifier not provided. \
 Please provide the model deployment identifier using the -m flag.""")
