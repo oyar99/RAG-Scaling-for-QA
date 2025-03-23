@@ -39,7 +39,7 @@ Ignored if conversation id is provided (optional)')
     parser.add_argument('-m', '--model', type=str,
                         help='model deployment identifier (required in predict mode)')
 
-    parser.add_argument('-a', '--agent', choices=['default', 'bm25'], default='default',
+    parser.add_argument('-a', '--agent', choices=['default', 'bm25', 'dense'], default='default',
                         help='agent to be used (required in predict mode)')
 
     parser.add_argument('-np', '--noop', action='store_true',

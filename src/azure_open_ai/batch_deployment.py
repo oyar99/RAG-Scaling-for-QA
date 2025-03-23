@@ -1,9 +1,7 @@
 """Module to queue a batch job for Question Answering using Azure OpenAI."""
 
-from itertools import repeat
 import json
 import io
-from multiprocessing import Pool, cpu_count
 import os
 import time
 from typing import Optional
@@ -13,7 +11,6 @@ from azure_open_ai.openai_client import OpenAIClient
 from models.agent import Agent
 from models.dataset import Dataset
 
-from models.question_answer import QuestionAnswer
 from utils.byte_utils import format_size
 from utils.token_utils import estimate_cost, estimate_num_tokens
 
@@ -47,30 +44,6 @@ Please review the questions and ensure they are not too verbose.")
         )
         raise RuntimeError("Program terminated forcefully.")
 
-
-def reason(question: QuestionAnswer, agent: Agent) -> tuple[dict, str]:
-    """
-    Reasoning function for processing a question using an agent.
-    This function is designed to be run in parallel using multiprocessing.
-
-    Args:
-        question (QuestionAnswer): the question to process
-        agent (Agent): the agent to use for processing the question
-
-    Returns:
-        str: the result of the reasoning process in JSON format as a string
-    """
-    result = agent.reason(question['question'])
-
-    result_json = {
-        'custom_id': question["question_id"],
-        'question': question['question'],
-        'result': result.get_sources()
-    }
-
-    prompt = result.get_notes() + question["question"]
-
-    return (result_json, prompt)
 
 # pylint: disable-next=too-many-locals
 def queue_qa_batch_job(
@@ -132,11 +105,15 @@ def queue_qa_batch_job(
 
     results = []
 
-    with Pool(cpu_count()) as pool:
-        all_questions = [q for _, question_set in questions.items()
-                         for q in question_set]
-        # Below process does not support logging
-        results = pool.starmap(reason, zip(all_questions, repeat(agent)))
+    all_questions = [q for _, question_set in questions.items()
+                     for q in question_set]
+
+    notebooks = agent.multiprocessing_reason(questions=[q['question'] for q in all_questions])
+
+    results = [({'custom_id': question["question_id"],
+                 'question': question['question'],
+                 'result': result.get_sources()}, result.get_notes() + question["question"])
+               for result, question in zip(notebooks, all_questions)]
 
     with open(output_name, 'w', encoding='utf-8') as f:
         for result_json, _ in results:

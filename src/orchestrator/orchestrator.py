@@ -3,6 +3,7 @@
 from typing import Type
 from agents.bm25.bm25 import BM25
 from agents.default.default import Default
+from agents.dense.dense import Dense
 from datasets.hotpot.hotpot import Hotpot
 from datasets.locomo.locomo import Locomo
 from datasets.musique.musique import MuSiQue
@@ -37,6 +38,7 @@ class Orchestrator:
         agents: dict[str, Type[Agent]] = {
             'default': Default,
             'bm25': BM25,
+            'dense': Dense,
         }
 
         if args.agent not in agents:

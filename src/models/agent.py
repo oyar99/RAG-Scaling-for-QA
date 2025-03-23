@@ -1,6 +1,7 @@
 """An agent module."""
 
 from abc import ABC, abstractmethod
+from multiprocessing import Pool, cpu_count
 from models.dataset import Dataset
 from models.retrieved_result import RetrievedResult
 
@@ -99,3 +100,24 @@ class Agent(ABC):
         Returns:
             notebook (Notebook): the detailed findings to help answer this question (context)
         """
+
+    def multiprocessing_reason(self, questions: list[str]) -> list[NoteBook]:
+        """
+        Processes the questions in parallel using multiprocessing.
+        This function is used to speed up the reasoning process by using multiple processes.
+        It creates a pool of workers and maps the questions to the reason function.
+
+        This function can be overridden by the agent to implement a custom multiprocessing strategy specially needed if 
+        the agent will use another device (GPU) to process the questions.
+
+        Args:
+            question (list[str]): the given questions
+
+        Returns:
+            notebook (list[Notebook]): the detailed findings to help answer all questions (context)
+        """
+        results = []
+        with Pool(cpu_count()) as pool:
+            results = pool.map(self.reason, questions)
+
+        return results
