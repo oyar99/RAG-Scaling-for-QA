@@ -1,12 +1,11 @@
 """Dense RAG system for document retrieval using dense embeddings."""
 
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer, util
 import torch
 from logger.logger import Logger
 from models.agent import Agent, NoteBook
 from models.dataset import Dataset
 from models.retrieved_result import RetrievedResult
-from utils.tokenizer import tokenize
 
 
 class Dense(Agent):
@@ -32,7 +31,8 @@ class Dense(Agent):
         corpus = dataset.read_corpus()
 
         sentence_transformer = SentenceTransformer(
-            'sentence-transformers/multi-qa-MiniLM-L6-cos-v1',
+            'sentence-transformers/msmarco-bert-base-dot-v5',
+            model_kwargs={'torch_dtype': torch.float16},
         )
 
         devices = [f"cuda:{i}"
@@ -47,7 +47,7 @@ class Dense(Agent):
             f"Max sequence length: {sentence_transformer.max_seq_length}")
 
         corpus_embeddings = sentence_transformer.encode_multi_process(
-            [' '.join(tokenize(doc['content'], remove_stopwords=True))
+            [doc['content']
              for doc in corpus],
             show_progress_bar=True,
             pool=pool,
@@ -107,15 +107,19 @@ class Dense(Agent):
 
         self._sentence_transformer.stop_multi_process_pool(pool=pool)
 
+        Logger().info("Successfully computed query embeddings")
+
         notebook = NoteBook()
         k = 20
 
-        scores_matrix = query_embeddings @ self._index.T
+        scores_matrix = util.dot_score(query_embeddings, self._index)
+
+        Logger().info("Successfully computed scores matrix")
 
         notebooks = []
         for scores in scores_matrix:
             # Get the top k indices for each query
-            top_k_indices = scores.argsort()[-k:][::-1]
+            top_k_indices = torch.topk(scores, k, largest=True).indices
 
             retrieved_docs = [
                 RetrievedResult(

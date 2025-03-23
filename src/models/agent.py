@@ -117,7 +117,7 @@ class Agent(ABC):
             notebook (list[Notebook]): the detailed findings to help answer all questions (context)
         """
         results = []
-        with Pool(cpu_count()) as pool:
+        with Pool(min(4, cpu_count())) as pool:
             results = pool.map(self.reason, questions)
 
         return results
