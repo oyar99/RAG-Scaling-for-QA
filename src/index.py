@@ -52,6 +52,12 @@ Ignored if conversation id is provided (optional)')
     parser.add_argument('-bt', '--bert-eval', action='store_true',
                         help='run bert evaluation (optional)')
 
+    parser.add_argument('-j', '--judge-eval', action='store_true',
+                        help='run judge evaluation (optional). Other evaluations will be skipped in this mode')
+    parser.add_argument('-jp', '--judge-eval-path', type=str,
+                        help='path to the judge evaluation file (optional). \
+If not provided, an evaluation file is generated')
+
     parser.add_argument('-r', '--retrieval', action='store_true',
                         help='run retrieval evaluation (optional)')
 

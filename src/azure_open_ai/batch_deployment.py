@@ -1,31 +1,36 @@
 """Module to queue a batch job for Question Answering using Azure OpenAI."""
 
 import json
-import io
 import os
-import time
 from typing import Optional
 from openai.types import Batch
+from azure_open_ai.batch import queue_batch_job
 from logger.logger import Logger
-from azure_open_ai.openai_client import OpenAIClient
 from models.agent import Agent
 from models.dataset import Dataset
-
-from utils.byte_utils import format_size
 from utils.token_utils import estimate_cost, estimate_num_tokens
 
 
-def guard_job(cost: int) -> None:
+def guard_job(results: list[tuple[dict, str]], model: str) -> None:
     """
     Guard the job based on the estimated cost.
 
     Args:
-        cost (int): the estimated cost of the job
-        stop (bool, optional): whether to stop the job if the cost exceeds a certain threshold. Defaults to False.
+        results (list[tuple[dict, str]]): the results of the job
+        model (str): the deployment model name
 
     Raises:
         RuntimeError: if the cost exceeds $2.0
     """
+    cost = 0.0
+
+    for _, prompt in results:
+        token_count = estimate_num_tokens(prompt, model)
+        cost += estimate_cost(token_count, model)
+        if token_count > 15000:
+            Logger().warn(
+                "Prompt for question exceeds 15,000 tokens. Truncation is recommended.")
+
     if cost == 0.0:
         Logger().error("Estimated cost is $0.0. Please review the questions.")
         raise RuntimeError("Program terminated forcefully.")
@@ -33,19 +38,31 @@ def guard_job(cost: int) -> None:
     if cost > 0.0:
         Logger().info(f"Estimated cost: {cost:.2f}")
 
-    if cost > 0.1:
+    if cost > 0.25:
         Logger().warn(
             "Estimated cost exceeds $0.1. \
 Please review the questions and ensure they are not too verbose.")
 
-    if cost > 0.25:
+    if cost > 0.5:
         Logger().error(
             "Cost likely exceeds $0.25. Stopping execution ..."
         )
         raise RuntimeError("Program terminated forcefully.")
 
 
-# pylint: disable-next=too-many-locals
+def get_output_path() -> str:
+    """
+    Get the output path for the batch job results.
+
+    Returns:
+        str: the output path
+    """
+    output_dir = os.path.join(os.path.normpath(
+        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'retrieval_jobs')
+    return os.path.join(
+        output_dir, f'retrieval_results_{Logger().get_run_id()}.jsonl')
+
+
 def queue_qa_batch_job(
     model: str,
     dataset: Dataset,
@@ -84,19 +101,9 @@ def queue_qa_batch_job(
             'presence_penalty': 0.0
         }
 
-    if not isinstance(job_args, dict):
-        raise ValueError("job_args must be a dictionary.")
-
-    cost = 0.0
-
     questions = dataset.get_questions()
 
     prompts = {}
-
-    output_dir = os.path.join(os.path.normpath(
-        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'retrieval_jobs')
-    output_name = os.path.join(
-        output_dir, f'retrieval_results_{Logger().get_run_id()}.jsonl')
 
     results = []
 
@@ -108,10 +115,10 @@ def queue_qa_batch_job(
 
     results = [({'custom_id': question["question_id"],
                  'question': question['question'],
-                 'result': result.get_sources()}, result.get_notes() + question["question"])
+                 'result': result.get_sources()}, result.get_notes())
                for result, question in zip(notebooks, all_questions)]
 
-    with open(output_name, 'w', encoding='utf-8') as f:
+    with open(get_output_path(), 'w', encoding='utf-8') as f:
         for result_json, _ in results:
             r = json.dumps(result_json)
             f.write(r + '\n')
@@ -120,21 +127,16 @@ def queue_qa_batch_job(
         Logger().warn("Returning without queuing job.")
         return None
 
-    for result_json, prompt in results:
-        prompts[result_json['custom_id']] = prompt
-        token_count = estimate_num_tokens(prompt, model)
-        cost += estimate_cost(token_count, model)
-        if token_count > 15000:
-            Logger().warn(
-                "Prompt for question exceeds 15,000 tokens. Truncation is recommended.")
-
-    guard_job(cost)
-
     if not isinstance(model, str) or len(model) <= 0:
         raise ValueError(
             "model must be a non-empty string.")
 
-    jobs = [
+    for result_json, prompt in results:
+        prompts[result_json['custom_id']] = prompt
+
+    guard_job(results, model)
+
+    return queue_batch_job([
         {
             "custom_id": question["question_id"],
             "method": "POST",
@@ -154,46 +156,4 @@ def queue_qa_batch_job(
         }
         for _, question_set in questions.items()
         for question in question_set
-    ]
-
-    jobs_jsonl = "\n".join(json.dumps(job) for job in jobs)
-    jsonl_encoded = jobs_jsonl.encode("utf-8")
-
-    Logger().info(f"batch file size: {format_size(len(jsonl_encoded))}")
-
-    byte_stream = io.BytesIO(jsonl_encoded)
-
-    Logger().info("Starting batch file upload ...")
-
-    openai_client = OpenAIClient().get_client()
-
-    # Upload jsonl file for batch processing
-    batch_file = openai_client.files.create(
-        file=(f'locomo-run-{Logger().get_run_id()}.jsonl',
-              byte_stream, 'application/jsonl'),
-        purpose="batch",
-    )
-
-    # Wait until the file is uploaded
-    while True:
-        file = openai_client.files.retrieve(batch_file.id)
-        if file.status in ("processed", "error"):
-            break
-        Logger().info("Waiting for file to be uploaded...")
-        time.sleep(10)
-
-    if file.status == "error":
-        # pylint: disable-next=broad-except
-        raise RuntimeError(f"File upload failed: {file.error}")
-
-    Logger().info("File upload succeeded.")
-    Logger().info("Creating batch job ...")
-
-    # Create a batch job
-    batch_job = openai_client.batches.create(
-        input_file_id=batch_file.id,
-        endpoint="/v1/chat/completions",
-        completion_window="24h"
-    )
-
-    return batch_job
+    ])

@@ -74,7 +74,7 @@ class ColbertV2(Agent):
 
         Logger().info("Searching for answers to questions")
 
-        results = searcher.search_all(queries=dict(enumerate(questions)), k=20)
+        results = searcher.search_all(queries=dict(enumerate(questions)), k=5)
 
         notebooks = []
 

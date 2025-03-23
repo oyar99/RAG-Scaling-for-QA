@@ -6,6 +6,7 @@ from typing import Optional
 from evaluator.exact_match_evaluator import eval_exact_match
 from evaluator.f1_evaluator import eval_f1_score
 from evaluator.bert_evaluator import eval_bert_score
+from evaluator.judge_evaluator import eval_judge_score, eval_judge_score_with_file
 from evaluator.retrieval_evaluator import eval_retrieval_recall
 from logger.logger import Logger
 from models.dataset import Dataset
@@ -65,8 +66,17 @@ def evaluator(args, dataset: Dataset) -> None:
             return doc_pairs
 
         def extract_qa_pair(eval_item) -> Optional[tuple[list[str], str]]:
+            question, answer, actual = extract_qa_pair_with_question(eval_item)
+
+            qa_pair = (answer, actual)
+
             Logger().debug(
-                f"Extracting QA pair for evaluation item: {eval_item['custom_id']}")
+                f"QA extracted: (question, truth, predicted): {question}{qa_pair}")
+            return qa_pair
+
+        def extract_qa_pair_with_question(eval_item) -> Optional[tuple[str, list[str], str]]:
+            Logger().debug(
+                f"Extracting QA pair with question for evaluation item: {eval_item['custom_id']}")
             question = dataset.get_question(eval_item['custom_id'])
 
             if question is None:
@@ -76,17 +86,25 @@ def evaluator(args, dataset: Dataset) -> None:
 
             Logger().debug(f"Question found: {question['question']}")
 
-            qa_pair = (question['answer'],
-                       str(eval_item['response']['body']['choices'][0]['message']['content']))
+            qa_pair = (question['question'], question['answer'], str(
+                eval_item['response']['body']['choices'][0]['message']['content']))
 
-            Logger().debug(
-                f"QA extracted: (question, truth, predicted): {question['question']}{qa_pair}")
             return qa_pair
 
         if args.retrieval:
             doc_pairs = [pair for pair in (extract_doc_pair(
                 eval_item) for eval_item in evaluation) if pair is not None]
             evaluate_retrieval(doc_pairs)
+        elif args.judge_eval and not args.judge_eval_path:
+            doc_pairs = [(q, ans[0], act)
+                         for q, ans, act in
+                         [pair for pair in
+                          (extract_qa_pair_with_question(eval_item)
+                           for eval_item in evaluation)
+                          if pair is not None]]
+            eval_judge_score(doc_pairs)
+        elif args.judge_eval and args.judge_eval_path:
+            eval_judge_score_with_file(args.judge_eval_path)
         else:
             qa_pairs = [pair for pair in (extract_qa_pair(
                 eval_item) for eval_item in evaluation) if pair is not None]
