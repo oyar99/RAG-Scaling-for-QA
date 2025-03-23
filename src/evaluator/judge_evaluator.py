@@ -54,8 +54,7 @@ def eval_judge_score_with_file(file_path: str) -> float:
                 no += 1
             else:
                 Logger().warn(
-                    f"Unexpected content in the response: {content}. Treating as 'no'.")
-                continue
+                    f"Unexpected content in the response: {content}.")
 
     if total > 0:
         score = yes / total
