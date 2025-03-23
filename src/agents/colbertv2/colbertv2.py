@@ -18,13 +18,11 @@ class ColbertV2(Agent):
         """
         Index the dataset for retrieval.
         """
-        pass
 
     def reason(self, question: str) -> NoteBook:
         """
         Reason over the indexed dataset to answer the question.
         """
-        pass
 
     def multiprocessing_reason(self, questions: list[str]) -> list[NoteBook]:
         """
@@ -33,4 +31,3 @@ class ColbertV2(Agent):
         Args:
             questions (list[str]): List of questions to answer.
         """
-        pass
