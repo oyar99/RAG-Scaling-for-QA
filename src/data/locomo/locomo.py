@@ -13,19 +13,48 @@ from utils.hash_utils import get_content_hash
 from utils.question_utils import filter_questions
 
 
+def session_id(doc_id: str) -> str:
+    """
+    Extracts the session id from the doc_id.
+
+    Args:
+        doc_id (str): the document id
+
+    Returns:
+        session_id (str): the session id
+    """
+    return f"session_{doc_id.split(':')[0][1:]}"
+
+
+def dia_idx(doc_id: str) -> int:
+    """
+    Extracts the index of the dialogue from the doc_id.
+
+    Args:
+        doc_id (str): the document id
+
+    Returns:
+        dia-idx (int): the index of the dialogue
+    """
+    return int(doc_id.split(':')[1]) - 1
+
+
 class Locomo(Dataset):
     """Locomo dataset class."""
 
     QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
 conversation between two users, followed by a question. Your task is to provide an EXACT answer, using only words \
-found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, a date, or an object), please \
-provide just that word. For example if the question is:
+found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, or an entity), please \
+answer with just that word. For dates, always answer with EXACT dates such as "5 July 2023" instead of relative answers such as "Yesterday" since \
+answers should not depend on the current date.
+
+Here is an example of a question and expected answer:
 
 Q: "what book did Carlos buy on his birthday?"
 
 Your answer should be: "Becoming Nicole"
 
-The conversation takes place over multiple days and the date of each conversation is appended at the end of each message.
+The conversation takes place over multiple days and the date of each conversation is added at the beginning of each message.
 
 Below are the relevant messages in the conversation.
 
@@ -47,32 +76,34 @@ Below are the relevant messages in the conversation.
         Logger().info("Reading Locomo dataset")
         conversation_id = self._args.conversation
         file_path = os.path.join("data", "locomo", "locomo10.json")
+
         with open(file_path, "r", encoding="utf-8") as locomo_dataset:
             dataset = [
                 DatasetSample(
-                    sample_id=conversation_sample['sample_id'],
+                    sample_id=cs['sample_id'],
                     sample=DatasetSampleInstance(
                         qa=filter_questions([QuestionAnswer(
                             docs=[Document(
                                 doc_id=ev,
-                                content=conversation_sample['conversation'][f"session_{ev.split(':')[0][1:]}"][int(
-                                    ev.split(':')[1]) - 1]['text'])
-                                  for ev in qa['evidence']
-                                  if f"session_{ev.split(':')[0][1:]}" in conversation_sample['conversation'] and int(
-                                      ev.split(':')[1]) - 1 <
-                                  len(conversation_sample['conversation'][f"session_{ev.split(':')[0][1:]}"])],
-                            question_id=f'{conversation_sample["sample_id"]}-{get_content_hash(qa["question"])}',
+                                content=f"At around {cs['conversation'][f'{session_id(ev)}_date_time']}, during \
+message {dia_idx(ev) + 1}, {cs['conversation'][session_id(ev)][dia_idx(ev)]['speaker']} said: \
+{cs['conversation'][session_id(ev)][dia_idx(ev)]['text']}")
+                                for ev in qa['evidence']
+                                if session_id(ev) in cs['conversation'] and dia_idx(ev) <
+                                len(cs['conversation'][session_id(ev)])],
+                            question_id=f'{cs["sample_id"]}-{get_content_hash(qa["question"])}',
                             question=qa['question'],
                             answer=[str(qa.get('answer')) or str(qa.get(
                                 'adversarial_answer'))],
                             category=QuestionCategory(qa['category'])
-                        ) for i, qa in enumerate(conversation_sample['qa'])], self._args.questions, self._args.category)
+                        ) for _, qa in enumerate(cs['qa'])], self._args.questions, self._args.category)
                     )
                 )
-                for conversation_sample in json.load(locomo_dataset)
-                if conversation_id is None or conversation_sample['sample_id'] == conversation_id
+                for cs in json.load(locomo_dataset)
+                if conversation_id is None or cs['sample_id'] == conversation_id
             ]
             dataset = super().process_dataset(dataset)
+
             Logger().info(
                 f"Locomo dataset read successfully. Total samples: {len(dataset)}")
 
@@ -97,8 +128,8 @@ Below are the relevant messages in the conversation.
             corpus = [
                 Document(
                     doc_id=message['dia_id'],
-                    content=f"At {conversation_sample['conversation'][f'{key}_date_time']} {message['speaker']} said: \
-{message['text']}"
+                    content=f"At around {conversation_sample['conversation'][f'{key}_date_time']}, \
+during message {dia_idx(message['dia_id']) + 1}, {message['speaker']} said: {message['text']}"
                 )
                 for conversation_sample in corpus[:self._args.limit]
                 if conversation_id is None or conversation_sample['sample_id'] == conversation_id

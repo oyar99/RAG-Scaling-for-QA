@@ -129,6 +129,10 @@ def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -
     Args:
         doc_pairs (list[tuple[list[Document], list[Document]]]): the ground truth documents and the model's documents
     """
+    if len(doc_pairs) == 0:
+        Logger().error("No doc pairs found. Please check the evaluation file.")
+        raise ValueError("No doc pairs found")
+
     Logger().info("Evaluating retrieval score")
 
     recall_at_k = eval_retrieval_recall(doc_pairs)
@@ -155,6 +159,10 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
 
         args (Namespace): the arguments passed to the script
     """
+    if len(qa_pairs) == 0:
+        Logger().error("No question-answer pairs found. Please check the evaluation file.")
+        raise ValueError("No question-answer pairs found")
+
     Logger().info("Evaluating exact match score")
 
     em = eval_exact_match(qa_pairs)

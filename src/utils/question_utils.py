@@ -20,12 +20,19 @@ def filter_questions(
     Returns:
         filtered_questions (list[QuestionAnswer]): the filtered list of questions
     """
+    filtered_questions = questions
 
-    # Remove unanswerable questions or filter by category
-    filtered_questions = [
-        question for question in questions
-        if (category is None and category != QuestionCategory.ADVERSARIAL) or int(question['category']) == category
-    ]
+    if category is not None:
+        filtered_questions = [
+            question for question in questions
+            if int(question['category']) == category
+        ]
+    else:
+        # Remove unanswerable questions
+        filtered_questions = [
+            question for question in questions
+            if question['category'] != QuestionCategory.ADVERSARIAL
+        ]
 
     # Dedupe questions by question_id
     filtered_questions = list(
