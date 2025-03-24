@@ -30,7 +30,7 @@ def evaluator(args, dataset: Dataset) -> None:
 
     Logger().info("Running evaluation")
 
-    if args.evaluation is None or (args.judge_eval and (args.judge_eval_path is None)):
+    if args.evaluation is None and not (args.judge_eval and args.judge_eval_path):
         Logger().error("Evaluation file not provided. Please provide the evaluation file path using the -ev flag.")
         raise ValueError("Evaluation file not provided")
 
