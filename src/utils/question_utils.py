@@ -20,9 +20,15 @@ def filter_questions(
     Returns:
         filtered_questions (list[QuestionAnswer]): the filtered list of questions
     """
+
+    # Remove unanswerable questions or filter by category
     filtered_questions = [
         question for question in questions
         if (category is None and category != QuestionCategory.ADVERSARIAL) or int(question['category']) == category
     ]
+
+    # Dedupe questions by question_id
+    filtered_questions = list(
+        {q['question_id']: q for q in filtered_questions}.values())
 
     return filtered_questions[:limit]
