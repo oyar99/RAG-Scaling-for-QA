@@ -43,16 +43,23 @@ class Locomo(Dataset):
     """Locomo dataset class."""
 
     QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
-conversation between two users, followed by a question. Your task is to provide an EXACT answer, using only words \
+conversation between two users, followed by a question. Your task is to provide an EXACT and short answer, using words \
 found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, or an entity), please \
-answer with just that word. For dates, always answer with EXACT dates such as "5 July 2023" instead of relative answers such as "Yesterday" since \
-answers should not depend on the current date.
+answer with just that word. For dates, always answer with ABSOLUTE dates such as "5 July 2023" or "week before 5 June" instead \
+of relative answers such as "Yesterday" or "last week" since your answers should not depend on the current date.
 
-Here is an example of a question and expected answer:
+For example, given the following conversation:
 
-Q: "what book did Carlos buy on his birthday?"
+"At around 1:50 pm on 17 August, 2023, during message 15, Caroline said: I'm always here for you, Mel! We had a blast last year \
+at the Pride fest. Those supportive friends definitely make everything worth it!"
 
-Your answer should be: "Becoming Nicole"
+And given the following question:
+
+Q: "When did Caroline and Melanie go to a pride fesetival together?"
+
+Your answer should be: 
+
+"2022"
 
 The conversation takes place over multiple days and the date of each conversation is added at the beginning of each message.
 
