@@ -30,9 +30,13 @@ def evaluator(args, dataset: Dataset) -> None:
 
     Logger().info("Running evaluation")
 
-    if args.evaluation is None:
+    if args.evaluation is None or (args.judge_eval and (args.judge_eval_path is None)):
         Logger().error("Evaluation file not provided. Please provide the evaluation file path using the -ev flag.")
         raise ValueError("Evaluation file not provided")
+
+    if args.judge_eval and args.judge_eval_path:
+        eval_judge_score_with_file(args.judge_eval_path)
+        return
 
     with open(args.evaluation, "r", encoding="utf-8") as evaluation_file:
         evaluation = [json.loads(line) for line in evaluation_file]
@@ -113,8 +117,6 @@ def evaluator(args, dataset: Dataset) -> None:
                            for eval_item in evaluation)
                           if pair is not None]]
             eval_judge_score(doc_pairs)
-        elif args.judge_eval and args.judge_eval_path:
-            eval_judge_score_with_file(args.judge_eval_path)
         else:
             qa_pairs = [pair for pair in (extract_qa_pair(
                 eval_item) for eval_item in evaluation) if pair is not None]

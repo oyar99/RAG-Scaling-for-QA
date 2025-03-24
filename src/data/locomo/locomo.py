@@ -39,10 +39,25 @@ def dia_idx(doc_id: str) -> int:
     return int(doc_id.split(':')[1]) - 1
 
 
+def format_content(date: str, message: int, speaker: str, text: str, alt_text: str = None) -> str:
+    """
+    Formats the content of a message.
+
+    Args:
+        date (str): the date of the message
+        message (int): the message number
+        speaker (str): the speaker of the message
+        text (str): the text of the message
+        alt_text (str): the alt text of attached images if any
+    """
+    return f"At around {date}, during message {message}, {speaker} said: {text}" if alt_text is None else \
+        f"At around {date}, during message {message}, {speaker} said: {text} - Attached image: {alt_text}"
+
+
 class Locomo(Dataset):
     """Locomo dataset class."""
 
-    QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with a \
+    QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with snippets from a \
 conversation between two users, followed by a question. Your task is to provide an EXACT and short answer, using words \
 found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, or an entity), please \
 answer with just that word. For dates, always answer with ABSOLUTE dates such as "5 July 2023" or "week before 5 June" instead \
@@ -55,7 +70,7 @@ at the Pride fest. Those supportive friends definitely make everything worth it!
 
 And given the following question:
 
-Q: "When did Caroline and Melanie go to a pride fesetival together?"
+Q: "When did Caroline and Melanie go to a pride festival together?"
 
 Your answer should be: 
 
@@ -92,9 +107,15 @@ Below are the relevant messages in the conversation.
                         qa=filter_questions([QuestionAnswer(
                             docs=[Document(
                                 doc_id=ev,
-                                content=f"At around {cs['conversation'][f'{session_id(ev)}_date_time']}, during \
-message {dia_idx(ev) + 1}, {cs['conversation'][session_id(ev)][dia_idx(ev)]['speaker']} said: \
-{cs['conversation'][session_id(ev)][dia_idx(ev)]['text']}")
+                                content=format_content(
+                                    date=cs['conversation'][f'{session_id(ev)}_date_time'],
+                                    message=dia_idx(ev) + 1,
+                                    speaker=cs['conversation'][session_id(
+                                        ev)][dia_idx(ev)]['speaker'],
+                                    text=cs['conversation'][session_id(
+                                        ev)][dia_idx(ev)]['text'],
+                                    alt_text=cs['conversation'][session_id(ev)][dia_idx(ev)].get('blip_caption'))
+                            )
                                 for ev in qa['evidence']
                                 if session_id(ev) in cs['conversation'] and dia_idx(ev) <
                                 len(cs['conversation'][session_id(ev)])],
@@ -135,8 +156,13 @@ message {dia_idx(ev) + 1}, {cs['conversation'][session_id(ev)][dia_idx(ev)]['spe
             corpus = [
                 Document(
                     doc_id=message['dia_id'],
-                    content=f"At around {conversation_sample['conversation'][f'{key}_date_time']}, \
-during message {dia_idx(message['dia_id']) + 1}, {message['speaker']} said: {message['text']}"
+                    content=format_content(
+                        date=conversation_sample['conversation'][f'{key}_date_time'],
+                        message=dia_idx(message['dia_id']) + 1,
+                        speaker=message['speaker'],
+                        text=message['text'],
+                        alt_text=message.get('blip_caption')
+                    ),
                 )
                 for conversation_sample in corpus[:self._args.limit]
                 if conversation_id is None or conversation_sample['sample_id'] == conversation_id
