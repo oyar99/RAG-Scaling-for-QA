@@ -1,7 +1,7 @@
 """Judge Evaluator Module"""
 import json
 from azure_open_ai.batch_evaluation import queue_evaluation_batch_job
-from src.logger.logger import Logger
+from logger.logger import Logger
 
 
 def eval_judge_score(qa_pairs: list[tuple[str, str, str]]) -> None:
