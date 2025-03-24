@@ -7,7 +7,8 @@ from logger.logger import Logger
 from utils.token_utils import estimate_cost, estimate_num_tokens
 
 EVALUATION_PROMPT = '''You are a helpful judge evaluating the quality of an answer. \
-You will answer 'Yes' or 'No' to indicate whether the provided answer matches the expected answer. \
+You will answer 'Yes' or 'No' to indicate whether the provided answer matches the expected answer.
+
 The question is: {question}. \
 The expected answer is: {answer}. \
 Please answer with 'Yes' or 'No' only. \
