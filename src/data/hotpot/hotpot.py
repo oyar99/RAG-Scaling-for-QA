@@ -8,7 +8,6 @@ from models.document import Document
 from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.hash_utils import get_content_hash
 from utils.question_utils import filter_questions
-from utils.token_utils import average_content_length
 
 
 class Hotpot(Dataset):

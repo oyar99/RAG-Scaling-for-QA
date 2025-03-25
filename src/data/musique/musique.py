@@ -64,10 +64,12 @@ class MuSiQue(Dataset):
         file_path = os.path.join("data", "musique", "musique_corpus.json")
         with open(file_path, encoding="utf-8") as musique_corpus:
             corpus = json.load(musique_corpus)
+            # pylint: disable=duplicate-code
             corpus = [
                 Document(doc_id=get_content_hash(doc['text']), content=doc['text'])
                 for doc in corpus
             ]
             super()._log_dataset_stats(corpus)
+            # pylint: disable=enable-code
 
             return corpus
