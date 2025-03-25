@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from logger.logger import Logger
 from models.document import Document
 from models.question_answer import QuestionAnswer
+from utils.token_utils import average_content_length
 
 
 class DatasetSampleInstance(dict):
@@ -189,3 +190,20 @@ Below are the passages.
         Logger().info(f"Total questions retrieved: {total_questions}")
 
         return questions
+
+    def _log_dataset_stats(self, corpus: list[Document]) -> None:
+        """
+        Logs the dataset statistics.
+
+        Args:
+            corpus (list[Document]): the corpus to log statistics for
+        """
+        Logger().info(
+            f"{self.name} dataset corpus stats. Total documents: {len(corpus)}")
+
+        # Calculate the average document length
+        avg_chars, avg_tokens = average_content_length(
+            corpus, self._args.model)
+        avg_tokens_str = f"{avg_tokens:.2f} tokens" if self._args.model else "unknown tokens"
+        Logger().info(
+            f"Average document length in the corpus: {avg_chars:.2f} characters ({avg_tokens_str})")

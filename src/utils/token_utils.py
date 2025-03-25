@@ -2,6 +2,28 @@
 import tiktoken
 
 from logger.logger import Logger
+from models.document import Document
+
+
+def average_content_length(corpus: list[Document], model: str = None) -> tuple[float, float]:
+    """
+    Computes the average content length of the given documents measured in
+    both characters and tokens
+
+    Args:
+        corpus (list[Document]): the given corpus
+        model (str): the model identifier to use for tokenization
+
+    Returns:
+        float: tuple[float, float]: average number of characters and tokens in the corpus
+    """
+    avg_length = sum(len(doc['content']) for doc in corpus) / len(corpus)
+    avg_tokens = 0.0
+
+    if model is not None:
+        avg_tokens = sum(estimate_num_tokens(
+            doc['content'], model) for doc in corpus) / len(corpus)
+    return avg_length, avg_tokens
 
 
 def estimate_num_tokens(prompt: str, model: str) -> int:

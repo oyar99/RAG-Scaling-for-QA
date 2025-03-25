@@ -74,7 +74,7 @@ class BM25(Agent):
         # pylint: enable=duplicate-code
 
         notebook = NoteBook()
-        k = 20
+        k = 5
 
         # Tokenize the query
         tokenized_query = tokenize(

@@ -169,8 +169,7 @@ Below are the relevant messages in the conversation.
                 for key, session in conversation_sample['conversation'].items() if pattern.match(key)
                 for message in session
             ]
-            Logger().info(
-                f"LoCoMo dataset corpus read successfully. Total documents: {len(corpus)}")
+            super()._log_dataset_stats(corpus)
 
             return corpus
 

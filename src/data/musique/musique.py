@@ -68,7 +68,6 @@ class MuSiQue(Dataset):
                 Document(doc_id=get_content_hash(doc['text']), content=doc['text'])
                 for doc in corpus
             ]
-            Logger().info(
-                f"MuSiQue dataset corpus read successfully. Total documents: {len(corpus)}")
+            super()._log_dataset_stats(corpus)
 
             return corpus

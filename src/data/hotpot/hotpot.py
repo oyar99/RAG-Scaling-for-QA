@@ -8,6 +8,7 @@ from models.document import Document
 from models.question_answer import QuestionAnswer, QuestionCategory
 from utils.hash_utils import get_content_hash
 from utils.question_utils import filter_questions
+from utils.token_utils import average_content_length
 
 
 class Hotpot(Dataset):
@@ -28,7 +29,8 @@ class Hotpot(Dataset):
         conversation_id = self._args.conversation
 
         # pylint: disable=duplicate-code
-        file_path = os.path.join("data", "hotpot", "hotpot_dev_distractor_v1.json")
+        file_path = os.path.join(
+            "data", "hotpot", "hotpot_dev_distractor_v1.json")
         with open(file_path, encoding="utf-8") as hotpot_dataset:
             dataset = [
                 DatasetSample(
@@ -70,10 +72,10 @@ class Hotpot(Dataset):
         with open(file_path, encoding="utf-8") as hotpot_corpus:
             corpus = json.load(hotpot_corpus)
             corpus = [
-                Document(doc_id=get_content_hash(doc['text']), content=doc['text'])
+                Document(doc_id=get_content_hash(
+                    doc['text']), content=doc['text'])
                 for doc in corpus
             ]
-            Logger().info(
-                f"Hotpot dataset corpus read successfully. Total documents: {len(corpus)}")
+            super()._log_dataset_stats(corpus)
 
             return corpus
