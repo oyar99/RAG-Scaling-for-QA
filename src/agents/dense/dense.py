@@ -58,7 +58,7 @@ class Dense(Agent):
         Logger().info("Successfully indexed documents")
         self._index = corpus_embeddings
         self._corpus = corpus
-        self._qa_prompt = dataset.QA_PROMPT
+        self._qa_prompt = dataset.get_prompt('qa_rel')
         self._sentence_transformer = sentence_transformer
 
     def reason(self, _: str) -> NoteBook:

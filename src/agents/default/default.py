@@ -23,7 +23,7 @@ class Default(Agent):
         corpus = dataset.read_corpus()
         self._corpus = corpus
         self._index = corpus
-        self._qa_prompt = dataset.QA_PROMPT
+        self._qa_prompt = dataset.get_prompt('qa_all')
 
     def reason(self, _: str) -> NoteBook:
         """Dummy reasoning since it just returns all the documents in the dataset.
@@ -45,10 +45,21 @@ class Default(Agent):
 
         notebook = NoteBook()
 
-        notes = self._qa_prompt.format(
-            context='\n'.join(doc['content'] for doc in self._index))
+        grouped_docs = {}
+        for doc in self._index:
+            folder_id = doc.get('folder_id')
+            if folder_id:
+                grouped_docs.setdefault(folder_id, []).append(doc)
+            else:
+                grouped_docs.setdefault(None, []).append(doc)
 
-        notebook.update_notes(notes)
+        formatted_docs = []
+        for folder_id, docs in grouped_docs.items():
+            if folder_id is not None:
+                formatted_docs.append(f"sample_id: {folder_id}")
+            formatted_docs.extend(doc['content'] for doc in docs)
+
+        notebook.update_notes('\n'.join(formatted_docs))
         notebook.update_sources([RetrievedResult(
             doc_id=doc['doc_id'], content=doc['content'], score=None)
             for doc in self._index])

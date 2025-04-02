@@ -32,7 +32,7 @@ class Oracle(Agent):
             for question in questions
         }
 
-        self._qa_prompt = dataset.QA_PROMPT
+        self._qa_prompt = dataset.get_prompt('qa_rel')
         self._corpus = corpus
 
     def reason(self, question: str) -> NoteBook:

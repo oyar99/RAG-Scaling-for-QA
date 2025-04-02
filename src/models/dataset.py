@@ -49,21 +49,6 @@ class Dataset(ABC):
     Args:
         ABC: an abstract base class
     """
-    QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with relevant \
-passages, followed by a question. Your task is to provide an EXACT answer, using only words \
-found in the passages when possible. If the answer can be a single word (e.g., Yes, No, a date, or an object), please \
-provide just that word. If there is no enough information in the passages to answer the question, please answer "N/A".
-
-For example if the question is:
-
-Q: "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?"
-
-Your answer should be: "No"
-
-Below are the passages.
-
-{context}
-'''
 
     def __init__(
         self,
@@ -73,6 +58,10 @@ Below are the passages.
         self._args = args
         self._dataset = None
         self._dataset_map = None
+        self._prompt_dict = {
+            'qa_rel': QA_PROMPT_RELEVANT,
+            'qa_all': QA_PROMPT_ALL,
+        }
 
         self.name = name
 
@@ -191,6 +180,26 @@ Below are the passages.
 
         return questions
 
+    def get_prompt(self, prompt_id: str) -> str:
+        """
+        Returns the prompt builder.
+
+        Args:
+            prompt_id (str): the prompt id to retrieve
+        Raises:
+            ValueError: if the prompt id is not found in the prompt dictionary
+
+        Returns:
+            str: the prompt builder
+        """
+        if prompt_id not in self._prompt_dict:
+            Logger().error(
+                f"Prompt id {prompt_id} not found in the prompt dictionary.")
+            raise ValueError(
+                f"Prompt id {prompt_id} not found in the prompt dictionary.")
+
+        return self._prompt_dict[prompt_id]
+
     def _log_dataset_stats(self, corpus: list[Document]) -> None:
         """
         Logs the dataset statistics.
@@ -207,3 +216,30 @@ Below are the passages.
         avg_tokens_str = f"{avg_tokens:.2f} tokens" if self._args.model else "unknown tokens"
         Logger().info(
             f"Average document length in the corpus: {avg_chars:.2f} characters ({avg_tokens_str})")
+
+
+QA_PROMPT_RELEVANT = '''You are a helpful Question Answering assistant. You will be presented with relevant \
+passages, followed by a question. Your task is to provide an EXACT answer, using only words \
+found in the passages when possible. If the answer can be a single word (e.g., Yes, No, a date, or an object), please \
+provide just that word. If there is no enough information in the passages to answer the question, please answer "N/A".
+
+For example if the question is:
+
+Q: "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?"
+
+Your answer should be: "No"
+
+Below are the passages.
+
+{context}
+'''
+
+QA_PROMPT_ALL = '''You are a helpful Question Answering assistant. You will be presented with all the passages \
+in the dataset which may or may not be relevant to answer the given question. Your task is to provide an EXACT \
+answer, using only words found in the passages when possible. If the answer can be a single word \
+(e.g., Yes, No, a date, or an object), please provide just that word. Note that all questions are answerable \
+with the provided passages, so reiterate if you do not find relevant information.
+
+Below are the passages in the dataset.
+{context}
+'''

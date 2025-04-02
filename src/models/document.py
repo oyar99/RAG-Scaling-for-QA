@@ -8,13 +8,15 @@ class Document(dict):
 
     Args:
         dict (Any): dictionary to store the document information
-        doc_id (int): the id of the document
+        folder_id (str): the id of the parent folder if any
+        doc_id (str): the id of the document
         content (str): the content of the document
     """
 
-    def __init__(self, doc_id: int, content: str):
-        dict.__init__(self, doc_id=doc_id,
+    def __init__(self, doc_id: str, folder_id: str, content: str):
+        dict.__init__(self, doc_id=doc_id, folder_id=folder_id,
                       content=content)
 
     def __repr__(self):
-        return f"""Document(doc_id={self.get('doc_id')}, content={self.get('content')})"""
+        return f"""Document(doc_id={self.get('doc_id')}, \
+folder_id={self.get('folder_id')} content={self.get('content')})"""

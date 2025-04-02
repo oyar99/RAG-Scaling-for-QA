@@ -57,34 +57,13 @@ def format_content(date: str, message: int, speaker: str, text: str, alt_text: s
 class Locomo(Dataset):
     """Locomo dataset class."""
 
-    QA_PROMPT = '''You are a helpful Question Answering assistant. You will be presented with snippets from a \
-conversation between two users, followed by a question. Your task is to provide an EXACT and short answer, using words \
-found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, or an entity), please \
-answer with just that word. For dates, always answer with ABSOLUTE dates such as "5 July 2023" or "week before 5 June" instead \
-of relative answers such as "Yesterday" or "last week" since your answers should not depend on the current date.
-
-For example, given the following conversation:
-
-"At around 1:50 pm on 17 August, 2023, during message 15, Caroline said: I'm always here for you, Mel! We had a blast last year \
-at the Pride fest. Those supportive friends definitely make everything worth it!"
-
-And given the following question:
-
-Q: "When did Caroline and Melanie go to a pride festival together?"
-
-Your answer should be: 
-
-"2022"
-
-The conversation takes place over multiple days and the date of each conversation is added at the beginning of each message.
-
-Below are the relevant messages in the conversation.
-
-{context}
-'''
-
     def __init__(self, args):
         super().__init__(args, name="locomo")
+        # Override the default prompts
+        self._prompt_dict = {
+            'qa_rel': QA_PROMPT_RELEVANT,
+            'qa_all': QA_PROMPT_ALL
+        }
         Logger().info("Initialized an instance of the Locomo dataset")
 
     # @override
@@ -107,6 +86,7 @@ Below are the relevant messages in the conversation.
                         qa=filter_questions([QuestionAnswer(
                             docs=[Document(
                                 doc_id=ev,
+                                folder_id=cs['sample_id'],
                                 content=format_content(
                                     date=cs['conversation'][f'{session_id(ev)}_date_time'],
                                     message=dia_idx(ev) + 1,
@@ -155,7 +135,8 @@ Below are the relevant messages in the conversation.
 
             corpus = [
                 Document(
-                    doc_id=message['dia_id'],
+                    doc_id=str(message['dia_id']),
+                    folder_id=conversation_sample['sample_id'],
                     content=format_content(
                         date=conversation_sample['conversation'][f'{key}_date_time'],
                         message=dia_idx(message['dia_id']) + 1,
@@ -207,3 +188,56 @@ Below are the relevant messages in the conversation.
             qa for qa in self._dataset_map[sample_id]['qa']
             if get_content_hash(qa['question']) == message_id), None
         )
+        
+QA_PROMPT_RELEVANT = '''You are a helpful Question Answering assistant. You will be presented with snippets from a \
+conversation between two users, followed by a question. Your task is to provide an EXACT and short answer, using words \
+found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, or an entity), please \
+answer with just that word. For dates, always answer with ABSOLUTE dates such as "5 July 2023" or "week before 5 June" instead \
+of relative answers such as "Yesterday" or "last week" since your answers should not depend on the current date.
+
+For example, given the following conversation:
+
+"At around 1:50 pm on 17 August, 2023, during message 15, Caroline said: I'm always here for you, Mel! We had a blast last year \
+at the Pride fest. Those supportive friends definitely make everything worth it!"
+
+And given the following question:
+
+Q: "When did Caroline and Melanie go to a pride festival together?"
+
+Your answer should be: 
+
+"2022"
+
+The conversation takes place over multiple days and the date of each conversation is added at the beginning of each message.
+
+Below are the relevant messages in the conversation.
+
+{context}
+'''
+
+QA_PROMPT_ALL = '''You are a helpful Question Answering assistant. You will be presented with multiple conversations \
+between two users, followed by a question. Your task is to provide an EXACT and short answer, using words found in the \
+conversations when possible. Each conversation is between separate users. If the answer can be a single word \
+(e.g., Yes, No, or an entity), please answer  with just that word. For dates, always answer with ABSOLUTE dates such \
+as "5 July 2023" or "week before 5 June" instead of relative answers such as "Yesterday" or "last week" since your \
+answers should not depend on the current date.
+
+For example, given the following conversation:
+
+"At around 1:50 pm on 17 August, 2023, during message 15, Caroline said: I'm always here for you, Mel! We had a blast last year \
+at the Pride fest. Those supportive friends definitely make everything worth it!"
+
+And given the following question:
+
+Q: "When did Caroline and Melanie go to a pride festival together?"
+
+Your answer should be: 
+
+"2022"
+
+Each conversation takes place over multiple days and the date of each conversation is added at the beginning of each message.
+
+Below are the conversations in the dataset.
+
+{context}
+'''

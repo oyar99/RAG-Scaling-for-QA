@@ -44,7 +44,7 @@ class ColbertV2(Agent):
 
         self._index = dataset.name or 'index'
         self._corpus = corpus
-        self._qa_prompt = dataset.QA_PROMPT
+        self._qa_prompt = dataset.get_prompt('qa_rel')
         Logger().info("Successfully indexed documents")
 
     def reason(self, _: str) -> NoteBook:

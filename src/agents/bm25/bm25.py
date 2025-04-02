@@ -53,7 +53,7 @@ class BM25(Agent):
             k1=0.5
         )
         self._corpus = corpus
-        self._qa_prompt = dataset.QA_PROMPT
+        self._qa_prompt = dataset.get_prompt('qa_rel')
 
         Logger().info("Successfully indexed documents")
 
