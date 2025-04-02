@@ -38,8 +38,7 @@ def dia_idx(doc_id: str) -> int:
     """
     return int(doc_id.split(':')[1]) - 1
 
-# pylint: disable-next=too-many-arguments,too-many-positional-arguments
-def format_content(date: str, message: int, speaker: str, text: str, img_url: str = None, alt_text: str = None) -> str:
+def format_content(date: str, message: int, speaker: str, text: str, alt_text: str = None) -> str:
     """
     Formats the content of a message.
 
@@ -51,7 +50,7 @@ def format_content(date: str, message: int, speaker: str, text: str, img_url: st
         alt_text (str): the alt text of attached images if any
     """
     return f"At around {date}, during message {message}, {speaker} said: {text}" if alt_text is None else \
-        f"At around {date}, during message {message}, {speaker} said: {text} - Attached image ({img_url}): {alt_text}"
+        f"At around {date}, during message {message}, {speaker} said: {text} - Attached image: {alt_text}"
 
 
 class Locomo(Dataset):
@@ -94,8 +93,6 @@ class Locomo(Dataset):
                                         ev)][dia_idx(ev)]['speaker'],
                                     text=cs['conversation'][session_id(
                                         ev)][dia_idx(ev)]['text'],
-                                    img_url=cs['conversation'][session_id(ev)][dia_idx(ev)].get('img_url')[
-                                        0] if cs['conversation'][session_id(ev)][dia_idx(ev)].get('img_url') else None,
                                     alt_text=cs['conversation'][session_id(ev)][dia_idx(ev)].get('blip_caption'))
                             )
                                 for ev in qa['evidence']
@@ -145,8 +142,6 @@ class Locomo(Dataset):
                         speaker=message['speaker'],
                         text=message['text'],
                         alt_text=message.get('blip_caption'),
-                        img_url=message.get('img_url')[0] if message.get(
-                            'img_url') else None
                     ),
                 )
                 for conversation_sample in corpus[:self._args.limit]
