@@ -59,7 +59,10 @@ class Default(Agent):
                 formatted_docs.append(f"sample_id: {folder_id}")
             formatted_docs.extend(doc['content'] for doc in docs)
 
-        notebook.update_notes('\n'.join(formatted_docs))
+        notes = self._qa_prompt.format(
+            context='\n'.join(formatted_docs)
+        )
+        notebook.update_notes(notes)
         notebook.update_sources([RetrievedResult(
             doc_id=doc['doc_id'], content=doc['content'], score=None)
             for doc in self._index])

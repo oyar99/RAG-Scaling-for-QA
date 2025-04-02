@@ -188,7 +188,8 @@ class Locomo(Dataset):
             qa for qa in self._dataset_map[sample_id]['qa']
             if get_content_hash(qa['question']) == message_id), None
         )
-        
+
+
 QA_PROMPT_RELEVANT = '''You are a helpful Question Answering assistant. You will be presented with snippets from a \
 conversation between two users, followed by a question. Your task is to provide an EXACT and short answer, using words \
 found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, or an entity), please \

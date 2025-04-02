@@ -13,7 +13,7 @@ class Document(dict):
         content (str): the content of the document
     """
 
-    def __init__(self, doc_id: str, folder_id: str, content: str):
+    def __init__(self, doc_id: str, content: str, folder_id: str = None):
         dict.__init__(self, doc_id=doc_id, folder_id=folder_id,
                       content=content)
 
