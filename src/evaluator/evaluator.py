@@ -8,6 +8,7 @@ from evaluator.f1_evaluator import eval_f1_score
 from evaluator.bert_evaluator import eval_bert_score
 from evaluator.judge_evaluator import eval_judge_score, eval_judge_score_with_file
 from evaluator.retrieval_evaluator import eval_retrieval_recall
+from evaluator.rogue_evaluator import eval_rogue_score
 from logger.logger import Logger
 from models.dataset import Dataset
 from models.document import Document
@@ -169,6 +170,10 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
 
     em = eval_exact_match(qa_pairs)
     f1, precision, recall = eval_f1_score(qa_pairs)
+    rogue_scores = eval_rogue_score(qa_pairs)
+    rogue, roge_precision, rogue_recall = rogue_scores[0]
+    rogue_2, roge_precision_2, rogue_recall_2 = rogue_scores[1]
+    rogue_l, roge_precision_l, rogue_recall_l = rogue_scores[2]
     bert_score = None
 
     if args.bert_eval:
@@ -179,6 +184,15 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     Logger().info(f"F1 score: {f1}")
     Logger().info(f"Precision: {precision}")
     Logger().info(f"Recall: {recall}")
+    Logger().info(f"ROUGE score: {rogue}")
+    Logger().info(f"ROUGE precision: {roge_precision}")
+    Logger().info(f"ROUGE recall: {rogue_recall}")
+    Logger().info(f"ROUGE-2 score: {rogue_2}")
+    Logger().info(f"ROUGE-2 precision: {roge_precision_2}")
+    Logger().info(f"ROUGE-2 recall: {rogue_recall_2}")
+    Logger().info(f"ROUGE-L score: {rogue_l}")
+    Logger().info(f"ROUGE-L precision: {roge_precision_l}")
+    Logger().info(f"ROUGE-L recall: {rogue_recall_l}")
 
     output_dir = os.path.join(os.path.normpath(
         os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'qa')
@@ -189,5 +203,14 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
         output_file.write(f"F1 score: {f1}\n")
         output_file.write(f"Precision: {precision}\n")
         output_file.write(f"Recall: {recall}\n")
+        output_file.write(f"ROUGE score: {rogue}\n")
+        output_file.write(f"ROUGE precision: {roge_precision}\n")
+        output_file.write(f"ROUGE recall: {rogue_recall}\n")
+        output_file.write(f"ROUGE-2 score: {rogue_2}\n")
+        output_file.write(f"ROUGE-2 precision: {roge_precision_2}\n")
+        output_file.write(f"ROUGE-2 recall: {rogue_recall_2}\n")
+        output_file.write(f"ROUGE-L score: {rogue_l}\n")
+        output_file.write(f"ROUGE-L precision: {roge_precision_l}\n")
+        output_file.write(f"ROUGE-L recall: {rogue_recall_l}\n")
         if bert_score:
             output_file.write(f"BERT score: {bert_score}\n")

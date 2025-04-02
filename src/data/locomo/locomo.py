@@ -38,8 +38,10 @@ def dia_idx(doc_id: str) -> int:
     """
     return int(doc_id.split(':')[1]) - 1
 
+# pylint: disable-next=too-many-arguments,too-many-positional-arguments
 
-def format_content(date: str, message: int, speaker: str, text: str, alt_text: str = None) -> str:
+
+def format_content(date: str, message: int, speaker: str, text: str, img_url: str = None, alt_text: str = None) -> str:
     """
     Formats the content of a message.
 
@@ -51,7 +53,7 @@ def format_content(date: str, message: int, speaker: str, text: str, alt_text: s
         alt_text (str): the alt text of attached images if any
     """
     return f"At around {date}, during message {message}, {speaker} said: {text}" if alt_text is None else \
-        f"At around {date}, during message {message}, {speaker} said: {text} - Attached image: {alt_text}"
+        f"At around {date}, during message {message}, {speaker} said: {text} - Attached image ({img_url}): {alt_text}"
 
 
 class Locomo(Dataset):
@@ -94,6 +96,8 @@ class Locomo(Dataset):
                                         ev)][dia_idx(ev)]['speaker'],
                                     text=cs['conversation'][session_id(
                                         ev)][dia_idx(ev)]['text'],
+                                    img_url=cs['conversation'][session_id(ev)][dia_idx(ev)].get('img_url')[
+                                        0] if cs['conversation'][session_id(ev)][dia_idx(ev)].get('img_url') else None,
                                     alt_text=cs['conversation'][session_id(ev)][dia_idx(ev)].get('blip_caption'))
                             )
                                 for ev in qa['evidence']
@@ -142,7 +146,9 @@ class Locomo(Dataset):
                         message=dia_idx(message['dia_id']) + 1,
                         speaker=message['speaker'],
                         text=message['text'],
-                        alt_text=message.get('blip_caption')
+                        alt_text=message.get('blip_caption'),
+                        img_url=message.get('img_url')[0] if message.get(
+                            'img_url') else None
                     ),
                 )
                 for conversation_sample in corpus[:self._args.limit]
@@ -219,9 +225,9 @@ Below are the relevant messages in the conversation.
 QA_PROMPT_ALL = '''You are a helpful Question Answering assistant. You will be presented with multiple conversations \
 between two users, followed by a question. Your task is to provide an EXACT and short answer, using words found in the \
 conversations when possible. Each conversation is between separate users. If the answer can be a single word \
-(e.g., Yes, No, or an entity), please answer  with just that word. For dates, always answer with ABSOLUTE dates such \
-as "5 July 2023" or "week before 5 June" instead of relative answers such as "Yesterday" or "last week" since your \
-answers should not depend on the current date.
+(e.g., Yes, No, or an entity), please answer with just that word. For dates, always answer with "ABSOLUTE" dates such \
+as "5 July 2023" or "week before 5 June" instead of relative answers such as "Yesterday", "last week" or "5 years ago" since your \
+answers SHOULD NOT depend on today's date.
 
 For example, given the following conversation:
 
