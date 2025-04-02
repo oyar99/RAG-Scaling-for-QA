@@ -151,7 +151,7 @@ def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -
         for k, recall in recall_at_k.items():
             output_file.write(f"Recall at {k}: {recall}\n")
 
-
+# pylint: disable=too-many-locals
 def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     """
     Evaluates question answering performance based on the provided question-answer pairs.

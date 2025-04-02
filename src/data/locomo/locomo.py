@@ -39,8 +39,6 @@ def dia_idx(doc_id: str) -> int:
     return int(doc_id.split(':')[1]) - 1
 
 # pylint: disable-next=too-many-arguments,too-many-positional-arguments
-
-
 def format_content(date: str, message: int, speaker: str, text: str, img_url: str = None, alt_text: str = None) -> str:
     """
     Formats the content of a message.
