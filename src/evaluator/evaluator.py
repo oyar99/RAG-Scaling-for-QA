@@ -13,7 +13,7 @@ from logger.logger import Logger
 from models.dataset import Dataset
 from models.document import Document
 
-
+# pylint: disable-next=too-many-statements
 def evaluator(args, dataset: Dataset) -> None:
     """
     Orchestrates the evaluation of the model's performance on the dataset.
