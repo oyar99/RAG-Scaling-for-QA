@@ -10,6 +10,7 @@ from azure_open_ai.batch import queue_batch_job
 from logger.logger import Logger
 from models.agent import Agent
 from models.dataset import Dataset
+from utils.model_utils import supports_temperature_param
 from utils.token_utils import estimate_cost, estimate_num_tokens, get_max_output_tokens, truncate_content
 
 default_job_args = {
@@ -158,7 +159,7 @@ def queue_qa_job(
                     {"role": "system", "content": context},
                     {"role": "user", "content": questions_str}
                 ],
-                "temperature": job_args['temperature'],
+                "temperature": job_args['temperature'] if supports_temperature_param(model) else None,
                 "frequency_penalty": job_args['frequency_penalty'],
                 "presence_penalty": job_args['presence_penalty'],
                 "max_completion_tokens": int(get_max_output_tokens(model)),
@@ -273,7 +274,7 @@ def queue_qa_batch_job(
                      "content": prompts[question["question_id"]]},
                     {"role": "user", "content": question["question"]}
                 ],
-                "temperature": job_args['temperature'],
+                "temperature": job_args['temperature'] if supports_temperature_param(model) else None,
                 "frequency_penalty": job_args['frequency_penalty'],
                 "presence_penalty": job_args['presence_penalty'],
                 "max_completion_tokens": job_args['max_completion_tokens']
