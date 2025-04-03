@@ -277,7 +277,7 @@ def queue_qa_batch_job(
                 "temperature": job_args['temperature'] if supports_temperature_param(model) else None,
                 "frequency_penalty": job_args['frequency_penalty'],
                 "presence_penalty": job_args['presence_penalty'],
-                "max_completion_tokens": job_args['max_completion_tokens']
+                "max_completion_tokens": int(get_max_output_tokens(model))
             },
         }
         for _, question_set in questions.items()
