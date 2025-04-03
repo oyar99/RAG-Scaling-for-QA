@@ -78,6 +78,16 @@ class Dense(Agent):
             "Dense agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
 
+    def batch_reason(self, _: list[str]) -> NoteBook:
+        """
+        Uses its question index to answer the questions.
+
+        Raises:
+            NotImplementedError: Batch reasoning is not implemented for the Dense agent.
+        """
+        raise NotImplementedError(
+            "Batch reasoning is not implemented for the Dense agent.")
+
     def multiprocessing_reason(self, questions: list[str]) -> list[NoteBook]:
         """
         Perform reasoning on the questions using the indexed documents in parallel.

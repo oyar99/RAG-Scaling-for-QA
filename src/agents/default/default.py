@@ -2,6 +2,7 @@
 
 from models.agent import Agent, NoteBook
 from models.dataset import Dataset
+from models.question_answer import QuestionAnswer
 from models.retrieved_result import RetrievedResult
 
 
@@ -14,6 +15,9 @@ class Default(Agent):
         self._qa_prompt = None
         super().__init__(args)
 
+        # Support batch reasoning
+        self.support_batch = True
+
     def index(self, dataset: Dataset) -> None:
         """Index the documents
 
@@ -25,23 +29,16 @@ class Default(Agent):
         self._index = corpus
         self._qa_prompt = dataset.get_prompt('qa_all')
 
-    def reason(self, _: str) -> NoteBook:
-        """Dummy reasoning since it just returns all the documents in the dataset.
+    def batch_reason(self, _: list[QuestionAnswer]) -> NoteBook:
+        """
+        Dummy batch reasoning since it just returns all the documents in the dataset.
 
         Args:
-            _ (str): the question to reason about
-
-        Raises:
-            ValueError: if the index is not created
-
-        Returns:
-            notebook (NoteBook): the notebook containing the documents
+            questions (QuestionAnswer): list of questions to reason about
         """
-        # pylint: disable=duplicate-code
         if not self._index or not self._corpus:
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
-        # pylint: enable=duplicate-code
 
         notebook = NoteBook()
 
@@ -52,7 +49,6 @@ class Default(Agent):
                 grouped_docs.setdefault(folder_id, []).append(doc)
             else:
                 grouped_docs.setdefault(None, []).append(doc)
-
         formatted_docs = []
         for folder_id, docs in grouped_docs.items():
             if folder_id is not None:
@@ -66,5 +62,20 @@ class Default(Agent):
         notebook.update_sources([RetrievedResult(
             doc_id=doc['doc_id'], content=doc['content'], score=None)
             for doc in self._index])
-
         return notebook
+
+    def reason(self, _: str) -> NoteBook:
+        """Dummy reasoning since it just returns all the documents in the dataset.
+
+        Args:
+            _ (str): the question to reason about
+
+        Raises:
+            ValueError: if the index is not created
+
+        Returns:
+            notebook (NoteBook): the notebook containing the documents
+        """
+        raise NotImplementedError(
+            "Default agent does not support single question reasoning. Use batch_reason instead."
+        )

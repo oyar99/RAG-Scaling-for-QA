@@ -36,7 +36,7 @@ def parse_args() -> dict[str, Any]:
 Ignored if conversation id is provided (optional)')
 
     # Predict mode arguments
-    parser.add_argument('-m', '--model', type=str,
+    parser.add_argument('-m', '--model', choices=['gpt-4o-mini', 'o3-mini'],
                         help='model deployment identifier (required in predict mode)')
 
     parser.add_argument('-a', '--agent', choices=['default', 'oracle', 'bm25', 'dense', 'colbertv2'], default='default',
@@ -54,12 +54,16 @@ Ignored if conversation id is provided (optional)')
 
     parser.add_argument('-j', '--judge-eval', action='store_true',
                         help='run judge evaluation (optional). Other evaluations will be skipped in this mode')
+
     parser.add_argument('-jp', '--judge-eval-path', type=str,
                         help='path to the judge evaluation file (optional). \
 If not provided, an evaluation file is generated')
 
     parser.add_argument('-r', '--retrieval', action='store_true',
                         help='run retrieval evaluation (optional)')
+
+    parser.add_argument('-eb', '--eval-batch', action='store_true',
+                        help='run batch evaluation (optional)')
 
     return parser.parse_args()
 

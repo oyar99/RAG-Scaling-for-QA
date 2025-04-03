@@ -57,6 +57,16 @@ class ColbertV2(Agent):
         raise NotImplementedError(
             "ColBERTV2 agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
+        
+    def batch_reason(self, _: list[str]) -> NoteBook:
+        """
+        Uses its question index to answer the questions.
+
+        Raises:
+            NotImplementedError: Batch reasoning is not implemented for the colbertv2 agent.
+        """
+        raise NotImplementedError(
+            "Batch reasoning is not implemented for the colbertv2 agent.")
 
     def multiprocessing_reason(self, questions: list[str]) -> list[NoteBook]:
         """

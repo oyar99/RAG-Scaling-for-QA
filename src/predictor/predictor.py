@@ -1,5 +1,5 @@
 """Predictor module."""
-from azure_open_ai.batch_deployment import queue_qa_batch_job
+from azure_open_ai.batch_deployment import queue_qa_batch_job, queue_qa_job
 from logger.logger import Logger
 from models.agent import Agent
 from models.dataset import Dataset
@@ -27,5 +27,13 @@ Please provide the model deployment identifier using the -m flag.""")
     _ = dataset.read()
     agent.index(dataset)
 
-    queue_qa_batch_job(
-        args.model, dataset, agent, stop=args.noop)
+    if agent.support_batch:
+        # Batch here refers that all the questions are batched together in a single request
+        # instead of sending each question separately
+        queue_qa_job(
+            args.model, dataset, agent, stop=args.noop)
+    else:
+        # Batch here refers that each question is sent separately
+        # instead of sending all questions together
+        queue_qa_batch_job(
+            args.model, dataset, agent, stop=args.noop)

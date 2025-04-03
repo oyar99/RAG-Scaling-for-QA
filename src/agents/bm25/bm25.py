@@ -57,6 +57,16 @@ class BM25(Agent):
 
         Logger().info("Successfully indexed documents")
 
+    def batch_reason(self, _: list[str]) -> NoteBook:
+        """
+        Uses its question index to answer the questions.
+
+        Raises:
+            NotImplementedError: Batch reasoning is not implemented for the BM25 agent.
+        """
+        raise NotImplementedError(
+            "Batch reasoning is not implemented for the BM25 agent.")
+
     def reason(self, question: str) -> NoteBook:
         """
         Retrieve the top k documents for the given question.

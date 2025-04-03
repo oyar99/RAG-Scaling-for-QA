@@ -1,3 +1,5 @@
+# pylint: disable=dangerous-default-value
+
 """Module to queue a batch job for Question Answering using Azure OpenAI."""
 
 import json
@@ -8,20 +10,38 @@ from azure_open_ai.batch import queue_batch_job
 from logger.logger import Logger
 from models.agent import Agent
 from models.dataset import Dataset
-from utils.token_utils import estimate_cost, estimate_num_tokens
+from utils.token_utils import estimate_cost, estimate_num_tokens, get_max_output_tokens, truncate_content
+
+default_job_args = {
+    'temperature': 0.0,
+    'max_completion_tokens': 100,
+    'frequency_penalty': 0.0,
+    'presence_penalty': 0.0
+}
 
 
-def guard_job(results: list[tuple[dict, str]], model: str) -> None:
+def guard_job(results: list[tuple[dict, str]], model: str, stop: bool) -> None:
     """
     Guard the job based on the estimated cost.
 
     Args:
         results (list[tuple[dict, str]]): the results of the job
         model (str): the deployment model name
+        stop (bool): whether to stop the job
 
     Raises:
         RuntimeError: if the cost exceeds $2.0
     """
+    if not isinstance(model, str) or len(model) <= 0:
+        raise ValueError(
+            "model must be a non-empty string.")
+
+    if stop:
+        Logger().error("Returning without queuing job.")
+        raise ValueError(
+            "Returning without queuing job. Please check the arguments."
+        )
+
     cost = 0.0
 
     for _, prompt in results:
@@ -43,7 +63,7 @@ def guard_job(results: list[tuple[dict, str]], model: str) -> None:
             "Estimated cost exceeds $0.4. \
 Please review the questions and ensure they are not too verbose.")
 
-    if cost > 1:
+    if cost > 10.0:
         Logger().error(
             "Cost likely exceeds $1.0. Stopping execution ..."
         )
@@ -63,11 +83,122 @@ def get_output_path() -> str:
         output_dir, f'retrieval_results_{Logger().get_run_id()}.jsonl')
 
 
+def queue_qa_job(
+    model: str,
+    dataset: Dataset,
+    agent: Agent,
+    job_args: dict = default_job_args,
+    stop: bool = False
+) -> Optional[Batch]:
+    """
+    Queues a job for Question Answering using Azure OpenAI.
+
+    Args:
+        model (str): the deployment model name
+        dataset (Dataset): the dataset to use for the job
+        agent (Agent): the agent to use for the job
+        job_args (dict, optional): a dictionary of job arguments. Defaults to None. Possible arguments are:
+            temperature (float, optional): the sampling temperature to use. Defaults to 0.0.
+            max_tokens (int, optional): this parameter is ignored in the batch job. The maximum number of tokens
+            that can be generated in the completion defaults to all possible tokens.
+            frequency_penalty (float, optional): penalize new tokens based on their existing frequency in the
+            text so far. Defaults to 0.0.
+            presence_penalty (float, optional): penalize new tokens based on whether they appear in the text so far.
+            Defaults to 0.0.
+    Raises:
+        ValueError: if any of the input parameters are invalid
+        RuntimeError: if the file upload fails
+    """
+    if not isinstance(dataset, Dataset):
+        raise ValueError("dataset must be an instance of Dataset.")
+
+    if not isinstance(agent, Agent):
+        raise ValueError("agent must be an instance of Agent.")
+
+    if not agent.support_batch:
+        Logger().error(
+            "agent does not support batch reasoning. Use queue_qa_batch_job instead."
+        )
+        raise ValueError(
+            "agent does not support batch reasoning. Use queue_qa_batch_job instead."
+        )
+
+    questions = dataset.get_questions()
+
+    notebook = agent.batch_reason([q['question']
+                                   for _, question_set in questions.items()
+                                   for q in question_set])
+
+    questions_list = [f'Q ({question["question_id"]}): {question["question"]}'
+                      for _, question_set in questions.items()
+                      for question in question_set]
+    question_batches = [
+        '\n'.join(questions_list[i:i + 20]).strip()
+        for i in range(0, len(questions_list), 20)
+    ]
+
+    context = truncate_content(notebook.get_notes(), model)
+
+    results = [({
+        'custom_id': f'{Logger().get_run_id()}-{i}',
+        'question': questions_str,
+        'result': notebook.get_sources()
+    }, context) for i, questions_str in enumerate(question_batches)]
+
+    guard_job(results, model, stop)
+
+    return queue_batch_job([
+        {
+            "custom_id": f'{Logger().get_run_id()}-{i}',
+            "method": "POST",
+            "url": "/chat/completions",
+            "body": {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": context},
+                    {"role": "user", "content": questions_str}
+                ],
+                "temperature": job_args['temperature'],
+                "frequency_penalty": job_args['frequency_penalty'],
+                "presence_penalty": job_args['presence_penalty'],
+                "max_completion_tokens": int(get_max_output_tokens(model)),
+                "response_format": {
+                    "type": "json_schema",
+                    "json_schema": {
+                        "strict": True,
+                        "name": "question_answering",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "result": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "question_id": {"type": "string"},
+                                            "answer": {"type": "string"},
+                                        },
+                                        "required": ["question_id", "answer"],
+                                        "additionalProperties": False
+                                    }
+                                }
+                            },
+                            "required": ["result"],
+                            "additionalProperties": False
+                        }
+                    }
+                }
+            },
+        }
+        for i, questions_str in enumerate(question_batches)
+    ])
+
+
 def queue_qa_batch_job(
     model: str,
     dataset: Dataset,
     agent: Agent,
-    job_args: dict = None,
+    job_args: dict = default_job_args,
     stop: bool = False
 ) -> Optional[Batch]:
     """
@@ -93,18 +224,20 @@ def queue_qa_batch_job(
     if not isinstance(dataset, Dataset):
         raise ValueError("dataset must be an instance of Dataset.")
 
-    if job_args is None:
-        job_args = {
-            'temperature': 0.0,
-            'max_tokens': 50,
-            'frequency_penalty': 0.0,
-            'presence_penalty': 0.0
-        }
+    if not isinstance(agent, Agent):
+        raise ValueError("agent must be an instance of Agent.")
+
+    if agent.support_batch:
+        Logger().error(
+            "agent does not support batch reasoning. Use queue_qa_job instead."
+        )
+        raise ValueError(
+            "agent does not support batch reasoning. Use queue_qa_job instead."
+        )
 
     questions = dataset.get_questions()
 
     prompts = {}
-
     results = []
 
     all_questions = [q for _, question_set in questions.items()
@@ -123,18 +256,10 @@ def queue_qa_batch_job(
             r = json.dumps(result_json)
             f.write(r + '\n')
 
-    if stop:
-        Logger().warn("Returning without queuing job.")
-        return None
-
-    if not isinstance(model, str) or len(model) <= 0:
-        raise ValueError(
-            "model must be a non-empty string.")
-
     for result_json, prompt in results:
         prompts[result_json['custom_id']] = prompt
 
-    guard_job(results, model)
+    guard_job(results, model, stop)
 
     return queue_batch_job([
         {
@@ -151,7 +276,7 @@ def queue_qa_batch_job(
                 "temperature": job_args['temperature'],
                 "frequency_penalty": job_args['frequency_penalty'],
                 "presence_penalty": job_args['presence_penalty'],
-                "max_tokens": job_args['max_tokens']
+                "max_completion_tokens": job_args['max_completion_tokens']
             },
         }
         for _, question_set in questions.items()

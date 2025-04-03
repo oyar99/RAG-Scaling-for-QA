@@ -76,6 +76,7 @@ class Agent(ABC):
         self._args = args
         self._index = None
         self._corpus = None
+        self.support_batch = False
 
     @abstractmethod
     def index(self, dataset: Dataset) -> None:
@@ -99,6 +100,22 @@ class Agent(ABC):
 
         Returns:
             notebook (Notebook): the detailed findings to help answer this question (context)
+        """
+
+    @abstractmethod
+    def batch_reason(self, questions: list[str]) -> NoteBook:
+        """
+        Given a list of questions, reasons about them using its index (memory) and returns a
+        detailed notebook (str) with its findings to generate a correct response.
+        The agent should not respond to the questions directly. Instead, it should create the notes with all 
+        its findings so that the response can easily be explainable.
+        This is different from the multiprocessing_reason method since it will not use multiprocessing. Instead,
+        it batches all the questions and returns a single notebook.
+        
+        Args:
+            questions (list[QuestionAnswer]): the given questions
+        Returns:
+            notebook (Notebook): the detailed findings to help answer all questions (context)
         """
 
     def multiprocessing_reason(self, questions: list[str]) -> list[NoteBook]:

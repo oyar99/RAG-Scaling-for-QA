@@ -71,3 +71,13 @@ class Oracle(Agent):
             for doc in docs])
 
         return notebook
+
+    def batch_reason(self, _: list[str]) -> NoteBook:
+        """
+        Uses its question index to answer the questions.
+
+        Raises:
+            NotImplementedError: Batch reasoning is not implemented for the Oracle agent.
+        """
+        raise NotImplementedError(
+            "Batch reasoning is not implemented for the Oracle agent.")

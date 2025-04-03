@@ -70,6 +70,29 @@ def evaluator(args, dataset: Dataset) -> None:
 
             return doc_pairs
 
+        def extract_qa_pairs(eval_item) -> list[tuple[list[str], str]]:
+            Logger().debug(
+                f"Extracting QA pairs for evaluation item: {eval_item['custom_id']}")
+            qa_pairs = []
+            json_obj = json.loads(eval_item['response']['body']['choices'][0]['message']['content'])
+            for qa in json_obj.get('result', []):
+                question_id = qa.get('question_id')
+                answer = qa.get('answer')
+                if question_id and answer:
+                    question = dataset.get_question(question_id)
+                    if question is None:
+                        Logger().warn(
+                            f"Sample id {question_id} not found in the dataset. Skipping evaluation ...")
+                    else:
+                        qa_pairs.append((question['answer'], answer))
+                else:
+                    Logger().error(
+                        f"Question ID or answer not found in the evaluation item: {eval_item['custom_id']}")
+                    raise ValueError(
+                        f"Question ID or answer not found in the evaluation item: {eval_item['custom_id']}")
+
+            return qa_pairs
+
         def extract_qa_pair(eval_item) -> Optional[tuple[list[str], str]]:
             pair = extract_qa_pair_with_question(eval_item)
 
@@ -118,6 +141,10 @@ def evaluator(args, dataset: Dataset) -> None:
                            for eval_item in evaluation)
                           if pair is not None]]
             eval_judge_score(doc_pairs)
+        elif args.eval_batch:
+            qa_pairs = [pair for pairs in (extract_qa_pairs(
+                eval_item) for eval_item in evaluation) for pair in pairs]
+            evaluate(qa_pairs, args)
         else:
             qa_pairs = [pair for pair in (extract_qa_pair(
                 eval_item) for eval_item in evaluation) if pair is not None]
@@ -152,6 +179,8 @@ def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -
             output_file.write(f"Recall at {k}: {recall}\n")
 
 # pylint: disable=too-many-locals
+
+
 def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     """
     Evaluates question answering performance based on the provided question-answer pairs.

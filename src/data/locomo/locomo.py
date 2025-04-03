@@ -216,11 +216,11 @@ Below are the relevant messages in the conversation.
 '''
 
 QA_PROMPT_ALL = '''You are a helpful Question Answering assistant. You will be presented with multiple conversations \
-between two users, followed by a question. Your task is to provide an EXACT and short answer, using words found in the \
-conversations when possible. Each conversation is between separate users. If the answer can be a single word \
-(e.g., Yes, No, or an entity), please answer with just that word. For dates, always answer with "ABSOLUTE" dates such \
-as "5 July 2023" or "week before 5 June" instead of relative answers such as "Yesterday", "last week" or "5 years ago" since your \
-answers SHOULD NOT depend on today's date.
+between two users, followed by a list of questions. Your task is to provide an EXACT and short answer to each question\
+, using words found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, or an entity)\
+, please answer with just that word. For dates, always answer with "ABSOLUTE" dates such as "5 July 2023" or "week before \
+5 June" instead of relative answers such as "Yesterday", "last week" or "5 years ago" since your answers SHOULD NOT depend \
+on today's date.
 
 For example, given the following conversation:
 
@@ -229,9 +229,9 @@ at the Pride fest. Those supportive friends definitely make everything worth it!
 
 And given the following question:
 
-Q: "When did Caroline and Melanie go to a pride festival together?"
+Q (<question_id>): "When did Caroline and Melanie go to a pride festival together?"
 
-Your answer should be: 
+Your answer should be:
 
 "2022"
 

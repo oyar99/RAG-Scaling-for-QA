@@ -70,10 +70,10 @@ The script supports any **closed-source models** that allow **batch deployments*
 
 Supported Models
 
-| Model Name      | Context Length |
-|-----------------|----------------|
-| GPT-3.5 Turbo   | 16,385 tokens   |
-| GPT-4o-mini     | 128,000 tokens  |
+| Model Name      | Context Length   | Max Outputh Length |
+|-----------------|------------------|--------------------|
+| o3-mini     | 200,000 tokens   | 16,384 tokens      |
+| GPT-4o-mini     | 128,000 tokens   | 100,000 tokens     |
 
 ## How to run
 
