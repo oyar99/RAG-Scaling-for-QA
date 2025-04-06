@@ -26,6 +26,8 @@ def average_content_length(corpus: list[Document], model: str = None) -> tuple[f
     return avg_length, avg_tokens
 
 # pylint: disable-next=too-many-locals
+
+
 def search_best_interval(
     content: str,
     must_have_texts: list[str],
@@ -34,8 +36,8 @@ def search_best_interval(
     encoding: tiktoken.Encoding
 ) -> tuple[int, int]:
     """
-    Find the largest interval (start, end) such that the length of tokens[start, end] is not greater than max_tokens 
-    and content is guaranteed to contain all substrings in must_have_texts.
+    Find the largest interval (start, end) such that the length of encoded(content)[start, end] is not greater 
+    than max_tokens and content is guaranteed to contain all substrings in must_have_texts.
     """
     must_have_indices = [
         (content.index(text), content.index(text) + len(text))
@@ -124,10 +126,8 @@ def truncate_content(content: str, must_have_texts: list[str], context_starts_id
         encoded_content = encoding.encode(content)
 
         if len(encoded_content) > max_tokens:
-            Logger().error("Truncation failed, content still exceeds max tokens")
-            raise ValueError(
-                f"Truncation failed, content still exceeds max tokens: {len(encoded_content)} > {max_tokens}"
-            )
+            Logger().warn("Truncation failed, content still exceeds max tokens. Proceeding with naive truncation")
+            content = encoding.decode(encoded_content[:max_tokens])
 
         Logger().debug(f"Truncating content: {start}-{end}")
         Logger().debug(f"token length: {len(encoded_content)}")

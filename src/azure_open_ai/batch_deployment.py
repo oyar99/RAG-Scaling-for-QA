@@ -137,18 +137,20 @@ def queue_qa_job(
     questions_objs = [question for _, question_set in questions.items()
                       for question in question_set]
 
+    batch_size = 5
+
     question_batches = [
         {
-            'content': '\n'.join(questions_list[i:i + 20]).strip(),
+            'content': '\n'.join(questions_list[i:i + batch_size]).strip(),
             'context': truncate_content(
                 content=notebook.get_notes(),
                 must_have_texts=[doc['content']
-                                 for question in questions_objs[i:i + 20]
+                                 for question in questions_objs[i:i + batch_size]
                                  for doc in question['docs']],
                 context_starts_idx=notebook.get_actual_context_idx(),
                 model=model)
         }
-        for i in range(0, len(questions_list), 20)
+        for i in range(0, len(questions_list), batch_size)
     ]
 
     results = [({

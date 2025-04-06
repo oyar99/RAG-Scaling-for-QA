@@ -15,6 +15,8 @@ from models.dataset import Dataset
 from models.document import Document
 
 # pylint: disable-next=too-many-statements
+
+
 def evaluator(args, dataset: Dataset) -> None:
     """
     Orchestrates the evaluation of the model's performance on the dataset.
@@ -75,9 +77,25 @@ def evaluator(args, dataset: Dataset) -> None:
             Logger().debug(
                 f"Extracting QA pairs for evaluation item: {eval_item['custom_id']}")
             qa_pairs = []
-            json_obj = json.loads(eval_item['response']['body']['choices'][0]['message']['content'])
+            json_obj = json.loads(
+                eval_item['response']['body']['choices'][0]['message']['content'])
+
+            results = json_obj.get('result', [])
+
+            Logger().info(
+                f"Found {len(results)} results in the evaluation item: {eval_item['custom_id']}")
+
+            question_ids = set()
+
             for qa in json_obj.get('result', []):
                 question_id = qa.get('question_id')
+
+                if question_id in question_ids:
+                    Logger().warn(
+                        f"Duplicate question ID {question_id} found in the evaluation item: {eval_item['custom_id']}. Skipping ...")
+                    continue
+
+                question_ids.add(question_id)
                 answer = qa.get('answer')
                 if question_id and answer:
                     question = dataset.get_question(question_id)

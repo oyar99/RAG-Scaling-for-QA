@@ -53,13 +53,16 @@ class Default(Agent):
         for folder_id, docs in grouped_docs.items():
             if folder_id is not None:
                 formatted_docs.append(f"sample_id: {folder_id}")
+            else:
+                formatted_docs.append("Passages:")
             formatted_docs.extend(doc['content'] for doc in docs)
 
         notes = self._qa_prompt.format(
             context='\n'.join(formatted_docs)
         )
         notebook.update_notes(notes)
-        notebook.update_actual_context_idx(notes.index('sample_id'))
+        notebook.update_actual_context_idx(notes.index(
+            'sample_id') if 'sample_id' in notes else notes.index('Passages:'))
         notebook.update_sources([RetrievedResult(
             doc_id=doc['doc_id'], content=doc['content'], score=None)
             for doc in self._index])
