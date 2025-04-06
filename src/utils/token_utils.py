@@ -106,8 +106,8 @@ def truncate_content(content: str, must_have_texts: list[str], context_starts_id
     tokens = encoding.encode(content)
 
     max_tokens_map = {
-        'gpt-4o-mini': 128_000 * 0.9,
-        'o3-mini': 200_000 * 0.9,
+        'gpt-4o-mini': 128_000 * 0.88,
+        'o3-mini': 200_000 * 0.88,
     }
 
     max_tokens = int(max_tokens_map.get(model, 0))
@@ -146,8 +146,8 @@ def get_max_output_tokens(model: str) -> int:
         max_output_tokens (int): the maximum number of output tokens for the given model
     """
     max_tokens_map = {
-        'gpt-4o-mini': 128_000 * 0.08,
-        'o3-mini': 200_000 * 0.08,
+        'gpt-4o-mini': 128_000 * 0.1,
+        'o3-mini': 200_000 * 0.1,
     }
 
     return max_tokens_map.get(model, 0)
