@@ -237,7 +237,8 @@ Your answer should be:
 
 Each conversation takes place over multiple days and the date of each conversation is added at the beginning of each message.
 
-Below are the conversations in the dataset.
+Below are the conversations in the dataset. (The conversations may be truncated due to length constraints, but all relevant \
+details are guaranteed to be included.)
 
 {context}
 '''

@@ -59,6 +59,7 @@ class Default(Agent):
             context='\n'.join(formatted_docs)
         )
         notebook.update_notes(notes)
+        notebook.update_actual_context_idx(notes.index('sample_id'))
         notebook.update_sources([RetrievedResult(
             doc_id=doc['doc_id'], content=doc['content'], score=None)
             for doc in self._index])

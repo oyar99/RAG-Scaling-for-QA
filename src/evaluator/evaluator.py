@@ -3,6 +3,7 @@
 import os
 import json
 from typing import Optional
+from evaluator.bleu_evaluator import eval_bleu_score
 from evaluator.exact_match_evaluator import eval_exact_match
 from evaluator.f1_evaluator import eval_f1_score
 from evaluator.bert_evaluator import eval_bert_score
@@ -203,6 +204,7 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     rogue, roge_precision, rogue_recall = rogue_scores[0]
     rogue_2, roge_precision_2, rogue_recall_2 = rogue_scores[1]
     rogue_l, roge_precision_l, rogue_recall_l = rogue_scores[2]
+    bleu_score = eval_bleu_score(qa_pairs)
     bert_score = None
 
     if args.bert_eval:
@@ -222,6 +224,7 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     Logger().info(f"ROUGE-L score: {rogue_l}")
     Logger().info(f"ROUGE-L precision: {roge_precision_l}")
     Logger().info(f"ROUGE-L recall: {rogue_recall_l}")
+    Logger().info(f"BLEU score: {bleu_score}")
 
     output_dir = os.path.join(os.path.normpath(
         os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'qa')
@@ -241,5 +244,6 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
         output_file.write(f"ROUGE-L score: {rogue_l}\n")
         output_file.write(f"ROUGE-L precision: {roge_precision_l}\n")
         output_file.write(f"ROUGE-L recall: {rogue_recall_l}\n")
+        output_file.write(f"BLEU score: {bleu_score}\n")
         if bert_score:
             output_file.write(f"BERT score: {bert_score}\n")

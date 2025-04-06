@@ -14,6 +14,7 @@ class NoteBook:
     def __init__(self):
         self._sources = []
         self._notes = None
+        self._actual_context_idx = None
 
     def update_notes(self, notes: str) -> None:
         """
@@ -24,6 +25,15 @@ class NoteBook:
         """
         self._notes = notes
 
+    def update_actual_context_idx(self, idx: int) -> None:
+        """
+        Updates the notebook with the given index.
+
+        Args:
+            idx (int): the index to be added to the notebook
+        """
+        self._actual_context_idx = idx
+
     def get_notes(self) -> str:
         """
         Gets the notes from the notebook.
@@ -32,6 +42,15 @@ class NoteBook:
             str: the notes in the notebook
         """
         return self._notes
+
+    def get_actual_context_idx(self) -> int:
+        """
+        Gets the index from the notebook.
+
+        Returns:
+            int: the index in the notebook
+        """
+        return self._actual_context_idx
 
     def update_sources(self, sources: list[RetrievedResult]) -> None:
         """
@@ -111,7 +130,7 @@ class Agent(ABC):
         its findings so that the response can easily be explainable.
         This is different from the multiprocessing_reason method since it will not use multiprocessing. Instead,
         it batches all the questions and returns a single notebook.
-        
+
         Args:
             questions (list[QuestionAnswer]): the given questions
         Returns:

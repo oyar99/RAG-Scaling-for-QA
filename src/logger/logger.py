@@ -25,7 +25,7 @@ class Logger(metaclass=Singleton):
         formatter = logging.Formatter(
             '%(asctime)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
-        self._logger.addHandler(ch)
+        # self._logger.addHandler(ch)
 
         # Create file handler
         log_dir = os.path.join(os.path.normpath(

@@ -21,6 +21,7 @@ datasets==3.4.1
 dill==0.3.8
 distro==1.9.0
 dotenv==0.9.9
+evaluate==0.4.3
 exceptiongroup==1.2.2
 faiss-gpu @ https://github.com/kyamagu/faiss-wheels/releases/download/v1.7.3/faiss_gpu-1.7.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
 filelock==3.17.0

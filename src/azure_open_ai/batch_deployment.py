@@ -133,18 +133,29 @@ def queue_qa_job(
     questions_list = [f'Q ({question["question_id"]}): {question["question"]}'
                       for _, question_set in questions.items()
                       for question in question_set]
+
+    questions_objs = [question for _, question_set in questions.items()
+                      for question in question_set]
+
     question_batches = [
-        '\n'.join(questions_list[i:i + 20]).strip()
+        {
+            'content': '\n'.join(questions_list[i:i + 20]).strip(),
+            'context': truncate_content(
+                content=notebook.get_notes(),
+                must_have_texts=[doc['content']
+                                 for question in questions_objs[i:i + 20]
+                                 for doc in question['docs']],
+                context_starts_idx=notebook.get_actual_context_idx(),
+                model=model)
+        }
         for i in range(0, len(questions_list), 20)
     ]
 
-    context = truncate_content(notebook.get_notes(), model)
-
     results = [({
         'custom_id': f'{Logger().get_run_id()}-{i}',
-        'question': questions_str,
+        'question': question_batch['content'],
         'result': notebook.get_sources()
-    }, context) for i, questions_str in enumerate(question_batches)]
+    }, question_batch['context']) for i, question_batch in enumerate(question_batches)]
 
     guard_job(results, model, stop)
 
@@ -156,8 +167,8 @@ def queue_qa_job(
             "body": {
                 "model": model,
                 "messages": [
-                    {"role": "system", "content": context},
-                    {"role": "user", "content": questions_str}
+                    {"role": "system", "content": question_batch['context']},
+                    {"role": "user", "content": question_batch['content']}
                 ],
                 "temperature": job_args['temperature'] if supports_temperature_param(model) else None,
                 "frequency_penalty": job_args['frequency_penalty'],
@@ -191,7 +202,7 @@ def queue_qa_job(
                 }
             },
         }
-        for i, questions_str in enumerate(question_batches)
+        for i, question_batch in enumerate(question_batches)
     ])
 
 
