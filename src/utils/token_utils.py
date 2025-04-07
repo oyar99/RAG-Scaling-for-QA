@@ -26,8 +26,6 @@ def average_content_length(corpus: list[Document], model: str = None) -> tuple[f
     return avg_length, avg_tokens
 
 # pylint: disable-next=too-many-locals
-
-
 def search_best_interval(
     content: str,
     must_have_texts: list[str],

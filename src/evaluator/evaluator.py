@@ -15,8 +15,6 @@ from models.dataset import Dataset
 from models.document import Document
 
 # pylint: disable-next=too-many-statements
-
-
 def evaluator(args, dataset: Dataset) -> None:
     """
     Orchestrates the evaluation of the model's performance on the dataset.
@@ -92,7 +90,8 @@ def evaluator(args, dataset: Dataset) -> None:
 
                 if question_id in question_ids:
                     Logger().warn(
-                        f"Duplicate question ID {question_id} found in the evaluation item: {eval_item['custom_id']}. Skipping ...")
+                        f"Duplicate question ID {question_id} found in the evaluation item: \
+{eval_item['custom_id']}. Skipping ...")
                     continue
 
                 question_ids.add(question_id)
