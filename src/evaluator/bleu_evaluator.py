@@ -18,8 +18,8 @@ def eval_bleu_score(qa_pairs: list[tuple[list[str], str]]) -> float:
     bleu = evaluate.load("bleu")
     results = []
     for references, candidate in qa_pairs:
-        result = bleu.compute(predictions=[candidate], references=references)
-        results.append((result["bleu"]))
+        result = max(bleu.compute(predictions=[candidate], references=[ref])['bleu'] for ref in references)
+        results.append(result)
 
     avg_bleu = sum(results) / len(results)
     return avg_bleu

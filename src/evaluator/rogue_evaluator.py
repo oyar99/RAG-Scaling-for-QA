@@ -22,7 +22,7 @@ def eval_rogue_score(qa_pairs: list[tuple[list[str], str]]) -> list[tuple[float,
     rouge = Rouge()
     scores = [max(rouge.get_scores(' '.join(tokenize(a)), ' '.join(tokenize(ref))),
                   key=lambda score: score['rouge-1']['f'])
-              for (gt, a) in qa_pairs for ref in gt]
+              for (gt, a) in qa_pairs for ref in gt if len(tokenize(a)) > 0 and len(tokenize(ref)) > 0]
 
     # Calculate average scores for rouge-1
     avg_rouge = sum(score['rouge-1']['f'] for score in scores) / len(scores)
