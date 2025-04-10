@@ -5,6 +5,7 @@ from agents.bm25.bm25 import BM25
 from agents.colbertv2.colbertv2 import ColbertV2
 from agents.default.default import Default
 from agents.dense.dense import Dense
+from agents.hippo_rag.hippo_rag import HippoRAG
 from agents.oracle.oracle import Oracle
 from data.hotpot.hotpot import Hotpot
 from data.locomo.locomo import Locomo
@@ -43,6 +44,7 @@ class Orchestrator:
             'bm25': BM25,
             'dense': Dense,
             'colbertv2': ColbertV2,
+            # 'hippo': HippoRAG,
         }
 
         if args.agent not in agents:

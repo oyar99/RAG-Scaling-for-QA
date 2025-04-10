@@ -39,8 +39,8 @@ Ignored if conversation id is provided (optional)')
     parser.add_argument('-m', '--model', choices=['gpt-4o-mini', 'o3-mini'],
                         help='model deployment identifier (required in predict mode)')
 
-    parser.add_argument('-a', '--agent', choices=['default', 'oracle', 'bm25', 'dense', 'colbertv2'], default='default',
-                        help='agent to be used (required in predict mode)')
+    parser.add_argument('-a', '--agent', choices=['default', 'oracle', 'bm25', 'dense', 'colbertv2', 'hippo'], 
+                        default='default', help='agent to be used (required in predict mode)')
 
     parser.add_argument('-np', '--noop', action='store_true',
                         help='do not run actual prediction (optional)')
