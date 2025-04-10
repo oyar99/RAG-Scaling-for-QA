@@ -44,7 +44,7 @@ class Orchestrator:
             'bm25': BM25,
             'dense': Dense,
             'colbertv2': ColbertV2,
-            # 'hippo': HippoRAG,
+            'hippo': HippoRAG,
         }
 
         if args.agent not in agents:

@@ -71,7 +71,7 @@ Please review the questions and ensure they are not too verbose.")
         raise RuntimeError("Program terminated forcefully.")
 
 
-def get_output_path() -> str:
+def get_retrieval_output_path() -> str:
     """
     Get the output path for the batch job results.
 
@@ -82,6 +82,19 @@ def get_output_path() -> str:
         os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'retrieval_jobs')
     return os.path.join(
         output_dir, f'retrieval_results_{Logger().get_run_id()}.jsonl')
+
+
+def get_qa_output_path() -> str:
+    """
+    Get the output path for the batch job results.
+
+    Returns:
+        str: the output path
+    """
+    output_dir = os.path.join(os.path.normpath(
+        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'qa_jobs')
+    return os.path.join(
+        output_dir, f'qa_results_{Logger().get_run_id()}.jsonl')
 
 
 def queue_qa_job(
@@ -265,13 +278,36 @@ def queue_qa_batch_job(
                  'result': result.get_sources()}, result.get_notes())
                for result, question in zip(notebooks, all_questions)]
 
-    with open(get_output_path(), 'w', encoding='utf-8') as f:
+    with open(get_retrieval_output_path(), 'w', encoding='utf-8') as f:
         for result_json, _ in results:
             r = json.dumps(result_json)
             f.write(r + '\n')
 
     for result_json, prompt in results:
         prompts[result_json['custom_id']] = prompt
+
+    if agent.standalone:
+        with open(get_qa_output_path(), 'w', encoding='utf-8') as f:
+            for result, question in zip(notebooks, all_questions):
+                result_json = {
+                    "custom_id": question["question_id"],
+                    "response": {
+                        "body": {
+                            "choices": [
+                                {
+                                    "message": {
+                                        "role": "assistant",
+                                        "content": result.get_notes()
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+                r = json.dumps(result_json)
+                f.write(r + '\n')
+
+        return None
 
     guard_job(results, model, stop)
 

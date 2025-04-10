@@ -11,10 +11,10 @@ CUDA_VISIBLE_DEVICES: <gpu id>
 """
 
 import os
-# from hipporag import HippoRAG as HippoRAGModel
 from logger.logger import Logger
 from models.agent import Agent, NoteBook
 from models.dataset import Dataset
+from models.retrieved_result import RetrievedResult
 
 
 class HippoRAG(Agent):
@@ -25,8 +25,10 @@ class HippoRAG(Agent):
     def __init__(self, args):
         self._index = None
         self._corpus = None
-        self._qa_prompt = None
+        self._reverse_doc_map = None
         super().__init__(args)
+        
+        self.standalone = True
 
     def index(self, dataset: Dataset) -> None:
         """
@@ -43,21 +45,28 @@ class HippoRAG(Agent):
 
         os.makedirs(hipporag_dir, exist_ok=True)
 
-        embedding_model = 'Contriever'
+        embedding_model = 'facebook/contriever'
         hipporag = None
-        #hipporag = HippoRAGModel(
-        #    save_dir=hipporag_dir,
-        #    llm_model_name=self._args.model,
-        #    embedding_model_name=embedding_model,
-        #)
 
-        hipporag.index(docs=[doc['content'] for doc in corpus])
+        # pylint: disable-next=import-outside-toplevel
+        from hipporag import HippoRAG as HippoRAGModel
+
+        hipporag = HippoRAGModel(
+            save_dir=hipporag_dir,
+            llm_model_name='Qwen/Qwen2.5-1.5B-Instruct',
+            embedding_model_name=embedding_model,
+            llm_base_url='http://localhost:8000/v1',
+        )
+
+        Logger().info([doc['content'] for doc in corpus][:10])
+
+        hipporag.index(docs=[doc['content'] for doc in corpus][:10])
 
         Logger().info("Successfully indexed documents")
 
         self._index = hipporag
         self._corpus = corpus
-        self._qa_prompt = dataset.get_prompt('qa_rel')
+        self._reverse_doc_map = {doc['content']: doc['doc_id'] for doc in corpus}
 
     def reason(self, _: str) -> NoteBook:
         """
@@ -99,8 +108,25 @@ class HippoRAG(Agent):
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
 
-        self._index.rag_qa(queries=questions)
+        results = self._index.rag_qa(queries=questions)
 
-        raise NotImplementedError(
-            "HippoRAG agent is not fully implemented yet."
-        )
+        Logger().info("Successfully retrieved documents")
+
+        notebooks = []
+
+        for result in results[0]:
+            retrieved_docs = [
+                RetrievedResult(
+                    doc_id=self._reverse_doc_map[doc],
+                    content=doc,
+                    score=score
+                ) for doc, score in zip(result.docs, result.doc_scores)
+            ]
+
+            notebook = NoteBook()
+            notebook.update_sources(retrieved_docs)
+            notebook.update_notes(result.answer)
+            
+            notebooks.append(notebook)
+
+        return notebooks

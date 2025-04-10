@@ -96,6 +96,7 @@ class Agent(ABC):
         self._index = None
         self._corpus = None
         self.support_batch = False
+        self.standalone = False
 
     @abstractmethod
     def index(self, dataset: Dataset) -> None:
