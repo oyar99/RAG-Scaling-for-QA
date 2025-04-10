@@ -27,7 +27,7 @@ class HippoRAG(Agent):
         self._corpus = None
         self._reverse_doc_map = None
         super().__init__(args)
-        
+
         self.standalone = True
 
     def index(self, dataset: Dataset) -> None:
@@ -126,7 +126,7 @@ class HippoRAG(Agent):
             notebook = NoteBook()
             notebook.update_sources(retrieved_docs)
             notebook.update_notes(result.answer)
-            
+
             notebooks.append(notebook)
 
         return notebooks

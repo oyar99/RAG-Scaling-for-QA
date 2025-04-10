@@ -220,7 +220,7 @@ def queue_qa_job(
         for i, question_batch in enumerate(question_batches)
     ])
 
-
+# pylint: disable-next=too-many-locals
 def queue_qa_batch_job(
     model: str,
     dataset: Dataset,
