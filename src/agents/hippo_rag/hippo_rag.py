@@ -58,9 +58,7 @@ class HippoRAG(Agent):
             llm_base_url='http://localhost:8000/v1',
         )
 
-        Logger().info([doc['content'] for doc in corpus][:10])
-
-        hipporag.index(docs=[doc['content'] for doc in corpus][:10])
+        hipporag.index(docs=[doc['content'] for doc in corpus])
 
         Logger().info("Successfully indexed documents")
 
@@ -119,13 +117,13 @@ class HippoRAG(Agent):
                 RetrievedResult(
                     doc_id=self._reverse_doc_map[doc],
                     content=doc,
-                    score=score
+                    score=float(score)
                 ) for doc, score in zip(result.docs, result.doc_scores)
             ]
 
             notebook = NoteBook()
             notebook.update_sources(retrieved_docs)
-            notebook.update_notes(result.answer)
+            notebook.update_notes(result.answer[:1000])
 
             notebooks.append(notebook)
 
