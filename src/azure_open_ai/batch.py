@@ -92,7 +92,7 @@ def wait_for_batch_job_and_save_result(
         time.sleep(120) # Sleep for 2 minutes
         batch = retrieve_batch_job(batch.id)
 
-    if batch.status != "succeeded":
+    if batch.status != "completed":
         Logger().error(
             f"Batch job failed with status: {batch.status}. Please check the logs for more details.")
         raise RuntimeError(
