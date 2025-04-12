@@ -100,6 +100,8 @@ def wait_for_batch_job_and_save_result(
 
     Logger().info(
         f"Batch job completed with status: {batch.status}")
+    Logger().info(
+        f"Batch job output file ID: {batch.output_file_id}")
 
     result = retrieve_file(batch.output_file_id)
 
