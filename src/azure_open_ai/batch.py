@@ -70,3 +70,68 @@ def queue_batch_job(
     )
 
     return batch_job
+
+def wait_for_batch_job_and_save_result(
+    batch: Batch,
+    output_file_path: str,
+) -> None:
+    """
+    Waits for a batch job to complete and saves the result to a file.
+
+    Args:
+        batch_job (Batch): the batch job object
+        output_file_path (str): the path to save the output file
+
+    Raises:
+        RuntimeError: if the batch job fails
+    """
+    # Polling for batch job completion
+    while batch.status in ("in_progress", "validating", "finalizing"):
+        Logger().info(
+            f"Batch job status: {batch.status}. Waiting for completion...")
+        time.sleep(120) # Sleep for 2 minutes
+        batch = retrieve_batch_job(batch.id)
+
+    if batch.status != "succeeded":
+        Logger().error(
+            f"Batch job failed with status: {batch.status}. Please check the logs for more details.")
+        raise RuntimeError(
+            f"Batch job failed with status: {batch.status}. Please check the logs for more details.")
+
+    Logger().info(
+        f"Batch job completed with status: {batch.status}")
+
+    result = retrieve_file(batch.output_file_id)
+
+    with open(output_file_path, 'wb') as f:
+        f.write(result)
+
+def retrieve_batch_job(
+    batch_job_id: str,
+) -> Batch:
+    """
+    Retrieves a batch job using Azure OpenAI.
+
+    Args:
+        batch_job_id (str): the ID of the batch job to retrieve
+
+    Returns:
+        Batch: the batch job object if the job is retrieved successfully
+    """
+    openai_client = OpenAIClient().get_client()
+    return openai_client.batches.retrieve(batch_job_id)
+
+def retrieve_file(
+    file_id: str,
+) -> bytes:
+    """
+    Retrieves a file using Azure OpenAI.
+
+    Args:
+        file_id (str): the ID of the file to retrieve
+
+    Returns:
+        bytes: the file object if the file is retrieved successfully
+    """
+    openai_client = OpenAIClient().get_client()
+    return openai_client.files.content(file_id).content

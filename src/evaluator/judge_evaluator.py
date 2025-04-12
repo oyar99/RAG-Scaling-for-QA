@@ -1,10 +1,12 @@
 """Judge Evaluator Module"""
 import json
+from typing import Optional
+from openai.types import Batch
 from azure_open_ai.batch_evaluation import queue_evaluation_batch_job
 from logger.logger import Logger
 
 
-def eval_judge_score(qa_pairs: list[tuple[str, str, str]]) -> None:
+def eval_judge_score(qa_pairs: list[tuple[str, str, str]]) -> Optional[Batch]:
     """
     Evaluate the question answer pairs based on a score given by an LLM judge.
     Uploads a batch job to Azure OpenAI for evaluation.
@@ -14,8 +16,8 @@ def eval_judge_score(qa_pairs: list[tuple[str, str, str]]) -> None:
         qa_pairs (list[tuple[str, str]]): A list of tuples containing question, expected answer and given answer pairs.
         file_path (str): The path to the file where the evaluation results were saved.
     """
-    queue_evaluation_batch_job(
-        model='gpt-4o-mini',
+    return queue_evaluation_batch_job(
+        model='gpt-4o-mini-batch',
         question_answers=qa_pairs,
     )
 

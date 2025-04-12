@@ -107,6 +107,7 @@ def truncate_content(content: str, must_have_texts: list[str], context_starts_id
 
     max_tokens_map = {
         'gpt-4o-mini': 128_000 * 0.88,
+        'gpt-4o-mini-batch': 128_000 * 0.88,
         'o3-mini': 200_000 * 0.88,
     }
 
@@ -145,6 +146,7 @@ def get_max_output_tokens(model: str) -> int:
     """
     max_tokens_map = {
         'gpt-4o-mini': 128_000 * 0.1,
+        'gpt-4o-mini-batch': 128_000 * 0.1,
         'o3-mini': 200_000 * 0.1,
     }
 
@@ -181,6 +183,7 @@ def estimate_cost(num_tokens: int, model: str) -> float:
     """
     cost_per_million_tokens = {
         'gpt-4o-mini': 0.075,
+        'gpt-4o-mini-batch': 0.075,
         'o3-mini': 0.55,
     }
 

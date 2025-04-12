@@ -3,6 +3,7 @@
 import os
 import json
 from typing import Optional
+from azure_open_ai.batch import wait_for_batch_job_and_save_result
 from evaluator.bleu_evaluator import eval_bleu_score
 from evaluator.exact_match_evaluator import eval_exact_match
 from evaluator.f1_evaluator import eval_f1_score
@@ -137,13 +138,16 @@ def evaluator(args, dataset: Dataset) -> None:
 
             Logger().debug(f"Question found: {question['question']}")
 
-            if 'content' not in eval_item['response']['body']['choices'][0]['message']:
+            content = (eval_item['response']['body']['choices'][0]['message']['content']
+                       if eval_item['response']['body']['choices'][0]['message'].get('content') else None)
+
+            if content is None:
                 Logger().warn(
-                    "Content not found in the response. Skipping evaluation ...")
-                return None
+                    "Content not found in the response. Setting to Empty string ...")
+                content = ""
 
             qa_pair = (question['question'], question['answer'], str(
-                eval_item['response']['body']['choices'][0]['message']['content']))
+                content))
 
             return qa_pair
 
@@ -158,7 +162,13 @@ def evaluator(args, dataset: Dataset) -> None:
                           (extract_qa_pair_with_question(eval_item)
                            for eval_item in evaluation)
                           if pair is not None]]
-            eval_judge_score(doc_pairs)
+            batch = eval_judge_score(doc_pairs)
+
+            if batch is not None:
+                Logger().info(
+                    f"Batch job {batch.id} submitted. Waiting for completion ...")
+                wait_for_batch_job_and_save_result(
+                    batch, get_eval_output_path())
         elif args.eval_batch:
             qa_pairs = [pair for pairs in (extract_qa_pairs(
                 eval_item) for eval_item in evaluation) for pair in pairs]
@@ -188,17 +198,7 @@ def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -
     for k, recall in recall_at_k.items():
         Logger().info(f"Recall at {k}: {recall}")
 
-    output_dir = os.path.join(os.path.normpath(
-        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'retrieval')
-    output_name = os.path.join(output_dir, f'eval-{Logger().get_run_id()}.out')
-
-    with open(output_name, "w", encoding="utf-8") as output_file:
-        for k, recall in recall_at_k.items():
-            output_file.write(f"Recall at {k}: {recall}\n")
-
 # pylint: disable=too-many-locals
-
-
 def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     """
     Evaluates question answering performance based on the provided question-answer pairs.
@@ -243,24 +243,15 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     Logger().info(f"ROUGE-L recall: {rogue_recall_l}")
     Logger().info(f"BLEU score: {bleu_score}")
 
-    output_dir = os.path.join(os.path.normpath(
-        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'qa')
-    output_name = os.path.join(output_dir, f'eval-{Logger().get_run_id()}.out')
 
-    with open(output_name, "w", encoding="utf-8") as output_file:
-        output_file.write(f"Exact match score: {em}\n")
-        output_file.write(f"F1 score: {f1}\n")
-        output_file.write(f"Precision: {precision}\n")
-        output_file.write(f"Recall: {recall}\n")
-        output_file.write(f"ROUGE score: {rogue}\n")
-        output_file.write(f"ROUGE precision: {roge_precision}\n")
-        output_file.write(f"ROUGE recall: {rogue_recall}\n")
-        output_file.write(f"ROUGE-2 score: {rogue_2}\n")
-        output_file.write(f"ROUGE-2 precision: {roge_precision_2}\n")
-        output_file.write(f"ROUGE-2 recall: {rogue_recall_2}\n")
-        output_file.write(f"ROUGE-L score: {rogue_l}\n")
-        output_file.write(f"ROUGE-L precision: {roge_precision_l}\n")
-        output_file.write(f"ROUGE-L recall: {rogue_recall_l}\n")
-        output_file.write(f"BLEU score: {bleu_score}\n")
-        if bert_score:
-            output_file.write(f"BERT score: {bert_score}\n")
+def get_eval_output_path() -> str:
+    """
+    Get the output path for the L1 evaluation job results.
+
+    Returns:
+        str: the output path
+    """
+    output_dir = os.path.join(os.path.normpath(
+        os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'eval_jobs')
+    return os.path.join(
+        output_dir, f'eval_results_{Logger().get_run_id()}.jsonl')
