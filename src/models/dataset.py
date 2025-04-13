@@ -59,7 +59,8 @@ class Dataset(ABC):
         self._dataset = None
         self._dataset_map = None
         self._prompt_dict = {
-            'qa_rel': QA_PROMPT_RELEVANT,
+            'qa_rel': (QA_PROMPT_RELEVANT if (args.model is not None) and
+                       args.model in ('o3-mini', 'gpt-4o-mini', 'gpt-4o-mini-batch') else QA_PROMPT_RELEVANT_EXPLICIT),
             'qa_all': QA_PROMPT_ALL,
         }
 
@@ -230,6 +231,58 @@ Q: "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborho
 Your answer should be: "No"
 
 Below are the passages.
+
+{context}
+'''
+
+QA_PROMPT_RELEVANT_EXPLICIT = '''You are a helpful Question Answering assistant. You will be presented with relevant \
+passages, followed by a question. Your task is to provide an EXACT answer, using only words found in the passages when \
+possible. Do not include any additional commentary, explanations, or reasoning in your response. The response should be concise and \
+limited to the answer only.
+
+Examples:
+
+Universal Pictures: Universal owned the rights to the \"Oswald the Lucky Rabbit\" character, although Walt Disney and \
+Ub Iwerks had created Oswald, and their films had enjoyed a successful theatrical run. After Charles Mintz had unsuccessfully \
+demanded that Disney accept a lower fee for producing the property, Mintz produced the films with his own group of animators. \
+Instead, Disney and Iwerks created Mickey Mouse who in 1928 starred in the first \"sync\" sound animated short, Steamboat Willie. \
+This moment effectively launched Walt Disney Studios' foothold, while Universal became a minor player in film animation. \
+Universal subsequently severed its link to Mintz and formed its own in-house animation studio to produce Oswald cartoons \
+headed by Walter Lantz.
+
+The Mickey Mouse Club: The Mickey Mouse Club is an American variety television show that aired intermittently from 1955 to \
+1996 and returned in 2017 to social media. Created by Walt Disney and produced by Walt Disney Productions, the program was \
+first televised in 1955 by ABC, featuring a regular but ever-changing cast of mostly teen performers. ABC broadcast reruns \
+weekday afternoons during the 1958 -- 1959 season, airing right after American Bandstand. The show was revived after its \
+initial 1955 -- 1959 run on ABC, first from 1977 -- 1979 for first-run syndication, again from 1989 -- 1996 as The All-New \
+Mickey Mouse Club (also known to fans as MMC from 1993 -- 1996) airing exclusively on cable television's The Disney Channel, \
+then rebooted in 2017 with the moniker Club Mickey Mouse airing exclusively on internet social media.
+
+Question:
+"What was the old show that was named after a character that Walt Disney created in 1928 called?"
+
+Answer:
+"The Mickey Mouse Club"
+
+---
+
+The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. It is named after the engineer Gustave Eiffel, \
+whose company designed and built the tower. Constructed from 1887 to 1889 as the entrance arch for the 1889 World's Fair, it was \
+initially criticized by some of France's leading artists and intellectuals for its design, but it has become a global cultural icon \
+of France and one of the most recognizable structures in the world.
+
+Question:
+"In what year was the Eiffel Tower completed?"
+
+Answer:
+"1889"
+
+---
+
+Your response should be formatted as a single line of text, containing only the answer to the question. \
+If the answer is not present in the passages, please respond with "N/A".
+
+Below are the relevant passages.
 
 {context}
 '''

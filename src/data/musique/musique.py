@@ -35,7 +35,7 @@ class MuSiQue(Dataset):
                         qa=filter_questions([QuestionAnswer(
                             docs=[Document(
                                 doc_id=get_content_hash(doc['paragraph_text']),
-                                content=doc['paragraph_text'])
+                                content=f'{doc["title"]}:{doc["paragraph_text"]}')
                                 for doc in sample['paragraphs'] if doc['is_supporting']],
                             question_id=sample['id'],
                             question=sample['question'],
@@ -66,7 +66,7 @@ class MuSiQue(Dataset):
             corpus = json.load(musique_corpus)
             # pylint: disable=duplicate-code
             corpus = [
-                Document(doc_id=get_content_hash(doc['text']), content=doc['text'])
+                Document(doc_id=get_content_hash(doc['text']), content=f'{doc["title"]}:{doc["text"]}')
                 for doc in corpus
             ]
             super()._log_dataset_stats(corpus)

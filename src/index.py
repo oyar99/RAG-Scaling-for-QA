@@ -41,7 +41,8 @@ Ignored if conversation id is provided (optional)')
                                                   'Qwen/Qwen2.5-1.5B-Instruct', 'google/gemma-3-12b-pt'],
                         help='model deployment identifier (required in predict mode)')
 
-    parser.add_argument('-a', '--agent', choices=['default', 'oracle', 'bm25', 'dense', 'colbertv2', 'hippo'],
+    parser.add_argument('-a', '--agent', choices=['default', 'oracle', 'bm25', 'dense',
+                                                  'colbertv2', 'colbertv2_rerank', 'hippo'],
                         default='default', help='agent to be used (required in predict mode)')
 
     parser.add_argument('-np', '--noop', action='store_true',

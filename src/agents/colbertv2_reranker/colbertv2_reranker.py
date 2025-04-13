@@ -87,6 +87,10 @@ class ColbertV2Reranker(Agent):
                 grouped_results[q_id] = []
             grouped_results[q_id].append((doc_id, score))
 
+        os.makedirs(os.path.join(colbert_dir, 'tmp'), exist_ok=True)
+        rerank_results_path = os.path.join(
+            colbert_dir, 'tmp/rerank_results.jsonl')
+
         batch = queue_batch_job([
             {
                 "custom_id": q_id,
@@ -113,9 +117,6 @@ class ColbertV2Reranker(Agent):
 
         Logger().info("Waiting for batch job to finish")
 
-        os.makedirs(os.path.join(colbert_dir, 'tmp'), exist_ok=True)
-        rerank_results_path = os.path.join(
-            colbert_dir, 'tmp/rerank_results.jsonl')
         wait_for_batch_job_and_save_result(batch, rerank_results_path)
 
         with open(rerank_results_path, 'r', encoding='utf-8') as file:
@@ -127,13 +128,31 @@ class ColbertV2Reranker(Agent):
 
                 try:
                     # Extract only the last line of the response content
-                    last_line = result['response']['choices'][0]['message']['content'].strip(
-                    ).split('\n')[-1]
-                    new_ranking = json.loads(last_line)
+                    last_line = next(
+                        (line for line in
+                         reversed(
+                             result['response']['body']['choices'][0]['message']['content'].strip().split('\n'))
+                         if line.startswith('[')), None)
+
+                    candidate_ranking = json.loads(last_line)
+
+                    # Validate candidate_ranking
+                    if (isinstance(candidate_ranking, list) and
+                            len(candidate_ranking) == 10 and
+                            sorted(candidate_ranking) == list(range(10))):
+                        new_ranking = candidate_ranking
+                        if candidate_ranking != list(range(10)):
+                            Logger().info(
+                                f"New ranking for question ID {q_id}: {new_ranking}")
+                    else:
+                        Logger().warn(
+                            f"Invalid ranking format for question ID {q_id}: {candidate_ranking}")
+                        Logger().info("Use the original ranking")
+                        new_ranking = list(range(10))
                 except json.JSONDecodeError:
                     Logger().warn(
                         f"Failed to decode JSON response for question ID {q_id}: \
-{result['response']['choices'][0]['message']['content']}")
+{result['response']['body']['choices'][0]['message']['content']}")
                     Logger().info("Use the original ranking")
                     new_ranking = list(range(10))
 
@@ -177,12 +196,12 @@ default_job_args = {
 RERANKER_PROMPT = '''You are tasked with re-ranking 10 documents based on their relevance to a given question.\
 The documents are initially ranked using the ColBERTV2 model.
 
-Your response should be a valid JSON array of numbers from 0 to 9, where:
+Your response should be a valid JSON array of numbers from 1 to 10, where:
 
 - Each number appears exactly once.\n
-- Each number corresponds to the index of a document in the original ranking.\n
+- Each number corresponds to the position of a document in the original ranking.\n
 - The position of each number in the array represents the new rank of the document.\n
-- The number at index 0 is the most relevant document, and the number at index 9 is the least relevant.\n
+- The number at the first position is the most relevant document, and the number at the last position is the least relevant.\n
 
 For example, given the following documents:
 
@@ -199,17 +218,18 @@ For example, given the following documents:
 
 and the question "What is the capital of France?", your response should be:
 
-[1, 6, 0, 7, 8, 2, 3, 4, 5, 9]
+[2, 7, 1, 8, 9, 3, 4, 5, 6, 10]
 
 Think step by step:
 
 1. Analyze the question to understand its intent.\n
-2. Evaluate the relevance of each document to the question.\n
+2. Evaluate the relevance of **each** document to the question.\n
 3. Re-rank the documents based on their relevance.\n
 
 Finally, the last line of your answer should be a valid JSON array of numbers.
+Do not include new lines or any other text after the JSON array.
 
-Here are the documents for re-ranking:
+Below are the documents for re-ranking.
 
 {documents}
 '''
