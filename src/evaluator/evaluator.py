@@ -138,7 +138,7 @@ def evaluator(args, dataset: Dataset) -> None:
 
             Logger().debug(f"Question found: {question['question']}")
 
-            content = (eval_item['response']['body']['choices'][0]['message']['content']
+            content = (eval_item['response']['body']['choices'][0]['message']['content'].strip()
                        if eval_item['response']['body']['choices'][0]['message'].get('content') else None)
 
             if content is None:

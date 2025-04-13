@@ -23,9 +23,9 @@ class OpenAIClient(metaclass=Singleton):
             ValueError: if any of the required environment variables are not set
         """
         if self._client is None:
-            llm_endpoint = os.getenv("LLM_ENDPOINT", "http://localhost:8000/v1")
+            llm_endpoint = os.getenv("LLM_ENDPOINT", None)
 
-            if len(llm_endpoint) > 0:
+            if llm_endpoint is not None:
                 self._client = OpenAI(
                     base_url=llm_endpoint,
                     api_key='PLACEHOLDER',
