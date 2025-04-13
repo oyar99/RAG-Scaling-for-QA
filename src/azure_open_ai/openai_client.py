@@ -1,6 +1,7 @@
 """A module to create a singleton instance of the Azure OpenAI client."""
 import os
 from openai import AzureOpenAI
+from openai import OpenAI
 
 from utils.singleton import Singleton
 
@@ -17,21 +18,29 @@ class OpenAIClient(metaclass=Singleton):
     def initialize_client(self):
         """
         Initializes the Azure OpenAI client if it is not already initialized.
-        
+
         Raises:
             ValueError: if any of the required environment variables are not set
         """
         if self._client is None:
-            azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
-            api_key = os.getenv("AZURE_OPENAI_API_KEY")
-            api_version = os.getenv(
-                "AZURE_OPENAI_API_VERSION") or "2024-12-01-preview"
+            llm_endpoint = os.getenv("LLM_ENDPOINT", "http://localhost:8000/v1")
 
-            self._client = AzureOpenAI(
-                azure_endpoint=azure_endpoint,
-                api_key=api_key,
-                api_version=api_version
-            )
+            if len(llm_endpoint) > 0:
+                self._client = OpenAI(
+                    base_url=llm_endpoint,
+                    api_key='PLACEHOLDER',
+                )
+            else:
+                azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+                api_key = os.getenv("AZURE_OPENAI_API_KEY")
+                api_version = os.getenv(
+                    "AZURE_OPENAI_API_VERSION") or "2024-12-01-preview"
+
+                self._client = AzureOpenAI(
+                    azure_endpoint=azure_endpoint,
+                    api_key=api_key,
+                    api_version=api_version
+                )
 
     def get_client(self):
         """

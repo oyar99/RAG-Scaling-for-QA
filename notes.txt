@@ -1,0 +1,3 @@
+mistralai/Mistral-Nemo-Instruct-2407 - EM: 27 F1: 53 - 10min
+Qwen/Qwen2.5-14B-Instruct - EM: 33 F1: 62 - 10min
+Qwen/Qwen2.5-1.5B-Instruct

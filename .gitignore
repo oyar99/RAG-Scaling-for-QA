@@ -179,3 +179,7 @@ src/data/twowikimultihopqa/corpus.json
 src/data/musique/musique_dev.json
 src/data/musique/musique_corpus.json
 src/data/musique/data/
+
+# Ignore vllm files and environment
+env-llm/
+vllm/

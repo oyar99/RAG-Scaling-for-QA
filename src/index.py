@@ -36,7 +36,9 @@ def parse_args() -> dict[str, Any]:
 Ignored if conversation id is provided (optional)')
 
     # Predict mode arguments
-    parser.add_argument('-m', '--model', choices=['gpt-4o-mini', 'o3-mini', 'gpt-4o-mini-batch'],
+    parser.add_argument('-m', '--model', choices=['gpt-4o-mini', 'o3-mini', 'gpt-4o-mini-batch',
+                                                  'mistralai/Mistral-Nemo-Instruct-2407', 'Qwen/Qwen2.5-14B-Instruct',
+                                                  'Qwen/Qwen2.5-1.5B-Instruct', 'google/gemma-3-27b-pt'],
                         help='model deployment identifier (required in predict mode)')
 
     parser.add_argument('-a', '--agent', choices=['default', 'oracle', 'bm25', 'dense', 'colbertv2', 'hippo'],

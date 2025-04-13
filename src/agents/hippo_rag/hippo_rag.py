@@ -53,7 +53,7 @@ class HippoRAG(Agent):
 
         hipporag = HippoRAGModel(
             save_dir=hipporag_dir,
-            llm_model_name='Qwen/Qwen2.5-1.5B-Instruct',
+            llm_model_name='mistralai/Mistral-Nemo-Instruct-2407',
             embedding_model_name=embedding_model,
             llm_base_url='http://localhost:8000/v1',
         )

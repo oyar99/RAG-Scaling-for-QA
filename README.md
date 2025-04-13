@@ -66,14 +66,18 @@ pip install https://github.com/kyamagu/faiss-wheels/releases/download/v1.7.3/fai
 
 ## Closed-Source Models
 
-The script supports any **closed-source models** that allow **batch deployments** via the Azure Open AI API
+The script supports any **closed-source models** that allow **batch deployments** via the Azure Open AI API and **open-source models** that are available via VLLM.
 
 Supported Models
 
-| Model Name      | Context Length   | Max Outputh Length |
-|-----------------|------------------|--------------------|
-| o3-mini         | 200,000 tokens   | 100,000 tokens     |
-| GPT-4o-mini     | 128,000 tokens   | 16,384 tokens      |
+| Model Name                  | Context Length   | Max Outputh Length |
+|-----------------------------|------------------|--------------------|
+| o3-mini                     | 200,000 tokens   | 100,000 tokens     |
+| GPT-4o-mini                 | 128,000 tokens   | 16,384 tokens      |
+| Mistral-Nemo-Instruct-2407  | 128,000 tokens   |                    |
+| Qwen2.5-14B-Instruct        | 131,072 tokens   | 8,192 tokens       |
+| Qwen2.5-1.5B-Instruct       | 32,768 tokens    | 8,192 tokens       |
+| Gemma 3-27B                 | 128,000 tokens   | 8,192 tokens       |
 
 ## How to run
 

@@ -148,6 +148,10 @@ def get_max_output_tokens(model: str) -> int:
         'gpt-4o-mini': 128_000 * 0.1,
         'gpt-4o-mini-batch': 128_000 * 0.1,
         'o3-mini': 200_000 * 0.1,
+        'mistralai/Mistral-Nemo-Instruct-2407': 128_000 * 0.1,
+        'Qwen/Qwen2.5-14B-Instruct': 128_000 * 0.1,
+        'Qwen/Qwen2.5-1.5B-Instruct': 32_000 * 0.1,
+        'google/gemma-3-27b-pt': 128_000 * 0.1,
     }
 
     return max_tokens_map.get(model, 0)
@@ -185,6 +189,10 @@ def estimate_cost(num_tokens: int, model: str) -> float:
         'gpt-4o-mini': 0.075,
         'gpt-4o-mini-batch': 0.075,
         'o3-mini': 0.55,
+        'mistralai/Mistral-Nemo-Instruct-2407': 0.01,
+        'Qwen/Qwen2.5-14B-Instruct': 0.01,
+        'Qwen/Qwen2.5-1.5B-Instruct': 0.01,
+        'google/gemma-3-27b-pt': 0.01,
     }
 
     if model not in cost_per_million_tokens:

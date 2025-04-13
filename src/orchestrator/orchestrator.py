@@ -3,6 +3,7 @@
 from typing import Type
 from agents.bm25.bm25 import BM25
 from agents.colbertv2.colbertv2 import ColbertV2
+from agents.colbertv2_reranker.colbertv2_reranker import ColbertV2Reranker
 from agents.default.default import Default
 from agents.dense.dense import Dense
 from agents.hippo_rag.hippo_rag import HippoRAG
@@ -44,6 +45,7 @@ class Orchestrator:
             'bm25': BM25,
             'dense': Dense,
             'colbertv2': ColbertV2,
+            'colbertv2_rerank': ColbertV2Reranker,
             'hippo': HippoRAG,
         }
 

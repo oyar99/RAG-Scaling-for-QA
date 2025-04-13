@@ -4,10 +4,11 @@ import os
 from typing import Optional
 from openai.types import Batch
 from azure_open_ai.batch import queue_batch_job, wait_for_batch_job_and_save_result
+from azure_open_ai.chat_completions import chat_completions
 from logger.logger import Logger
 from models.agent import Agent
 from models.dataset import Dataset
-from utils.model_utils import supports_temperature_param
+from utils.model_utils import supports_batch, supports_temperature_param
 from utils.token_utils import estimate_cost, estimate_num_tokens, get_max_output_tokens, truncate_content
 
 
@@ -100,8 +101,8 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
         prompts[result_json['custom_id']] = prompt
 
     guard_job(results, args.model, args.noop)
-    # Batch here means that each question is sent separately, but in a single batch request
-    return queue_batch_job([
+
+    open_ai_requests = [
         {
             "custom_id": question["question_id"],
             "method": "POST",
@@ -110,7 +111,7 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
                 "model": args.model,
                 "messages": [
                     {"role": "system",
-                        "content": prompts[question["question_id"]]},
+                     "content": prompts[question["question_id"]]},
                     {"role": "user", "content": question["question"]}
                 ],
                 "temperature": default_job_args['temperature'] if supports_temperature_param(args.model) else None,
@@ -119,9 +120,40 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
                 "max_completion_tokens": int(get_max_output_tokens(args.model))
             },
         }
-        for _, question_set in questions.items()
-        for question in question_set
-    ])
+        for question in all_questions
+    ]
+
+    if not supports_batch(args.model):
+        results = chat_completions([
+            {
+            "custom_id": open_ai_request['custom_id'],
+            **open_ai_request['body']
+            }
+            for open_ai_request in open_ai_requests
+        ])
+
+        with open(get_qa_output_path(), 'w', encoding='utf-8') as f:
+            for result, custom_id in results:
+                r = json.dumps({
+                    "custom_id": custom_id,
+                    "response": {
+                        "body": {
+                            "choices": [
+                                {
+                                    "message": {
+                                        "role": "assistant",
+                                        "content": result.choices[0].message.content
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                })
+                f.write(r + '\n')
+
+        return None
+    # Batch here means that each question is sent separately, but in a single batch request
+    return queue_batch_job(open_ai_requests)
 
 
 def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
@@ -282,7 +314,7 @@ def guard_job(results: list[tuple[dict, str]], model: str, stop: bool) -> None:
             "Estimated cost exceeds $0.4. \
 Please review the questions and ensure they are not too verbose.")
 
-    if cost > 10.0:
+    if cost > 1.0:
         Logger().error(
             "Cost likely exceeds $1.0. Stopping execution ..."
         )

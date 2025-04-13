@@ -15,7 +15,6 @@ def queue_batch_job(
 ) -> Optional[Batch]:
     """
     Queues a batch job using Azure OpenAI.
-
     Args:
         jobs (list[dict]): list of dictionaries containing job information
 
@@ -27,7 +26,7 @@ def queue_batch_job(
     """
     if not isinstance(jobs, list) or len(jobs) <= 0:
         raise ValueError(
-            "jobs must be a non-empty list of dictionaries.")
+            "jobs must be a non-empty list of dictionaries.") 
 
     jobs_jsonl = "\n".join(json.dumps(job) for job in jobs)
     jsonl_encoded = jobs_jsonl.encode("utf-8")
