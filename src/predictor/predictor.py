@@ -114,6 +114,7 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
                      "content": prompts[question["question_id"]]},
                     {"role": "user", "content": question["question"]}
                 ],
+                "stop": ["\n"],
                 "temperature": default_job_args['temperature'] if supports_temperature_param(args.model) else None,
                 "frequency_penalty": default_job_args['frequency_penalty'],
                 "presence_penalty": default_job_args['presence_penalty'],

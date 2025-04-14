@@ -237,10 +237,12 @@ Below are the passages.
 
 QA_PROMPT_RELEVANT_EXPLICIT = '''You are a helpful Question Answering assistant. You will be presented with relevant \
 passages, followed by a question. Your task is to provide an EXACT answer, using only words found in the passages when \
-possible. Do not include any additional commentary, explanations, or reasoning in your response. The response should be concise and \
-limited to the answer only.
+possible. UNDER NO CIRCUMSTANCES should you include any additional commentary, explanations, reasoning, or notes in \
+your response. Your response MUST be concise and to the point.
 
-Examples:
+Below is an example of given passages, a question, and the expected answer.
+
+Passages:
 
 Universal Pictures: Universal owned the rights to the \"Oswald the Lucky Rabbit\" character, although Walt Disney and \
 Ub Iwerks had created Oswald, and their films had enjoyed a successful theatrical run. After Charles Mintz had unsuccessfully \
@@ -264,27 +266,21 @@ Question:
 Answer:
 "The Mickey Mouse Club"
 
----
+Your response MUST be formatted as a single line of text, containing ONLY the answer to the question. \
+If the answer is not present or cannot be inferred with the information found in the passages, you MUST then respond with "N/A". 
 
-The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. It is named after the engineer Gustave Eiffel, \
-whose company designed and built the tower. Constructed from 1887 to 1889 as the entrance arch for the 1889 World's Fair, it was \
-initially criticized by some of France's leading artists and intellectuals for its design, but it has become a global cultural icon \
-of France and one of the most recognizable structures in the world.
-
-Question:
-"In what year was the Eiffel Tower completed?"
-
-Answer:
-"1889"
-
----
-
-Your response should be formatted as a single line of text, containing only the answer to the question. \
-If the answer is not present in the passages, please respond with "N/A".
+DO NOT include any additional commentary, explanations, or reasoning in your response. For example, \
+refrain from including notes like "(Note: Based on the information provided, the answer is...)"
 
 Below are the relevant passages.
 
+Passages:
+
 {context}
+
+-----
+
+Remember to provide the answer in a single line, without any additional commentary, explanations, or extraneous text.
 '''
 
 QA_PROMPT_ALL = '''You are a helpful Question Answering assistant. You will be presented with all the passages \

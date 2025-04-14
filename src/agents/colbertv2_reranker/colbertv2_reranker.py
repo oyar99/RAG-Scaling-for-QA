@@ -76,8 +76,6 @@ class ColbertV2Reranker(Agent):
 
         results = searcher.search_all(queries=dict(enumerate(questions)), k=10)
 
-        notebooks = []
-
         grouped_results = {}
 
         Logger().info("Processing results")
@@ -119,6 +117,8 @@ class ColbertV2Reranker(Agent):
 
         wait_for_batch_job_and_save_result(batch, rerank_results_path)
 
+        notebooks_dict = {}
+
         with open(rerank_results_path, 'r', encoding='utf-8') as file:
             for line in file:
                 result = json.loads(line)
@@ -134,29 +134,29 @@ class ColbertV2Reranker(Agent):
                              result['response']['body']['choices'][0]['message']['content'].strip().split('\n'))
                          if line.startswith('[')), None)
 
-                    candidate_ranking = json.loads(last_line)
+                    candidate_ranking = json.loads(last_line) if last_line else None
 
                     # Validate candidate_ranking
                     if (isinstance(candidate_ranking, list) and
                             len(candidate_ranking) == 10 and
-                            sorted(candidate_ranking) == list(range(10))):
+                            sorted(candidate_ranking) == list(range(1, 11))):
                         new_ranking = candidate_ranking
-                        if candidate_ranking != list(range(10)):
+                        if candidate_ranking != list(range(1, 11)):
                             Logger().info(
                                 f"New ranking for question ID {q_id}: {new_ranking}")
                     else:
                         Logger().warn(
                             f"Invalid ranking format for question ID {q_id}: {candidate_ranking}")
                         Logger().info("Use the original ranking")
-                        new_ranking = list(range(10))
+                        new_ranking = list(range(1, 11))
                 except json.JSONDecodeError:
                     Logger().warn(
                         f"Failed to decode JSON response for question ID {q_id}: \
 {result['response']['body']['choices'][0]['message']['content']}")
                     Logger().info("Use the original ranking")
-                    new_ranking = list(range(10))
+                    new_ranking = list(range(1, 11))
 
-                ranked_docs = [grouped_results[q_id][rank]
+                ranked_docs = [grouped_results[q_id][rank-1]
                                for rank in new_ranking]
 
                 retrieved_results = [
@@ -168,7 +168,6 @@ class ColbertV2Reranker(Agent):
                     for doc_id, score in ranked_docs[:5]
                 ]
 
-                # pylint: disable=duplicate-code
                 notebook = NoteBook()
                 notebook.update_sources(retrieved_results)
 
@@ -179,10 +178,9 @@ class ColbertV2Reranker(Agent):
                 )
 
                 notebook.update_notes(notes)
-                notebooks.append(notebook)
-                # pylint: enable=duplicate-code
+                notebooks_dict[int(q_id)] = notebook
 
-        return notebooks
+        return [notebooks_dict[key] for key in sorted(notebooks_dict.keys())]
 
 
 default_job_args = {
@@ -220,14 +218,9 @@ and the question "What is the capital of France?", your response should be:
 
 [2, 7, 1, 8, 9, 3, 4, 5, 6, 10]
 
-Think step by step:
+Let us think step by step.
 
-1. Analyze the question to understand its intent.\n
-2. Evaluate the relevance of **each** document to the question.\n
-3. Re-rank the documents based on their relevance.\n
-
-Finally, the last line of your answer should be a valid JSON array of numbers.
-Do not include new lines or any other text after the JSON array.
+Finally, the last line of your response should be a valid JSON array of numbers.
 
 Below are the documents for re-ranking.
 

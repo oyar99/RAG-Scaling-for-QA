@@ -27,7 +27,8 @@ def chat_completions(
             temperature=job["temperature"],
             frequency_penalty=job["frequency_penalty"],
             presence_penalty=job["presence_penalty"],
-            max_tokens=job["max_completion_tokens"]
+            max_tokens=job["max_completion_tokens"],
+            stop=job["stop"],
         )
 
         Logger().debug(
