@@ -115,7 +115,7 @@ class ColbertV2Reranker(Agent):
             }
             for q_id, docs in grouped_results.items()
         ])
-        
+
         # pylint: enable=duplicate-code
 
         Logger().info("Waiting for batch job to finish")
@@ -139,7 +139,8 @@ class ColbertV2Reranker(Agent):
                              result['response']['body']['choices'][0]['message']['content'].strip().split('\n'))
                          if line.startswith('[')), None)
 
-                    candidate_ranking = json.loads(last_line) if last_line else None
+                    candidate_ranking = json.loads(
+                        last_line) if last_line else None
 
                     # Validate candidate_ranking
                     if (isinstance(candidate_ranking, list) and
