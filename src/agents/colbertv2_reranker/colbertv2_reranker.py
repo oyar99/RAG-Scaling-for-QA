@@ -43,10 +43,10 @@ class ColbertV2Reranker(Agent):
         Reason over the indexed dataset to answer the question.
         """
         Logger().error(
-            "ColBERTV2 agent does not support single question reasoning. Use multiprocessing_reason instead."
+            "ColBERTV2 Reranker agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
         raise NotImplementedError(
-            "ColBERTV2 agent does not support single question reasoning. Use multiprocessing_reason instead."
+            "ColBERTV2 Reranker agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
 
     def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
@@ -54,11 +54,12 @@ class ColbertV2Reranker(Agent):
         Uses its question index to answer the questions.
 
         Raises:
-            NotImplementedError: Batch reasoning is not implemented for the colbertv2 agent.
+            NotImplementedError: Batch reasoning is not implemented for the colbertv2 Reranker agent.
         """
         raise NotImplementedError(
-            "Batch reasoning is not implemented for the colbertv2 agent.")
+            "Batch reasoning is not implemented for the colbertv2 Reranker agent.")
 
+    # pylint: disable-next=too-many-locals
     def multiprocessing_reason(self, questions: list[str]) -> list[NoteBook]:
         """
         Multiprocessing reason over the indexed dataset to answer the questions.
