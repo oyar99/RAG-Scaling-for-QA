@@ -67,6 +67,7 @@ class ColbertV2Reranker(Agent):
         Args:
             questions (list[str]): List of questions to answer.
         """
+        # pylint: disable=duplicate-code
         colbert_dir = os.path.join(os.path.normpath(
             os.getcwd() + os.sep + os.pardir), 'temp' + os.sep + 'colbert')
 
@@ -114,6 +115,8 @@ class ColbertV2Reranker(Agent):
             }
             for q_id, docs in grouped_results.items()
         ])
+        
+        # pylint: enable=duplicate-code
 
         Logger().info("Waiting for batch job to finish")
 

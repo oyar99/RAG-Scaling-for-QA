@@ -75,7 +75,7 @@ class Default(Agent):
 
         # Batches questions in groups of 5 that share the same context and
         # ensures all supporting docs are included for all 5 questions
-        batch_size = 5
+        batch_size = 8
 
         with Pool(processes=cpu_count()) as pool:
             question_batches = pool.starmap(
