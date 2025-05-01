@@ -3,6 +3,7 @@ import os
 from openai import AzureOpenAI
 from openai import OpenAI
 
+from logger.logger import Logger
 from utils.singleton import Singleton
 
 
@@ -24,8 +25,12 @@ class OpenAIClient(metaclass=Singleton):
         """
         if self._client is None:
             llm_endpoint = os.getenv("LLM_ENDPOINT", None)
+            force_remote_llm = os.getenv("REMOTE_LLM", None)
 
-            if llm_endpoint is not None:
+            if (llm_endpoint is not None and len(llm_endpoint) > 0) and (force_remote_llm != "1"):
+                Logger().info(
+                    f"Using custom LLM endpoint: {llm_endpoint}, force_remote: {force_remote_llm}"
+                )
                 self._client = OpenAI(
                     base_url=llm_endpoint,
                     api_key='PLACEHOLDER',

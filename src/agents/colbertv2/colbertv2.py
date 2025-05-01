@@ -5,6 +5,7 @@ from colbert import Indexer, Searcher
 from logger.logger import Logger
 from models.agent import Agent, NoteBook
 from models.dataset import Dataset
+from models.question_answer import QuestionAnswer
 from models.retrieved_result import RetrievedResult
 
 
@@ -58,7 +59,7 @@ class ColbertV2(Agent):
             "ColBERTV2 agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
 
-    def batch_reason(self, _: list[str]) -> NoteBook:
+    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
         """
         Uses its question index to answer the questions.
 

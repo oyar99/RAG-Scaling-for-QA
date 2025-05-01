@@ -5,6 +5,7 @@ from logger.logger import Logger
 from models.agent import Agent, NoteBook
 from models.dataset import Dataset
 from models.document import Document
+from models.question_answer import QuestionAnswer
 from models.retrieved_result import RetrievedResult
 from utils.tokenizer import PreprocessingMethod, tokenize
 
@@ -57,7 +58,7 @@ class BM25(Agent):
 
         Logger().info("Successfully indexed documents")
 
-    def batch_reason(self, _: list[str]) -> NoteBook:
+    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
         """
         Uses its question index to answer the questions.
 

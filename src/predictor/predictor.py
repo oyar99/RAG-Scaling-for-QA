@@ -9,7 +9,7 @@ from logger.logger import Logger
 from models.agent import Agent
 from models.dataset import Dataset
 from utils.model_utils import supports_batch, supports_temperature_param
-from utils.token_utils import estimate_cost, estimate_num_tokens, get_max_output_tokens, truncate_content
+from utils.token_utils import estimate_cost, estimate_num_tokens, get_max_output_tokens
 
 
 def predictor(args, dataset: Dataset, agent: Agent) -> None:
@@ -49,7 +49,7 @@ Please provide the model deployment identifier using the -m flag.""")
 
         wait_for_batch_job_and_save_result(batch, get_qa_output_path())
 
-
+# pylint: disable-next=too-many-locals
 def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
     """
     Generates predictions for the given dataset using the specified agent.
@@ -127,8 +127,8 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
     if not supports_batch(args.model):
         results = chat_completions([
             {
-            "custom_id": open_ai_request['custom_id'],
-            **open_ai_request['body']
+                "custom_id": open_ai_request['custom_id'],
+                **open_ai_request['body']
             }
             for open_ai_request in open_ai_requests
         ])
@@ -163,52 +163,26 @@ def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[B
     """
     questions = dataset.get_questions()
 
-    notebook = agent.batch_reason([q['question']
+    notebooks = agent.batch_reason([q
                                    for _, question_set in questions.items()
                                    for q in question_set])
 
-    questions_list = [f'Q ({question["question_id"]}): {question["question"]}'
-                      for _, question_set in questions.items()
-                      for question in question_set]
-
-    questions_objs = [question for _, question_set in questions.items()
-                      for question in question_set]
-
-    batch_size = 5
-
-    question_batches = [
-        {
-            'content': '\n'.join(questions_list[i:i + batch_size]).strip(),
-            'context': truncate_content(
-                content=notebook.get_notes(),
-                must_have_texts=[doc['content']
-                                 for question in questions_objs[i:i + batch_size]
-                                 for doc in question['docs']],
-                context_starts_idx=notebook.get_actual_context_idx(),
-                model=args.model)
-        }
-        for i in range(0, len(questions_list), batch_size)
-    ]
-
     results = [({
         'custom_id': f'{Logger().get_run_id()}-{i}',
-        'question': question_batch['content'],
+        'question': notebook.get_questions(),
         'result': notebook.get_sources()
-    }, question_batch['context']) for i, question_batch in enumerate(question_batches)]
+    }, notebook.get_notes()) for i, notebook in enumerate(notebooks)]
 
-    guard_job(results, args.model, args.noop)
-
-    return queue_batch_job([
-        {
-            "custom_id": f'{Logger().get_run_id()}-{i}',
+    jobs = [{
+            "custom_id": result['custom_id'],
             "method": "POST",
             "url": "/chat/completions",
             "body": {
                 "model": args.model,
                 "messages": [
                     {"role": "system",
-                        "content": question_batch['context']},
-                    {"role": "user", "content": question_batch['content']}
+                        "content": context},
+                    {"role": "user", "content": result['question']}
                 ],
                 "temperature": default_job_args['temperature'] if supports_temperature_param(args.model) else None,
                 "frequency_penalty": default_job_args['frequency_penalty'],
@@ -241,9 +215,12 @@ def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[B
                     }
                 }
             },
-        }
-        for i, question_batch in enumerate(question_batches)
-    ])
+            }
+            for (result, context) in results]
+
+    guard_job(results, args.model, args.noop)
+
+    return queue_batch_job(jobs)
 
 
 def get_qa_output_path() -> str:

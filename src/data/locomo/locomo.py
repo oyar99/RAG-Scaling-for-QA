@@ -84,7 +84,7 @@ class Locomo(Dataset):
                     sample=DatasetSampleInstance(
                         qa=filter_questions([QuestionAnswer(
                             docs=[Document(
-                                doc_id=ev,
+                                doc_id=f'{ev}:{cs["sample_id"]}',
                                 folder_id=cs['sample_id'],
                                 content=format_content(
                                     date=cs['conversation'][f'{session_id(ev)}_date_time'],
@@ -134,7 +134,7 @@ class Locomo(Dataset):
 
             corpus = [
                 Document(
-                    doc_id=str(message['dia_id']),
+                    doc_id=f'{str(message["dia_id"])}:{conversation_sample["sample_id"]}',
                     folder_id=conversation_sample['sample_id'],
                     content=format_content(
                         date=conversation_sample['conversation'][f'{key}_date_time'],

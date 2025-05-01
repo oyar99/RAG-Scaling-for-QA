@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from multiprocessing import Pool, cpu_count
 from models.dataset import Dataset
+from models.question_answer import QuestionAnswer
 from models.retrieved_result import RetrievedResult
 
 
@@ -14,7 +15,7 @@ class NoteBook:
     def __init__(self):
         self._sources = []
         self._notes = None
-        self._actual_context_idx = None
+        self._questions = None
 
     def update_notes(self, notes: str) -> None:
         """
@@ -25,15 +26,6 @@ class NoteBook:
         """
         self._notes = notes
 
-    def update_actual_context_idx(self, idx: int) -> None:
-        """
-        Updates the notebook with the given index.
-
-        Args:
-            idx (int): the index to be added to the notebook
-        """
-        self._actual_context_idx = idx
-
     def get_notes(self) -> str:
         """
         Gets the notes from the notebook.
@@ -42,15 +34,6 @@ class NoteBook:
             str: the notes in the notebook
         """
         return self._notes
-
-    def get_actual_context_idx(self) -> int:
-        """
-        Gets the index from the notebook.
-
-        Returns:
-            int: the index in the notebook
-        """
-        return self._actual_context_idx
 
     def update_sources(self, sources: list[RetrievedResult]) -> None:
         """
@@ -69,6 +52,24 @@ class NoteBook:
             list[RetrievedResult]: the sources in the notebook
         """
         return self._sources
+
+    def update_questions(self, questions: list[str]) -> None:
+        """
+        Updates the notebook with the given questions.
+
+        Args:
+            questions (list[str]): the questions to be added to the notebook
+        """
+        self._questions = questions
+
+    def get_questions(self) -> list[str]:
+        """
+        Gets the questions from the notebook.
+
+        Returns:
+            list[str]: the questions in the notebook
+        """
+        return self._questions
 
 
 class Agent(ABC):
@@ -123,7 +124,7 @@ class Agent(ABC):
         """
 
     @abstractmethod
-    def batch_reason(self, questions: list[str]) -> NoteBook:
+    def batch_reason(self, questions: list[QuestionAnswer]) -> list[NoteBook]:
         """
         Given a list of questions, reasons about them using its index (memory) and returns a
         detailed notebook (str) with its findings to generate a correct response.
@@ -135,7 +136,7 @@ class Agent(ABC):
         Args:
             questions (list[QuestionAnswer]): the given questions
         Returns:
-            notebook (Notebook): the detailed findings to help answer all questions (context)
+            notebooks (list[NoteBook]): the detailed findings to help answer all questions (context)
         """
 
     def multiprocessing_reason(self, questions: list[str]) -> list[NoteBook]:

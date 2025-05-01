@@ -8,6 +8,7 @@ from azure_open_ai.batch import queue_batch_job, wait_for_batch_job_and_save_res
 from logger.logger import Logger
 from models.agent import Agent, NoteBook
 from models.dataset import Dataset
+from models.question_answer import QuestionAnswer
 from models.retrieved_result import RetrievedResult
 from utils.model_utils import supports_temperature_param
 from utils.token_utils import get_max_output_tokens
@@ -48,7 +49,7 @@ class ColbertV2Reranker(Agent):
             "ColBERTV2 agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
 
-    def batch_reason(self, _: list[str]) -> NoteBook:
+    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
         """
         Uses its question index to answer the questions.
 

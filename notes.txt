@@ -3,4 +3,4 @@ Qwen/Qwen2.5-14B-Instruct - EM: 33 F1: 62 - 10min
 Qwen/Qwen2.5-1.5B-Instruct - EM: 21 F1: 44 - 5min
 
 
-vllm serve google/gemma-3-27b-pt --tensor-parallel-size 2 --dtype float16 --gpu-memory-utilization 0.95 --max-model-len 32000 --max-num-seqs 128 --enforce-eager
+vllm serve Qwen/Qwen2.5-14B-Instruct --tensor-parallel-size 2 --dtype float16 --gpu-memory-utilization 0.95 --max-model-len 32000 --max-num-seqs 128 --enforce-eager
