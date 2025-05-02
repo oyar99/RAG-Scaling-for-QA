@@ -34,22 +34,29 @@ Please provide the model deployment identifier using the -m flag.""")
     _ = dataset.read()
     agent.index(dataset)
 
-    batch: Optional[Batch] = None
+    batches: Optional[list[Batch]] = None
 
     if agent.support_batch:
         # Batch here means that questions are batched together in a single request and
         # batches are sent in a batch request
-        batch = batch_question_answering(dataset, agent, args)
+        batches = batch_question_answering(dataset, agent, args)
     else:
-        batch = question_answering(dataset, agent, args)
+        batch = question_answering(
+            dataset, agent, args)
 
-    if batch is not None:
-        Logger().info(
-            f"Batch job queued with ID: {batch.id} and status: {batch.status}")
+        if batch is not None:
+            batches = [batch]
 
-        wait_for_batch_job_and_save_result(batch, get_qa_output_path())
+    if batches is not None:
+        for i, batch in enumerate(batches):
+            Logger().info(
+                f"Batch job queued with ID: {batch.id} and status: {batch.status}")
+
+            wait_for_batch_job_and_save_result(batch, get_qa_output_path(i))
 
 # pylint: disable-next=too-many-locals
+
+
 def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
     """
     Generates predictions for the given dataset using the specified agent.
@@ -157,7 +164,7 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
     return queue_batch_job(open_ai_requests)
 
 
-def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
+def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[list[Batch]]:
     """
     Generates predictions for the given dataset using the specified agent.
     """
@@ -220,10 +227,39 @@ def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[B
 
     guard_job(results, args.model, args.noop)
 
-    return queue_batch_job(jobs)
+    Logger().info(
+        f"Total number of jobs: {len(jobs)}.")
+
+    # Estimate the size of each job in MBs
+    job_sizes = []
+    for job in jobs:
+        job_size = len(json.dumps(job).encode('utf-8')) / \
+            (1024 * 1024)  # Convert bytes to MB
+        job_sizes.append(job_size)
+
+    # Split jobs into smaller batches if total size exceeds 195MB since a batch job maximum size is 200MB
+    batched_jobs = []
+    current_batch = []
+    current_batch_size = 0
+
+    for job, job_size in zip(jobs, job_sizes):
+        if current_batch_size + job_size > 195:
+            batched_jobs.append(current_batch)
+            current_batch = []
+            current_batch_size = 0
+        current_batch.append(job)
+        current_batch_size += job_size
+
+    if len(current_batch) > 0:
+        batched_jobs.append(current_batch)
+
+    Logger().info(
+        f"Total number of batches: {len(batched_jobs)}.")
+
+    return [queue_batch_job(batch) for batch in batched_jobs]
 
 
-def get_qa_output_path() -> str:
+def get_qa_output_path(postfix: Optional[str] = None) -> str:
     """
     Get the output path for the batch job results.
 
@@ -232,8 +268,10 @@ def get_qa_output_path() -> str:
     """
     output_dir = os.path.join(os.path.normpath(
         os.getcwd() + os.sep + os.pardir), 'output' + os.sep + 'qa_jobs')
+    name = (f'qa_results_{Logger().get_run_id()}.jsonl'
+            if postfix is None else f'qa_results_{Logger().get_run_id()}_{postfix}.jsonl')
     return os.path.join(
-        output_dir, f'qa_results_{Logger().get_run_id()}.jsonl')
+        output_dir, name)
 
 
 def get_retrieval_output_path() -> str:

@@ -176,9 +176,59 @@ def get_context_docs(
         encoded_content = encoding.encode(content)
 
         if len(encoded_content) > max_tokens:
-            content = encoding.decode(encoded_content[:max_tokens])
+            return search_optimal_removal(
+                flattened_docs, start, end, must_have_docs, max_tokens, encoding)
 
     return flattened_docs[start:end]
+
+# pylint: disable-next=too-many-locals,too-many-arguments,too-many-positional-arguments
+def search_optimal_removal(
+    docs: list[Document],
+    start: int, end: int,
+    must_have_docs: list[str], max_tokens: int,
+    encoding: tiktoken.Encoding
+) -> list[Document]:
+    """
+    Find the optimal documents to remove from the list of documents to ensure that the remaining documents
+    fit within the max_tokens limit while still containing all must_have_docs.
+    """
+    target_slice = docs[start:end]
+
+    # Indices relative to target_slice
+    removable_indices = [
+        i for i, doc in enumerate(target_slice)
+        if doc['doc_id'] not in must_have_docs
+    ]
+
+    # Binary search to find the minimal number of docs to remove
+    left, right = 0, len(removable_indices)
+    best_indices_to_remove = set(removable_indices)
+
+    while left <= right:
+        mid = (left + right) // 2
+        indices_to_remove = set(removable_indices[:mid])
+
+        # Create updated docs excluding indices_to_remove
+        updated_docs = [
+            doc for i, doc in enumerate(target_slice)
+            if i not in indices_to_remove
+        ]
+
+        # Check if the updated content satisfies the token limit
+        updated_content = get_content(updated_docs)
+        encoded_updated_content = encoding.encode(updated_content)
+
+        if len(encoded_updated_content) <= max_tokens:
+            best_indices_to_remove = indices_to_remove
+            right = mid - 1
+        else:
+            left = mid + 1
+
+    # Construct the new docs with only the pruned slice changed
+    return [
+        doc for i, doc in enumerate(target_slice)
+        if i not in best_indices_to_remove
+    ]
 
 # pylint: disable-next=too-many-locals
 def search_best_interval(
