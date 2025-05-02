@@ -235,13 +235,13 @@ def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[l
             (1024 * 1024)  # Convert bytes to MB
         job_sizes.append(job_size)
 
-    # Split jobs into smaller batches if total size exceeds 195MB since a batch job maximum size is 200MB
+    # Split jobs into smaller batches if total size exceeds 190MB since a batch job maximum size is 200MB
     batched_jobs = []
     current_batch = []
     current_batch_size = 0
 
     for job, job_size in zip(jobs, job_sizes):
-        if current_batch_size + job_size > 195:
+        if current_batch_size + job_size > 190:
             batched_jobs.append(current_batch)
             current_batch = []
             current_batch_size = 0

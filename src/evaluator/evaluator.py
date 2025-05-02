@@ -76,8 +76,14 @@ def evaluator(args, dataset: Dataset) -> None:
             Logger().debug(
                 f"Extracting QA pairs for evaluation item: {eval_item['custom_id']}")
             qa_pairs = []
-            json_obj = json.loads(
-                eval_item['response']['body']['choices'][0]['message']['content'])
+
+            try:
+                json_obj = json.loads(
+                    eval_item['response']['body']['choices'][0]['message']['content'])
+            except KeyError:
+                Logger().error(
+                    f"KeyError: 'response' or 'body' not found in the evaluation item: {eval_item['custom_id']}")
+                return qa_pairs
 
             results = json_obj.get('result', [])
 
