@@ -133,8 +133,7 @@ class Dataset(ABC):
         if question_id not in self._dataset_map:
             Logger().error(
                 f"Question id {question_id} not found in the dataset.")
-            raise ValueError(
-                f"Question id {question_id} not found in the dataset.")
+            return None
 
         return next((qa for qa in self._dataset_map[question_id]['qa'] if qa['question_id'] == question_id), None)
 
