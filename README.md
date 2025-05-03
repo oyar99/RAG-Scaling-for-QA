@@ -68,23 +68,41 @@ pip install https://github.com/kyamagu/faiss-wheels/releases/download/v1.7.3/fai
 
 The script supports any **closed-source models** that allow **batch deployments** via the Azure Open AI API and **open-source models** that are available via VLLM.
 
-Supported Models
+Sample Models
 
 | Model Name                  | Context Length   | Max Outputh Length |
 |-----------------------------|------------------|--------------------|
 | o3-mini                     | 200,000 tokens   | 100,000 tokens     |
 | GPT-4o-mini                 | 128,000 tokens   | 16,384 tokens      |
-| Mistral-Nemo-Instruct-2407  | 128,000 tokens   |                    |
 | Qwen2.5-14B-Instruct        | 131,072 tokens   | 8,192 tokens       |
 | Qwen2.5-1.5B-Instruct       | 32,768 tokens    | 8,192 tokens       |
 | Gemma 3-27B                 | 128,000 tokens   | 8,192 tokens       |
+
+## VLLM
+
+To start a `VLLM` HTTP server, the following command can be used.
+
+```sh
+vllm serve Qwen/Qwen2.5-14B-Instruct --tensor-parallel-size 2 --dtype float16 --gpu-memory-utilization 0.95 --max-model-len 32000 --max-num-seqs 128
+```
+
+**Explanation:**
+
+```sh
+Qwen/Qwen2.5-14B-Instruct # Specifies the LLM model to use
+--tensore-parallel-size # Specifies the number of GPUs to use using tensor parallelism
+--dtype float16 # Loads the model using 16-bit floating point precision (fp16)
+--gpu-memory-utilization # Specifies how much memory to use for each GPU
+--max-model-len # Sets the maximum number of tokens per input sequence to 32,000
+--max-nums-seqs # Maximum number of concurrent sequences (i.e., requests) that can be processed in parallel.
+```
 
 ## How to run
 
 The script supports two execution modes:
 
 - `predict`: Generates answers for a given dataset.
-- `eval`: Runs evaluation metrics (`Exact Match (EM)` and `F1 Score`) against ground-truth answers.
+- `eval`: Runs evaluation metrics (`Exact Match (EM)`, `F1 Score`, `R1 Score`, `L1 Score`) against ground-truth answers.
 
 ### Running Predictions
 
@@ -140,7 +158,7 @@ python .\index.py -e "eval" -ev "predictions.jsonl" -d hotpot
 -ev predictions.jsonl    # Path to the batch output containing the generated answers.
 ```
 
-The metrics will be placed in the `output` directory.
+The metrics will be logged.
 
 ### Getting Help
 
