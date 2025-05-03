@@ -6,18 +6,18 @@ from azure_open_ai.batch_evaluation import queue_evaluation_batch_job
 from logger.logger import Logger
 
 
-def eval_judge_score(qa_pairs: list[tuple[str, str, str]]) -> Optional[Batch]:
+def eval_judge_score(model: Optional[str], qa_pairs: list[tuple[str, str, str]]) -> Optional[Batch]:
     """
     Evaluate the question answer pairs based on a score given by an LLM judge.
     Uploads a batch job to Azure OpenAI for evaluation.
     The evaluation is done by comparing the expected answer with the provided answer.
 
     Args:
+        model (str): The model to be used for evaluation.
         qa_pairs (list[tuple[str, str]]): A list of tuples containing question, expected answer and given answer pairs.
-        file_path (str): The path to the file where the evaluation results were saved.
     """
     return queue_evaluation_batch_job(
-        model='gpt-4o-mini-batch',
+        model=model or 'gpt-4o-mini',
         question_answers=qa_pairs,
     )
 
