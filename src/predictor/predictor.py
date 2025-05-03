@@ -2,6 +2,7 @@
 import json
 import os
 from typing import Optional
+from openai.types.chat.chat_completion import ChatCompletion
 from openai.types import Batch
 from azure_open_ai.batch import queue_batch_job, wait_for_batch_job_and_save_result
 from azure_open_ai.chat_completions import chat_completions
@@ -138,24 +139,7 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[Batch]:
             for open_ai_request in open_ai_requests
         ])
 
-        with open(get_qa_output_path(), 'w', encoding='utf-8') as f:
-            for result, custom_id in results:
-                r = json.dumps({
-                    "custom_id": custom_id,
-                    "response": {
-                        "body": {
-                            "choices": [
-                                {
-                                    "message": {
-                                        "role": "assistant",
-                                        "content": result.choices[0].message.content
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                })
-                f.write(r + '\n')
+        chat_completions_to_jsonl(results)
 
         return None
     # Batch here means that each question is sent separately, but in a single batch request
@@ -177,6 +161,8 @@ def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[l
         'question': notebook.get_questions(),
         'result': notebook.get_sources()
     }, notebook.get_notes()) for i, notebook in enumerate(notebooks)]
+
+    guard_job(results, args.model, args.noop)
 
     jobs = [{
             "custom_id": result['custom_id'],
@@ -223,10 +209,21 @@ def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[l
             }
             for (result, context) in results]
 
-    guard_job(results, args.model, args.noop)
-
     Logger().info(
         f"Total number of jobs: {len(jobs)}.")
+
+    if not supports_batch(args.model):
+        results = chat_completions([
+            {
+                "custom_id": open_ai_request['custom_id'],
+                **open_ai_request['body']
+            }
+            for open_ai_request in jobs
+        ])
+
+        chat_completions_to_jsonl(results)
+
+        return None
 
     # Estimate the size of each job in MBs
     job_sizes = []
@@ -255,6 +252,34 @@ def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[l
         f"Total number of batches: {len(batched_jobs)}.")
 
     return [queue_batch_job(batch) for batch in batched_jobs]
+
+
+def chat_completions_to_jsonl(results: list[tuple[ChatCompletion, str]]) -> None:
+    """
+    Convert the results of the chat completions to JSONL format.
+
+    Args:
+        results (list[tuple[dict, str]]): the results of the chat completions
+    """
+    with open(get_qa_output_path(), 'w', encoding='utf-8') as f:
+        for result, custom_id in results:
+            r = json.dumps({
+                "custom_id": custom_id,
+                "response": {
+                    "body": {
+                        "choices": [
+                            {
+                                "message": {
+                                    "role": "assistant",
+                                    "content": result.choices[0].message.content
+                                }
+                            }
+                        ],
+                        "usage": result.usage,
+                    }
+                }
+            })
+            f.write(r + '\n')
 
 
 def get_qa_output_path(postfix: Optional[str] = None) -> str:
