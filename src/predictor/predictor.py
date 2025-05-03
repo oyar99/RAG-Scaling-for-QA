@@ -275,7 +275,11 @@ def chat_completions_to_jsonl(results: list[tuple[ChatCompletion, str]]) -> None
                                 }
                             }
                         ],
-                        "usage": result.usage,
+                        "usage": {
+                            "completion_tokens": result.usage.completion_tokens,
+                            "prompt_tokens": result.usage.prompt_tokens,
+                            "total_tokens": result.usage.total_tokens
+                        }
                     }
                 }
             })
