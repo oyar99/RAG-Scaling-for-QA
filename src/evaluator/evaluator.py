@@ -52,7 +52,7 @@ def evaluator(args, dataset: Dataset) -> None:
             evaluate_retrieval(doc_pairs)
         elif args.metric:
             metrics = [m for m in (extract_metrics(eval_item)
-                      for eval_item in evaluation) if m is not None]
+                                   for eval_item in evaluation) if m is not None]
             eval_metrics(metrics)
         elif args.judge_eval and not args.judge_eval_path:
             batch: Optional[Batch] = None
@@ -150,7 +150,8 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     Logger().info(f"ROUGE-L precision: {roge_precision_l}")
     Logger().info(f"ROUGE-L recall: {rogue_recall_l}")
     Logger().info(f"BLEU score: {bleu_score}")
-  
+
+
 def extract_metrics(eval_item: dict[str, any]) -> Optional[dict[str, int]]:
     """
     Extracts the metrics from the evaluation item.
