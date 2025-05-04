@@ -10,6 +10,7 @@ from evaluator.exact_match_evaluator import eval_exact_match
 from evaluator.f1_evaluator import eval_f1_score
 from evaluator.bert_evaluator import eval_bert_score
 from evaluator.judge_evaluator import eval_judge_score, eval_judge_score_with_file
+from evaluator.metrics_evaluator import eval_metrics
 from evaluator.retrieval_evaluator import eval_retrieval_recall
 from evaluator.rogue_evaluator import eval_rogue_score
 from logger.logger import Logger
@@ -49,6 +50,10 @@ def evaluator(args, dataset: Dataset) -> None:
             doc_pairs = [pair for pair in (extract_doc_pair(dataset,
                                                             eval_item) for eval_item in evaluation) if pair is not None]
             evaluate_retrieval(doc_pairs)
+        elif args.metric:
+            metrics = [m for m in (extract_metrics(eval_item)
+                      for eval_item in evaluation) if m is not None]
+            eval_metrics(metrics)
         elif args.judge_eval and not args.judge_eval_path:
             batch: Optional[Batch] = None
             doc_pairs = []
@@ -145,6 +150,33 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     Logger().info(f"ROUGE-L precision: {roge_precision_l}")
     Logger().info(f"ROUGE-L recall: {rogue_recall_l}")
     Logger().info(f"BLEU score: {bleu_score}")
+  
+def extract_metrics(eval_item: dict[str, any]) -> Optional[dict[str, int]]:
+    """
+    Extracts the metrics from the evaluation item.
+
+    Args:
+        eval_item (dict[str, any]): the evaluation item to be processed
+
+    Returns:
+        Optional[dict[str, any]]: the metrics extracted from the evaluation item
+    """
+    Logger().debug(
+        f"Extracting metrics for evaluation item: {eval_item['custom_id']}")
+    try:
+        completion_tokens = eval_item['response']['body']['usage']['completion_tokens']
+        prompt_tokens = eval_item['response']['body']['usage']['prompt_tokens']
+        total_tokens = eval_item['response']['body']['usage']['total_tokens']
+    except KeyError:
+        Logger().error(
+            f"KeyError: 'usage metrics' not found in the evaluation item: {eval_item['custom_id']}")
+        return None
+
+    return {
+        'completion_tokens': int(completion_tokens),
+        'prompt_tokens': int(prompt_tokens),
+        'total_tokens': int(total_tokens)
+    }
 
 
 def extract_doc_pair(dataset: Dataset, eval_item: dict[str, any]) -> Optional[tuple[list[Document], list[Document]]]:

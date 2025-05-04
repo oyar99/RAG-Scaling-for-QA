@@ -65,6 +65,9 @@ If not provided, an evaluation file is generated')
     parser.add_argument('-r', '--retrieval', action='store_true',
                         help='run retrieval evaluation (optional)')
 
+    parser.add_argument('-mt', '--metric', action='store_true',
+                        help='run metric evaluation (optional)')
+
     parser.add_argument('-eb', '--eval-batch', action='store_true',
                         help='run batch evaluation (optional)')
 
