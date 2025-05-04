@@ -121,7 +121,7 @@ class Dense(Agent):
         Logger().info("Successfully computed query embeddings")
 
         notebook = NoteBook()
-        k = 5
+        k = self._args.k or 5
 
         scores_matrix = util.dot_score(query_embeddings, self._index)
 

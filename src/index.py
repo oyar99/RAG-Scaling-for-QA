@@ -48,6 +48,9 @@ Ignored if conversation id is provided (optional)')
     parser.add_argument('-np', '--noop', action='store_true',
                         help='do not run actual prediction (optional)')
 
+    parser.add_argument('-k', '--k', type=int,
+                        help='number of documents to be retrieved for agents that support k argument (optional)')
+
     # Evaluation mode arguments
     parser.add_argument('-ev', '--evaluation', type=str,
                         help='evaluation file path (required in evaluation mode)')
