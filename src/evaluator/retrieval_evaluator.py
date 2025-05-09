@@ -4,7 +4,7 @@
 from models.document import Document
 
 
-K_LIST = [1, 2, 5, 10, 20]
+K_LIST = [1, 2, 5, 10, 20, 100]
 
 
 def eval_retrieval_recall(doc_pairs: list[tuple[list[Document], list[Document]]]) -> dict[int, float]:

@@ -91,3 +91,5 @@ if __name__ == "__main__":
     Logger().info(
         f"Starting program with execution id: {Logger().get_run_id()}")
     main()
+    Logger().info(
+        f"Terminating program with execution id: {Logger().get_run_id()}")
