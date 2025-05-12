@@ -41,7 +41,7 @@ def get_max_output_tokens(model: str) -> int:
         'gpt-4o-mini-batch': 128_000 * 0.1,
         'o3-mini': 200_000 * 0.1,
         'mistralai/Mistral-Nemo-Instruct-2407': 128_000 * 0.1,
-        'Qwen/Qwen2.5-14B-Instruct': 128_000 * 0.1,
+        'Qwen/Qwen2.5-14B-Instruct': 32_000 * 0.1,
         'Qwen/Qwen2.5-1.5B-Instruct': 32_000 * 0.1,
         'google/gemma-3-12b-pt': 128_000 * 0.1,
     }
