@@ -1,6 +1,6 @@
 """A module to create a singleton instance of the Azure OpenAI client."""
 import os
-from openai import AzureOpenAI
+from openai import AzureOpenAI, Timeout
 from openai import OpenAI
 
 from logger.logger import Logger
@@ -34,6 +34,7 @@ class OpenAIClient(metaclass=Singleton):
                 self._client = OpenAI(
                     base_url=llm_endpoint,
                     api_key='PLACEHOLDER',
+                    timeout=Timeout(120.0),
                 )
             else:
                 azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
