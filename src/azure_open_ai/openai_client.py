@@ -34,7 +34,7 @@ class OpenAIClient(metaclass=Singleton):
                 self._client = OpenAI(
                     base_url=llm_endpoint,
                     api_key='PLACEHOLDER',
-                    timeout=Timeout(120.0),
+                    timeout=Timeout(180.0),
                 )
             else:
                 azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")

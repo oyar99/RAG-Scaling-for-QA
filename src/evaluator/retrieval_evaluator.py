@@ -1,6 +1,7 @@
 
 """Retrieval Evaluator Module."""
 
+from logger.logger import Logger
 from models.document import Document
 
 
@@ -44,6 +45,8 @@ def recall_score(expected_docs: list[Document], actual_docs: list[Document]) -> 
 
     recall_at_k = {}
     for k in K_LIST:
+        if len(actual_docs) < k:
+            Logger().warn(f'Length of actual docs is less than {k}, retrieval at K may not be accurate')
         top_k_docs = actual_docs[:k]
 
         correct_at_k = sum(1 for doc in top_k_docs if doc['doc_id'] in [
