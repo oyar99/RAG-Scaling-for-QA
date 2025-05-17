@@ -125,30 +125,27 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
 
     em = eval_exact_match(qa_pairs)
     f1, precision, recall = eval_f1_score(qa_pairs)
-    rogue_scores = eval_rogue_score(qa_pairs)
-    rogue, roge_precision, rogue_recall = rogue_scores[0]
-    rogue_2, roge_precision_2, rogue_recall_2 = rogue_scores[1]
-    rogue_l, roge_precision_l, rogue_recall_l = rogue_scores[2]
+    rouge_scores = eval_rogue_score(qa_pairs)
     bleu_score = eval_bleu_score(qa_pairs)
     bert_score = None
 
     if args.bert_eval:
         bert_score = eval_bert_score(qa_pairs)
         Logger().info(f"BERT score: {bert_score}")
+        
+    rogue, rogue_precision, rogue_recall = rouge_scores[0]
+    rogue_2, rogue_precision_2, rogue_recall_2 = rouge_scores[1]
 
     Logger().info(f"Exact match score: {em}")
     Logger().info(f"F1 score: {f1}")
     Logger().info(f"Precision: {precision}")
     Logger().info(f"Recall: {recall}")
     Logger().info(f"ROUGE score: {rogue}")
-    Logger().info(f"ROUGE precision: {roge_precision}")
+    Logger().info(f"ROUGE precision: {rogue_precision}")
     Logger().info(f"ROUGE recall: {rogue_recall}")
     Logger().info(f"ROUGE-2 score: {rogue_2}")
-    Logger().info(f"ROUGE-2 precision: {roge_precision_2}")
+    Logger().info(f"ROUGE-2 precision: {rogue_precision_2}")
     Logger().info(f"ROUGE-2 recall: {rogue_recall_2}")
-    Logger().info(f"ROUGE-L score: {rogue_l}")
-    Logger().info(f"ROUGE-L precision: {roge_precision_l}")
-    Logger().info(f"ROUGE-L recall: {rogue_recall_l}")
     Logger().info(f"BLEU score: {bleu_score}")
 
 

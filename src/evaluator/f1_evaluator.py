@@ -46,21 +46,21 @@ def f1_score(expected: list[str], actual: str) -> tuple[float, float, float]:
         expected_tokens = tokenize(e)
         actual_tokens = tokenize(a)
 
+        if len(actual_tokens) == 0 or len(expected_tokens) == 0:
+            return (0, 0, 0)
+
         common = Counter(expected_tokens) & Counter(actual_tokens)
         num_same = sum(common.values())
-
-        if num_same == 0:
-            return (0, 0, 0)
 
         precision = 1.0 * num_same / len(actual_tokens)
         recall = 1.0 * num_same / len(expected_tokens)
 
-        f1 = (2 * precision * recall) / (precision + recall)
+        f1 = (2 * precision * recall) / (precision + recall + 1e-8)
 
         return f1, precision, recall
 
     f1, precision, recall = max((compute_score(e, actual)
-                                for e in expected), key=lambda x: x[0])
+                                 for e in expected), key=lambda x: x[0])
 
     Logger().debug(
         f"F1 score: {f1} - Expected: {expected} - Actual: {actual}")
