@@ -100,7 +100,7 @@ class Default(Agent):
             notes = self._qa_prompt.format(
                 context=get_content(question_batch['context'])
             )
-
+            
             notebook.update_notes(notes)
             notebook.update_sources([RetrievedResult(
                 doc_id=doc['doc_id'], content=doc['content'], score=None)
@@ -112,6 +112,12 @@ class Default(Agent):
             get_notebook(question_batch)
             for question_batch in question_batches
         ]
+        
+        retrieved_docs = 0
+        for notebook in notebooks:
+            retrieved_docs += len(notebook.get_sources())
+            
+        Logger().info(f"Average number of retrieved docs: {1.0 * retrieved_docs / len(notebooks)}")
 
         return notebooks
 
