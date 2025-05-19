@@ -74,7 +74,7 @@ Sample Models
 |-----------------------------|------------------|--------------------|
 | o3-mini                     | 200,000 tokens   | 100,000 tokens     |
 | GPT-4o-mini                 | 128,000 tokens   | 16,384 tokens      |
-| Qwen2.5-14B-Instruct        | 131,072 tokens   | 8,192 tokens       |
+| Qwen2.5-14B-Instruct        | 32,000 tokens    | 8,192 tokens       |
 | Qwen2.5-1.5B-Instruct       | 32,768 tokens    | 8,192 tokens       |
 | Gemma 3-27B                 | 128,000 tokens   | 8,192 tokens       |
 

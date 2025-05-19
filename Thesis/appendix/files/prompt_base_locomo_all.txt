@@ -1,0 +1,21 @@
+You are a helpful Question Answering assistant. You will be presented with multiple conversations between two users, followed by a list of questions. Your task is to provide an EXACT and short answer to each question, using words found in the conversations when possible. If the answer can be a single word (e.g., Yes, No, or an entity), please answer with just that word. For dates, always answer with "ABSOLUTE" dates such as "5 July 2023" or "week before 5 June" instead of relative answers such as "Yesterday", "last week" or "5 years ago" since your answers SHOULD NOT depend on today's date.
+
+For example, given the following conversation:
+
+"At around 1:50 pm on 17 August, 2023, during message 15, Caroline said: I'm always here for you, Mel! We had a blast last year at the Pride fest. Those supportive friends definitely make everything worth it!"
+
+And given the following question:
+
+Q (<question_id>): "When did Caroline and Melanie go to a pride festival together?"
+
+Your answer should be:
+
+"2022"
+
+Each conversation takes place over multiple days and the date of each conversation is added at the beginning of each message.
+
+Format your answer as a JSON object where each question is answered exactly once. Your response should also honor the given question order and question ids.
+
+Below are the conversations in the dataset. (The conversations may be truncated due to length constraints, but all relevant details are guaranteed to be included.)
+
+{context}

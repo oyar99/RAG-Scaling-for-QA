@@ -1,0 +1,245 @@
+% Define custom colors
+\definecolor{emcolor}{rgb}{0.51,0.51,0.71}     % 130,130,180
+\definecolor{r1color}{rgb}{0.39,0.75,0.51}     % 100,190,130
+\definecolor{r2color}{rgb}{0.90,0.55,0.27}     % 230,140,70
+\definecolor{l1color}{rgb}{0.68,0.85,0.90}     % 173,216,230
+
+% Data tables
+\pgfplotstableread[row sep=\\,col sep=&]{
+K & EM & R1 & R2 & L1 \\
+5   & 27.5 & 51.6 & 27.3 & 47.0 \\
+10  & 27.3 & 53.0 & 28.3 & 47.0 \\
+20  & 28.4 & 55.1 & 30.0 & 51.0 \\
+100 & 29.2 & 56.7 & 31.2 & 54.0 \\
+}\locomo
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+K & EM & R1 & R2 & L1 \\
+5   & 39.6 & 49.2 & 27.2 & 49.0 \\
+10  & 43.2 & 53.4 & 29.7 & 53.0 \\
+20  & 46.0 & 56.7 & 31.5 & 57.0 \\
+100 & 47.5 & 59.2 & 32.7 &  \\
+}\hotpotqa
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+K & EM & R1 & R2 & L1 \\
+5   & 25.2 & 28.1 & 19.4 & 26.0 \\
+10  & 27.9 & 31.2 & 21.9 & 29.0 \\
+20  & 31.5 & 35.2 & 24.9 & 35.0 \\
+100 & 33.4 & 37.5 & 26.1 &  \\
+}\twowiki
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+K & EM & R1 & R2 & L1 \\
+5   & 10.9 & 15.5 & 8.6 & 14.0 \\
+10  & 13.1 & 17.4 & 9.9 & 15.0 \\
+20  & 14.4 & 19.0 & 11.1 & 17.0 \\
+100 & 15.2 & 20.7 & 11.9 & 19.0 \\
+}\musique
+
+% Plot
+\begin{tikzpicture}[scale=1.0]
+    \begin{groupplot}[
+        group style={
+            group size=4 by 1,
+            horizontal sep=0.05cm,
+            vertical sep=0cm,
+        },
+        width=0.35\textwidth,
+        height=0.35\textwidth,
+        xlabel={\tiny Docs},
+        ylabel={\tiny Score},
+        ymin=0, ymax=70,
+        ytick={20,40,60},
+        tick style={draw=none},
+        legend style={
+            at={(2,1.4)}, % centered above the plots
+            anchor=north,
+            legend columns=4,
+            font=\tiny,
+            draw=gray!40, % light gray border
+            fill=white,   % optional: white background
+            align={left}
+        }, 
+        legend cell align={left},
+        axis line style={draw=none},
+        grid=major,
+        grid style={dotted},
+        yticklabel style={font=\fontsize{1pt}{4.5pt}\selectfont},
+        xticklabel style={font=\fontsize{1pt}{4.5pt}\selectfont},
+        title style={font=\tiny},
+        xtick=data,
+        symbolic x coords={5,10,20,100},
+        ylabel style={yshift=-14pt},
+        xlabel style={yshift=8pt}
+    ]
+
+    % LoCoMo subplot
+    \nextgroupplot[title={LoCoMo}]
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=emcolor,
+        mark options={fill=emcolor, draw=emcolor, solid}
+    ] table[x=K, y=EM] {\locomo}; \addlegendentry{EM}
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=r1color,
+        mark options={fill=r1color, draw=r1color, solid}
+    ] table[x=K, y=R1] {\locomo}; \addlegendentry{R1}
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=r2color,
+        mark options={fill=r2color, draw=r2color, solid}
+    ] table[x=K, y=R2] {\locomo}; \addlegendentry{R2}
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=l1color,
+        mark options={fill=l1color, draw=l1color, solid}
+    ] table[x=K, y=L1] {\locomo}; \addlegendentry{L1}
+
+    % HotpotQA subplot
+    \nextgroupplot[
+        title={HotpotQA},
+        ylabel={},
+        yticklabels={},
+        ytick style={draw=none}
+    ]
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=emcolor,
+        mark options={fill=emcolor, draw=emcolor, solid}
+    ] table[x=K, y=EM] {\hotpotqa};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=r1color,
+        mark options={fill=r1color, draw=r1color, solid}
+    ] table[x=K, y=R1] {\hotpotqa};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=r2color,
+        mark options={fill=r2color, draw=r2color, solid}
+    ] table[x=K, y=R2] {\hotpotqa};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=l1color,
+        mark options={fill=l1color, draw=l1color, solid}
+    ] table[x=K, y=L1] {\hotpotqa};
+
+    % TwoWiki subplot
+    \nextgroupplot[
+        title={2Wiki},
+        ylabel={},
+        yticklabels={},
+        ytick style={draw=none}
+    ]
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=emcolor,
+        mark options={fill=emcolor, draw=emcolor, solid}
+    ] table[x=K, y=EM] {\twowiki};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=r1color,
+        mark options={fill=r1color, draw=r1color, solid}
+    ] table[x=K, y=R1] {\twowiki};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=r2color,
+        mark options={fill=r2color, draw=r2color, solid}
+    ] table[x=K, y=R2] {\twowiki};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=l1color,
+        mark options={fill=l1color, draw=l1color, solid}
+    ] table[x=K, y=L1] {\twowiki};
+
+    % MuSiQue subplot
+    \nextgroupplot[
+        title={MuSiQue},
+        ylabel={},
+        yticklabels={},
+        ytick style={draw=none}
+    ]
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=emcolor,
+        mark options={fill=emcolor, draw=emcolor, solid}
+    ] table[x=K, y=EM] {\musique};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=r1color,
+        mark options={fill=r1color, draw=r1color, solid}
+    ] table[x=K, y=R1] {\musique};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=r2color,
+        mark options={fill=r2color, draw=r2color, solid}
+    ] table[x=K, y=R2] {\musique};
+
+    \addplot+[
+        mark=triangle*,
+        mark size=1.0pt,
+        thick,
+        dotted,
+        draw=l1color,
+        mark options={fill=l1color, draw=l1color, solid}
+    ] table[x=K, y=L1] {\musique};
+
+    \end{groupplot}
+\end{tikzpicture}

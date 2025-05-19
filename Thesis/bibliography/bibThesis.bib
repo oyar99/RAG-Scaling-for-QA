@@ -490,7 +490,139 @@
     pages = "17--24",
 }
 
+@inproceedings{10.1145/2682862.2682863,
+    author = {Trotman, Andrew and Puurula, Antti and Burgess, Blake},
+    title = {Improvements to BM25 and Language Models Examined},
+    year = {2014},
+    isbn = {9781450330008},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/2682862.2682863},
+    doi = {10.1145/2682862.2682863},
+    abstract = {Recent work on search engine ranking functions report improvements on BM25 and Language Models with Dirichlet Smoothing. In this investigation 9 recent ranking functions (BM25, BM25+, BM25T, BM25-adpt, BM25L, TF1°δ°p\texttimes{}ID, LM-DS, LM-PYP, and LM-PYP-TFIDF) are compared by training on the INEX 2009 Wikipedia collection and testing on INEX 2010 and 9 TREC collections. We find that once trained (using particle swarm optimization) there is very little difference in performance between these functions, that relevance feedback is effective, that stemming is effective, and that it remains unclear which function is best over-all.},
+    booktitle = {Proceedings of the 19th Australasian Document Computing Symposium},
+    pages = {58–65},
+    numpages = {8},
+    keywords = {Relevance Ranking, Procrastination, Document Retrieval},
+    location = {Melbourne, VIC, Australia},
+    series = {ADCS '14}
+}
+
+@inproceedings{reimers-2019-sentence-bert,
+    title = "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks",
+    author = "Reimers, Nils and Gurevych, Iryna",
+    booktitle = "Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing",
+    month = "11",
+    year = "2019",
+    publisher = "Association for Computational Linguistics",
+    url = "http://arxiv.org/abs/1908.10084",
+}
+
+@inproceedings{santhanam-etal-2022-colbertv2,
+    title = "{C}ol{BERT}v2: Effective and Efficient Retrieval via Lightweight Late Interaction",
+    author = "Santhanam, Keshav  and
+      Khattab, Omar  and
+      Saad-Falcon, Jon  and
+      Potts, Christopher  and
+      Zaharia, Matei",
+    editor = "Carpuat, Marine  and
+      de Marneffe, Marie-Catherine  and
+      Meza Ruiz, Ivan Vladimir",
+    booktitle = "Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+    month = jul,
+    year = "2022",
+    address = "Seattle, United States",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2022.naacl-main.272/",
+    doi = "10.18653/v1/2022.naacl-main.272",
+    pages = "3715--3734",
+    abstract = "Neural information retrieval (IR) has greatly advanced search and other knowledge-intensive language tasks. While many neural IR methods encode queries and documents into single-vector representations, late interaction models produce multi-vector representations at the granularity of each token and decompose relevance modeling into scalable token-level computations. This decomposition has been shown to make late interaction more effective, but it inflates the space footprint of these models by an order of magnitude. In this work, we introduce ColBERTv2, a retriever that couples an aggressive residual compression mechanism with a denoised supervision strategy to simultaneously improve the quality and space footprint of late interaction. We evaluate ColBERTv2 across a wide range of benchmarks, establishing state-of-the-art quality within and outside the training domain while reducing the space footprint of late interaction models by 6{--}10x."
+}
+
+@inproceedings{sun-etal-2023-chatgpt,
+    title = "Is {C}hat{GPT} Good at Search? Investigating Large Language Models as Re-Ranking Agents",
+    author = "Sun, Weiwei  and
+      Yan, Lingyong  and
+      Ma, Xinyu  and
+      Wang, Shuaiqiang  and
+      Ren, Pengjie  and
+      Chen, Zhumin  and
+      Yin, Dawei  and
+      Ren, Zhaochun",
+    editor = "Bouamor, Houda  and
+      Pino, Juan  and
+      Bali, Kalika",
+    booktitle = "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+    month = dec,
+    year = "2023",
+    address = "Singapore",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.emnlp-main.923/",
+    doi = "10.18653/v1/2023.emnlp-main.923",
+    pages = "14918--14937",
+    abstract = "Large Language Models (LLMs) have demonstrated remarkable zero-shot generalization across various language-related tasks, including search engines. However, existing work utilizes the generative ability of LLMs for Information Retrieval (IR) rather than direct passage ranking. The discrepancy between the pre-training objectives of LLMs and the ranking objective poses another challenge. In this paper, we first investigate generative LLMs such as ChatGPT and GPT-4 for relevance ranking in IR. Surprisingly, our experiments reveal that properly instructed LLMs can deliver competitive, even superior results to state-of-the-art supervised methods on popular IR benchmarks. Furthermore, to address concerns about data contamination of LLMs, we collect a new test set called NovelEval, based on the latest knowledge and aiming to verify the model`s ability to rank unknown knowledge. Finally, to improve efficiency in real-world applications, we delve into the potential for distilling the ranking capabilities of ChatGPT into small specialized models using a permutation distillation scheme. Our evaluation results turn out that a distilled 440M model outperforms a 3B supervised model on the BEIR benchmark. The code to reproduce our results is available at www.github.com/sunnweiwei/RankGPT."
+}
+
+@inproceedings{papineni-etal-2002-bleu,
+    title = "{B}leu: a Method for Automatic Evaluation of Machine Translation",
+    author = "Papineni, Kishore  and
+      Roukos, Salim  and
+      Ward, Todd  and
+      Zhu, Wei-Jing",
+    editor = "Isabelle, Pierre  and
+      Charniak, Eugene  and
+      Lin, Dekang",
+    booktitle = "Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics",
+    month = jul,
+    year = "2002",
+    address = "Philadelphia, Pennsylvania, USA",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/P02-1040/",
+    doi = "10.3115/1073083.1073135",
+    pages = "311--318"
+}
+
+@inproceedings{lin-2004-rouge,
+    title = "{ROUGE}: A Package for Automatic Evaluation of Summaries",
+    author = "Lin, Chin-Yew",
+    booktitle = "Text Summarization Branches Out",
+    month = jul,
+    year = "2004",
+    address = "Barcelona, Spain",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/W04-1013/",
+    pages = "74--81"
+}
+
+@proceedings{mrqa-2021-machine,
+    title = "Proceedings of the 3rd Workshop on Machine Reading for Question Answering",
+    editor = "Fisch, Adam  and
+      Talmor, Alon  and
+      Chen, Danqi  and
+      Choi, Eunsol  and
+      Seo, Minjoon  and
+      Lewis, Patrick  and
+      Jia, Robin  and
+      Min, Sewon",
+    month = nov,
+    year = "2021",
+    address = "Punta Cana, Dominican Republic",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.mrqa-1.0/"
+}
+
+@misc{li2024llmsasjudgescomprehensivesurveyllmbased,
+    title={LLMs-as-Judges: A Comprehensive Survey on LLM-based Evaluation Methods}, 
+    author={Haitao Li and Qian Dong and Junjie Chen and Huixue Su and Yujia Zhou and Qingyao Ai and Ziyi Ye and Yiqun Liu},
+    year={2024},
+    eprint={2412.05579},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL},
+    url={https://arxiv.org/abs/2412.05579}, 
+}
+
 % ------------------------
+
 
 % Paper that implements a graph RAG for enterprise use cases%
 @misc{rasmussen2025zeptemporalknowledgegraph,
