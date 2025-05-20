@@ -1,11 +1,12 @@
 """Utilities for tokenization and token counting."""
+from typing import Optional
 import tiktoken
 
 from logger.logger import Logger
 from models.document import Document
 
 
-def average_content_length(corpus: list[Document], model: str = None) -> tuple[float, float]:
+def average_content_length(corpus: list[Document], model: Optional[str] = None) -> tuple[float, float]:
     """
     Computes the average content length of the given documents measured in
     both characters and tokens
@@ -46,7 +47,52 @@ def get_max_output_tokens(model: str) -> int:
         'google/gemma-3-12b-pt': 128_000 * 0.1,
     }
 
-    return max_tokens_map.get(model, 0)
+    return int(max_tokens_map.get(model, 0))
+
+
+def get_max_context_length(model: str) -> int:
+    """
+    Get the context length for a given model.
+
+    Args:
+        model (str): the model to be used
+
+    Returns:
+        context_length (int): the context length for the given model
+    """
+    context_length_map = {
+        'gpt-4o-mini': 128_000 * 0.88,
+        'gpt-4o-mini-batch': 128_000 * 0.88,
+        'o3-mini': 200_000 * 0.88,
+        'mistralai/Mistral-Nemo-Instruct-2407': 128_000 * 0.88,
+        'Qwen/Qwen2.5-14B-Instruct': 32_000 * 0.88,
+        'Qwen/Qwen2.5-1.5B-Instruct': 32_000 * 0.88,
+        'google/gemma-3-12b-pt': 128_000 * 0.88,
+    }
+
+    return int(context_length_map.get(model, 0))
+
+
+def truncate_prompt_if_needed(prompt: str, model: str) -> str:
+    """
+    Truncate the prompt if it exceeds the maximum number of tokens for the given model.
+
+    Args:
+        prompt (str): the prompt to be truncated
+        model (str): the model to be used for truncation
+
+    Returns:
+        truncated_prompt (str): the truncated prompt
+    """
+    max_tokens = get_max_context_length(model)
+    encoding = get_encoding(model)
+    num_tokens = len(encoding.encode(prompt))
+
+    if num_tokens > max_tokens:
+        Logger().warn(f"Prompt exceeds max tokens ({max_tokens}). Truncating.")
+        return encoding.decode(encoding.encode(prompt)[:max_tokens])
+
+    return prompt
 
 
 def estimate_num_tokens(prompt: str, model: str) -> int:

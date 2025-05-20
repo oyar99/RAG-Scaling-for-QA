@@ -2,7 +2,6 @@
 import io
 import json
 import time
-from typing import Optional
 from openai.types import Batch
 
 from azure_open_ai.openai_client import OpenAIClient
@@ -12,7 +11,7 @@ from utils.byte_utils import format_size
 
 def queue_batch_job(
     jobs: list[dict],
-) -> Optional[Batch]:
+) -> Batch:
     """
     Queues a batch job using Azure OpenAI.
     Args:
@@ -26,7 +25,7 @@ def queue_batch_job(
     """
     if not isinstance(jobs, list) or len(jobs) <= 0:
         raise ValueError(
-            "jobs must be a non-empty list of dictionaries.") 
+            "jobs must be a non-empty list of dictionaries.")
 
     jobs_jsonl = "\n".join(json.dumps(job) for job in jobs)
     jsonl_encoded = jobs_jsonl.encode("utf-8")
@@ -38,6 +37,9 @@ def queue_batch_job(
     Logger().info("Starting batch file upload ...")
 
     openai_client = OpenAIClient().get_client()
+
+    if not openai_client:
+        raise RuntimeError("Failed to create OpenAI client.")
 
     # Upload jsonl file for batch processing
     batch_file = openai_client.files.create(
@@ -56,7 +58,7 @@ def queue_batch_job(
 
     if file.status == "error":
         # pylint: disable-next=broad-except
-        raise RuntimeError(f"File upload failed: {file.error}")
+        raise RuntimeError(f"File upload failed: {file.id}")
 
     Logger().info("File upload succeeded.")
     Logger().info("Creating batch job ...")
@@ -69,6 +71,7 @@ def queue_batch_job(
     )
 
     return batch_job
+
 
 def wait_for_batch_job_and_save_result(
     batch: Batch,
@@ -88,7 +91,7 @@ def wait_for_batch_job_and_save_result(
     while batch.status in ("in_progress", "validating", "finalizing"):
         Logger().info(
             f"Batch job status: {batch.status}. Waiting for completion...")
-        time.sleep(120) # Sleep for 2 minutes
+        time.sleep(120)  # Sleep for 2 minutes
         batch = retrieve_batch_job(batch.id)
 
     if batch.status != "completed":
@@ -107,6 +110,7 @@ def wait_for_batch_job_and_save_result(
     with open(output_file_path, 'wb') as f:
         f.write(result)
 
+
 def retrieve_batch_job(
     batch_job_id: str,
 ) -> Batch:
@@ -120,7 +124,12 @@ def retrieve_batch_job(
         Batch: the batch job object if the job is retrieved successfully
     """
     openai_client = OpenAIClient().get_client()
+
+    if not openai_client:
+        raise RuntimeError("Failed to create OpenAI client.")
+
     return openai_client.batches.retrieve(batch_job_id)
+
 
 def retrieve_file(
     file_id: str,
@@ -135,4 +144,8 @@ def retrieve_file(
         bytes: the file object if the file is retrieved successfully
     """
     openai_client = OpenAIClient().get_client()
+
+    if not openai_client:
+        raise RuntimeError("Failed to create OpenAI client.")
+
     return openai_client.files.content(file_id).content

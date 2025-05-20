@@ -10,7 +10,7 @@ from logger.logger import Logger
 from models.agent import Agent
 from models.dataset import Dataset
 from utils.model_utils import supports_batch, supports_temperature_param
-from utils.token_utils import estimate_cost, estimate_num_tokens, get_max_output_tokens
+from utils.token_utils import estimate_cost, estimate_num_tokens, get_max_output_tokens, truncate_prompt_if_needed
 
 
 def predictor(args, dataset: Dataset, agent: Agent) -> None:
@@ -50,7 +50,7 @@ Please provide the model deployment identifier using the -m flag.""")
             Logger().info(
                 f"Batch job queued with ID: {batch.id} and status: {batch.status}")
 
-            wait_for_batch_job_and_save_result(batch, get_qa_output_path(i))
+            wait_for_batch_job_and_save_result(batch, get_qa_output_path(str(i)))
 
 # pylint: disable-next=too-many-locals
 def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[list[Batch]]:
@@ -114,14 +114,14 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[list[Ba
                 "model": args.model,
                 "messages": [
                     {"role": "system",
-                     "content": prompts[question["question_id"]]},
+                     "content": truncate_prompt_if_needed(prompts[question["question_id"]], args.model)},
                     {"role": "user", "content": question["question"]}
                 ],
                 "stop": ["\n"],
                 "temperature": default_job_args['temperature'] if supports_temperature_param(args.model) else None,
                 "frequency_penalty": default_job_args['frequency_penalty'],
                 "presence_penalty": default_job_args['presence_penalty'],
-                "max_completion_tokens": int(get_max_output_tokens(args.model))
+                "max_completion_tokens": get_max_output_tokens(args.model)
             },
         }
         for question in all_questions
@@ -145,7 +145,7 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[list[Ba
     Logger().info(
         f"Total number of batches: {len(batched_jobs)}.")
 
-    return [queue_batch_job(batch) for batch in batched_jobs]
+    return [queue_batch_job(batch) for batch in batched_jobs if batch is not None]
 
 
 def batch_question_answering(dataset: Dataset, agent: Agent, args) -> Optional[list[Batch]]:
@@ -289,9 +289,9 @@ def chat_completions_to_jsonl(results: list[tuple[ChatCompletion, str]]) -> None
                             }
                         ],
                         "usage": {
-                            "completion_tokens": result.usage.completion_tokens,
-                            "prompt_tokens": result.usage.prompt_tokens,
-                            "total_tokens": result.usage.total_tokens
+                            "completion_tokens": result.usage.completion_tokens if result.usage else 0,
+                            "prompt_tokens": result.usage.prompt_tokens if result.usage else 0,
+                            "total_tokens": result.usage.total_tokens if result.usage else 0
                         }
                     }
                 }

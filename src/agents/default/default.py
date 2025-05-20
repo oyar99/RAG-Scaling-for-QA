@@ -11,7 +11,7 @@ from models.dataset import Dataset
 from models.document import Document
 from models.question_answer import QuestionAnswer
 from models.retrieved_result import RetrievedResult
-from utils.token_utils import get_encoding
+from utils.token_utils import get_encoding, get_max_context_length
 
 
 class Default(Agent):
@@ -156,13 +156,7 @@ def get_context_docs(
     """
     encoding = get_encoding(model)
 
-    max_tokens_map = {
-        'gpt-4o-mini': 128_000 * 0.88,
-        'gpt-4o-mini-batch': 128_000 * 0.88,
-        'o3-mini': 200_000 * 0.88,
-    }
-
-    max_tokens = int(max_tokens_map.get(model, 0))
+    max_tokens = get_max_context_length(model)
 
     flattened_docs = [doc for ds in docs.values() for doc in ds]
 
