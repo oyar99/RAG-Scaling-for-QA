@@ -121,7 +121,7 @@ def question_answering(dataset: Dataset, agent: Agent, args) -> Optional[list[Ba
                 "temperature": default_job_args['temperature'] if supports_temperature_param(args.model) else None,
                 "frequency_penalty": default_job_args['frequency_penalty'],
                 "presence_penalty": default_job_args['presence_penalty'],
-                "max_completion_tokens": get_max_output_tokens(args.model)
+                "max_completion_tokens": 500,
             },
         }
         for question in all_questions
