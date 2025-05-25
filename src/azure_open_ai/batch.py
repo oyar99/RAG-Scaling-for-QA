@@ -146,7 +146,7 @@ def retrieve_file(
     """
     if not file_id:
         raise ValueError("file_id must be a non-empty string.")
-    
+
     openai_client = OpenAIClient().get_client()
 
     if not openai_client:

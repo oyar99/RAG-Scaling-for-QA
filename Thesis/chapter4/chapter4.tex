@@ -3,59 +3,31 @@
 \label{ch:results}
 \label{ch:chapter4}
 
-\section{Retrieval}
+\section{Retrieval Results}
 
-As a baseline, we evaluated a set of retrieval systems that include both traditional lexical and semantic retrievers, as well as more sophisticated approaches. These methods provide reference points before introducing our agent-based architectures.\\
+We first evaluated the retrieval performance of our baseline systems introduced in Section \ref{baselines_sec}. We found that ColBERTV2 consistently demonstrated strong performance across all datasets. In contrast, HippoRAG showed particularly high retrieval performance on MuSiQue, which is attributed to the dataset’s entity-centric design and also supported by the HippoRAG authors \cite{NEURIPS2024_6ddc001d}. However, HippoRAG underperformed on easier datasets relative to simpler methods like BM25. 
 
-\noindent First, we used a BM25 ranking function with hyperparameters $b = 0.75$ and $k_1 = 0.5$. These values were selected experimentally, considering that passages across all four datasets are relatively short \cite{10.1145/2682862.2682863}. \\
+\noindent We also observe that MuSiQue and 2Wiki have the lowest overall retrieval scores. This is consistent with the design of these benchmarks, which introduce complexity through actual multi-hop reasoning.
 
-\noindent Second, we evaluated a semantic retriever based on the \textit{msmarco-bert-base-dot-v5} sentence embeddings. This model, trained on question answer pairs from the MS Marco dataset, has demonstrated strong performance on a range of natural language tasks including QA \cite{reimers-2019-sentence-bert}. \\
-
-\noindent Third, we included ColBERTV2, a semantic retriever that leverages contextual late interaction. Unlike single-vector dense retrievers, ColBERTV2 compares queries and documents at the token level, allowing for finer-grained relevance retrieval \cite{santhanam-etal-2022-colbertv2}.\\
-
-\noindent In addition to these retrieval-only models, we evaluated HippoRAG, a more recent architecture inspired by neurobiological systems. HippoRAG represents knowledge using triples extracted offline from the corpus by an LLM. In our configuration, we used \textit{QWen2.5-14B 32K} to extract these triples. When answering questions, HippoRAG employes a semantic retriever, in our case \textit{Contriever}, to locate relevant nodes in the knowledge graph \cite{NEURIPS2024_6ddc001d}. Its structured representation enables competitive performance, especially on more challenging datasets like MuSiQue. \\
-
-
-\noindent Table \ref{tab:retrieval_results} summarizes retrieval performance across all systems, reporting $Recall@2$, $Recall@5$, $Recall@10$, $Recall@20$, and $Recall@100$. Importantly, nearly all questions in the datasets require no more than five passages as supporting evidence, which highlights the importance of high recall at lower thresholds, where systems like ColBERTV2 demonstrate meaningful advantages over simpler retrieval methods. \\
+\noindent Table \ref{tab:retrieval_results} summarizes retrieval performance across all systems, reporting \textbf{recall@k} for various values of $k$. Importantly, the vast majorify of questions in the datasets require no more than five passages as supporting evidence, which highlights the importance of high recall at low values of $k$ to reduce irrelevant content during the question answering phase.
 
 \input{chapter4/retrieval_results}
 
-\section{Question Answering}
+\section{Question Answering Results}
 
-To evaluate the performance of various cognitive language agents, we use four metrics.\\
+\noindent Figure \ref{fig:scores_gpt4o} shows the results obtained using GPT-4o-mini across the four datasets using ColBERTV2, msmarco-bert-base-dot-v5, and BM25 retrievers. While performance generally improves with increasing $k$, the gains diminish as more irrelevant details begin to interfere with the model's ability to identify relevant information within its context.
 
-\noindent \textbf{Exact Match (EM)}: This metric assigns a score of 1 if the predicted answer exactly matches the reference. Prior to comparison, both values are normalized by removing articles, whitespace, and punctuation to account for superficial variations.\\
-
-\noindent \textbf{ROUGE-1 ($R_1$) and ROUGE-2 ($R_2$)}: These metrics compute the harmonic mean of precision and recall over unigram and bigram overlaps respectively, allowing for duplicate n-grams \cite{lin-2004-rouge}. For predictions that are empty, often due to model safety filters, we assign scores of 0 to both $R_1$ and $R_2$. Importantly, our use of $R_1$ is equivalent to $F1$ as typically used in the literature, with a small constant $\epsilon=1 \times 10^{-8}$ added to avoid division by zero \cite{mrqa-2021-machine}.\\
-
-\begin{equation}
-    \text{ROUGE-}F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall} + \epsilon}
-\end{equation}
-
-\noindent \\ \textbf{LLM Judge ($L_1$)}: We employ an LLM judge as a binary evaluator \cite{li2024llmsasjudgescomprehensivesurveyllmbased}, tasked with determining whether the predicted and reference answers are both semantically equivalent, assigning a score of 1 if it deems the answer correct. We use GPT-4o-mini ($128K$ context window), and the prompt used is described in Appendix \ref{fig:eval-judge}. \\
-
-\noindent We place particular emphasis on $R_1$ and $L_1$, as they offer more flexibility in recognizing semantically correct answers, even when the model deviates from the instruction to quote directly from the retrieved passages.\\
-
-\subsection{Experimental Setup}
-
-\noindent We first construct a series of standard RAG systems using  the retrievers introduced in Section 4.1. Variations of a QA prompt are used to provide instructions to the models (See appendix \ref{ch:appendices}). \\
-
-\noindent To study the effect of context size, we vary the number of retrieved passages $k$ fed into the model, increasing it from $5$ to $100$. We also evaluate a full-context variant in which all documents are passed to the model, ensuring that all relevant ground-truth passages are present even if truncation is needed to fit within the model's context window. Due to computational constraints, questions are processed in batches of size $8$, and the model is required to return structured outputs to facilitate answer extraction.\\
-
-\noindent Figure \ref{fig:scores_gpt4o} shows the results obtained using GPT-4o-mini ($128k$ context window) across the four datasets using ColBERTV2, MSMarco-BERT embeddings, and BM25 retrievers. While performance generally improves with increasing $k$, the gains diminish as more irrelevant details begin to interfere with the model's ability to identify relevant information within its context.\\
-
-\noindent Interestingly, a performance drop is observed on LoCoMo, HotpotQA, and 2Wiki under the full-context setup, which suggests that excessive context introduces noise. However, MuSiQue, the most complex dataset, benefits modestly from the added information.\\
-
+\noindent Interestingly, a performance drop is observed on LoCoMo, HotpotQA, and 2Wiki under the full-context setup, which suggests that excessive context introduces noise. However, MuSiQue, the most complex dataset, benefits modestly from the added information.
 
 \input{chapter4/scores_gpt4o}
 
-\noindent We also evaluate Qwen2.5-14B ($32k$ context window) using a slightly adapted prompt.  As shown in Figure \ref{fig:scores_qwen}, its performance closely matches that of GPT-4o-mini, demonstrating that smaller models with strong instruction tuning can achieve competitive results. \\
+\noindent We also evaluate Qwen2.5-14B using a slightly adapted prompt, see Appendix \ref{fig:qa-base-qwen}.  As shown in Figure \ref{fig:scores_qwen}, its performance closely matches that of GPT-4o-mini, demonstrating that smaller models with strong instruction tuning can achieve competitive results.
 
 \input{chapter4/scores_qwen}
 
-\noindent To isolate the role of reasoning, we test o3-mini using $k = 5$. As expected, o3-mini matches or outperforms other models with higher $k$ values, suggesting that reasoning ability can, in some cases, substitute for broader retrieval.\\
+\noindent We also test o3-mini using $k = 5$. As expected, o3-mini matches or outperforms other models with higher $k$ values, suggesting that reasoning ability plays a key role for MHQA task.
 
-\noindent Finally, we include QA results from HippoRAG \cite{NEURIPS2024_6ddc001d}, which incorporates graph-structured memory. HippoRAG performs especially well on the MuSiQue dataset, likely due to its ability to abstract relationships and reason over structured content. \\
+\noindent Finally, we include QA results from HippoRAG \cite{NEURIPS2024_6ddc001d}, which incorporates graph-structured memory. HippoRAG performs especially well on the MuSiQue dataset, likely due to its ability to abstract relationships and reason over structured content.
 
 \noindent Detailed results for all baseline configurations are provided in Table \ref{tab:qa_results}.
 

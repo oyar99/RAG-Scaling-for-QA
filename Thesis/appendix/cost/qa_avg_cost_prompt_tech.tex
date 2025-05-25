@@ -25,35 +25,38 @@ HotpotQA  & 1263.8 & 4.7 \\
 MuSiQue   & 1332.5 & 3.9 \\
 }\hrdata
 
+\pgfplotsset{
+    qaavgstyle/.style={
+        ybar stacked,
+        bar width=.5cm,
+        width=\textwidth,
+        height=.5\textwidth,
+        grid=major,
+        axis line style={draw=none},
+        tick label style={font=\scriptsize},
+        label style={font=\scriptsize},
+        symbolic x coords={LoCoMo,HotpotQA,2Wiki,MuSiQue},
+        xtick=data,
+        enlarge x limits=0.15,
+        nodes near coords,
+        nodes near coords align={vertical},
+        every node near coord/.append style={
+            text=black,
+            font=\tiny,
+            rotate=90,
+            anchor=west,
+        },
+        ymin=0, ymax=2800,
+        ylabel={Average $token$ consumption},
+    }
+}
+
 \begin{figure}[h]
     \centering
-    \begin{tikzpicture}[
-        every axis/.style={
-            ybar stacked,
-            bar width=.5cm,
-            width=\textwidth,
-            height=.5\textwidth,
-            grid=major,
-            axis line style={draw=none},
-            tick label style={font=\scriptsize},
-            label style={font=\scriptsize},
-            symbolic x coords={LoCoMo,HotpotQA,2Wiki,MuSiQue},
-            xtick=data,
-            enlarge x limits=0.15,
-            nodes near coords,
-            nodes near coords align={vertical},
-            every node near coord/.append style={
-                text=black,
-                font=\tiny,
-                rotate=90,
-                anchor=west,
-            },
-            ymin=0, ymax=2800,
-            ylabel={Average $token$ consumption},
-        }
-    ]
+    \begin{tikzpicture}
     
     \begin{axis}[
+        qaavgstyle,
         hide axis,
         every node near coord/.append style={
             yshift=0.25cm,
@@ -75,7 +78,7 @@ MuSiQue   & 1332.5 & 3.9 \\
     \end{axis}
 
     \begin{axis}[
-        %hide axis,
+        qaavgstyle,
         every node near coord/.append style={
             yshift=-0.25cm,
         }
@@ -97,6 +100,7 @@ MuSiQue   & 1332.5 & 3.9 \\
     \end{axis}
 
     \begin{axis}[
+        qaavgstyle,
         every node near coord/.append style={
             yshift=-0.75cm,
         }

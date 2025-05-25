@@ -518,6 +518,72 @@
     url = "http://arxiv.org/abs/1908.10084",
 }
 
+@inproceedings{kwon2023efficient,
+  title={Efficient Memory Management for Large Language Model Serving with PagedAttention},
+  author={Woosuk Kwon and Zhuohan Li and Siyuan Zhuang and Ying Sheng and Lianmin Zheng and Cody Hao Yu and Joseph E. Gonzalez and Hao Zhang and Ion Stoica},
+  booktitle={Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles},
+  year={2023}
+}
+
+
+@InProceedings{pmlr-v201-duman-keles23a,
+  title = 	 {On The Computational Complexity of Self-Attention},
+  author =       {Duman Keles, Feyza and Wijewardena, Pruthuvi Mahesakya and Hegde, Chinmay},
+  booktitle = 	 {Proceedings of The 34th International Conference on Algorithmic Learning Theory},
+  pages = 	 {597--619},
+  year = 	 {2023},
+  editor = 	 {Agrawal, Shipra and Orabona, Francesco},
+  volume = 	 {201},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {20 Feb--23 Feb},
+  publisher =    {PMLR},
+  pdf = 	 {https://proceedings.mlr.press/v201/duman-keles23a/duman-keles23a.pdf},
+  url = 	 {https://proceedings.mlr.press/v201/duman-keles23a.html},
+  abstract = 	 {Transformer architectures have led to remarkable progress in many state-of-art applications. However, despite their successes, modern transformers rely on the self-attention mechanism, whose time- and space-complexity is quadratic in the length of the input. Several approaches have been proposed to speed up self-attention mechanisms to achieve sub-quadratic running time; however, the large majority of these works are not accompanied by rigorous error guarantees. In this work, we establish lower bounds on the computational complexity of self-attention in a number of scenarios. We prove that the time complexity of self-attention is necessarily quadratic in the input length, unless the Strong Exponential Time Hypothesis (SETH) is false. This argument holds even if the attention computation is performed only approximately, and for a variety of attention mechanisms. As a complement to our lower bounds, we show that it is indeed possible to approximate dot-product self-attention using finite Taylor series in linear-time, at the cost of having an exponential dependence on the polynomial order.}
+}
+
+
+@misc{leng2024longcontextragperformance,
+  title={Long Context RAG Performance of Large Language Models}, 
+  author={Quinn Leng and Jacob Portes and Sam Havens and Matei Zaharia and Michael Carbin},
+  year={2024},
+  eprint={2411.03538},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG},
+  url={https://arxiv.org/abs/2411.03538}, 
+}
+
+@inproceedings{
+    peng2024yarn,
+    title={Ya{RN}: Efficient Context Window Extension of Large Language Models},
+    author={Bowen Peng and Jeffrey Quesnelle and Honglu Fan and Enrico Shippole},
+    booktitle={The Twelfth International Conference on Learning Representations},
+    year={2024},
+    url={https://openreview.net/forum?id=wHBfxhZu1u}
+}
+
+@inproceedings{lei-etal-2023-unsupervised,
+    title = "Unsupervised Dense Retrieval with Relevance-Aware Contrastive Pre-Training",
+    author = "Lei, Yibin  and
+      Ding, Liang  and
+      Cao, Yu  and
+      Zan, Changtong  and
+      Yates, Andrew  and
+      Tao, Dacheng",
+    editor = "Rogers, Anna  and
+      Boyd-Graber, Jordan  and
+      Okazaki, Naoaki",
+    booktitle = "Findings of the Association for Computational Linguistics: ACL 2023",
+    month = jul,
+    year = "2023",
+    address = "Toronto, Canada",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.findings-acl.695/",
+    doi = "10.18653/v1/2023.findings-acl.695",
+    pages = "10932--10940",
+    abstract = "Dense retrievers have achieved impressive performance, but their demand for abundant training data limits their application scenarios. Contrastive pre-training, which constructs pseudo-positive examples from unlabeled data, has shown great potential to solve this problem. However, the pseudo-positive examples crafted by data augmentations can be irrelevant. To this end, we propose relevance-aware contrastive learning. It takes the intermediate-trained model itself as an imperfect oracle to estimate the relevance of positive pairs and adaptively weighs the contrastive loss of different pairs according to the estimated relevance. Our method consistently improves the SOTA unsupervised Contriever model on the BEIR and open-domain QA retrieval benchmarks. Further exploration shows that our method can not only beat BM25 after further pre-training on the target corpus but also serves as a good few-shot learner. Our code is publicly available at \url{https://github.com/Yibin-Lei/ReContriever}."
+}
+
 @inproceedings{santhanam-etal-2022-colbertv2,
     title = "{C}ol{BERT}v2: Effective and Efficient Retrieval via Lightweight Late Interaction",
     author = "Santhanam, Keshav  and
@@ -621,42 +687,6 @@
     url={https://arxiv.org/abs/2412.05579}, 
 }
 
-% ------------------------
-
-
-% Paper that implements a graph RAG for enterprise use cases%
-@misc{rasmussen2025zeptemporalknowledgegraph,
-      title={Zep: A Temporal Knowledge Graph Architecture for Agent Memory}, 
-      author={Preston Rasmussen and Pavlo Paliychuk and Travis Beauvais and Jack Ryan and Daniel Chalef},
-      year={2025},
-      eprint={2501.13956},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2501.13956}, 
-}
-
-% React for MHQA %
-@inproceedings{trivedi-etal-2023-interleaving,
-    title = "Interleaving Retrieval with Chain-of-Thought Reasoning for Knowledge-Intensive Multi-Step Questions",
-    author = "Trivedi, Harsh  and
-      Balasubramanian, Niranjan  and
-      Khot, Tushar  and
-      Sabharwal, Ashish",
-    editor = "Rogers, Anna  and
-      Boyd-Graber, Jordan  and
-      Okazaki, Naoaki",
-    booktitle = "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
-    month = jul,
-    year = "2023",
-    address = "Toronto, Canada",
-    publisher = "Association for Computational Linguistics",
-    url = "https://aclanthology.org/2023.acl-long.557/",
-    doi = "10.18653/v1/2023.acl-long.557",
-    pages = "10014--10037",
-    abstract = "Prompting-based large language models (LLMs) are surprisingly powerful at generating natural language reasoning steps or Chains-of-Thoughts (CoT) for multi-step question answering (QA). They struggle, however, when the necessary knowledge is either unavailable to the LLM or not up-to-date within its parameters. While using the question to retrieve relevant text from an external knowledge source helps LLMs, we observe that this one-step retrieve-and-read approach is insufficient for multi-step QA. Here, \textit{what to retrieve} depends on \textit{what has already been derived}, which in turn may depend on \textit{what was previously retrieved}. To address this, we propose IRCoT, a new approach for multi-step QA that interleaves retrieval with steps (sentences) in a CoT, guiding the retrieval with CoT and in turn using retrieved results to improve CoT. Using IRCoT with GPT3 substantially improves retrieval (up to 21 points) as well as downstream QA (up to 15 points) on four datasets: HotpotQA, 2WikiMultihopQA, MuSiQue, and IIRC. We observe similar substantial gains in out-of-distribution (OOD) settings as well as with much smaller models such as Flan-T5-large without additional training. IRCoT reduces model hallucination, resulting in factually more accurate CoT reasoning."
-}
-
-%  Limitations of current scores for MHQA evaluation %  
 @inproceedings{chen-etal-2019-evaluating,
     title = "Evaluating Question Answering Evaluation",
     author = "Chen, Anthony  and
@@ -680,7 +710,6 @@
     abstract = "As the complexity of question answering (QA) datasets evolve, moving away from restricted formats like span extraction and multiple-choice (MC) to free-form answer generation, it is imperative to understand how well current metrics perform in evaluating QA. This is especially important as existing metrics (BLEU, ROUGE, METEOR, and F1) are computed using n-gram similarity and have a number of well-known drawbacks. In this work, we study the suitability of existing metrics in QA. For generative QA, we show that while current metrics do well on existing datasets, converting multiple-choice datasets into free-response datasets is challenging for current metrics. We also look at span-based QA, where F1 is a reasonable metric. We show that F1 may not be suitable for all extractive QA tasks depending on the answer types. Our study suggests that while current metrics may be suitable for existing QA datasets, they limit the complexity of QA datasets that can be created. This is especially true in the context of free-form QA, where we would like our models to be able to generate more complex and abstractive answers, thus necessitating new metrics that go beyond n-gram based matching. As a step towards a better QA metric, we explore using BERTScore, a recently proposed metric for evaluating translation, for QA. We find that although it fails to provide stronger correlation with human judgements, future work focused on tailoring a BERT-based metric to QA evaluation may prove fruitful."
 }
 
-% Other scores for MHQA %
 @misc{zhang2020bertscoreevaluatingtextgeneration,
       title={BERTScore: Evaluating Text Generation with BERT}, 
       author={Tianyi Zhang and Varsha Kishore and Felix Wu and Kilian Q. Weinberger and Yoav Artzi},
@@ -689,6 +718,112 @@
       archivePrefix={arXiv},
       primaryClass={cs.CL},
       url={https://arxiv.org/abs/1904.09675}, 
+}
+
+@article{ALONSO2024102938,
+    title = {MedExpQA: Multilingual benchmarking of Large Language Models for Medical Question Answering},
+    journal = {Artificial Intelligence in Medicine},
+    volume = {155},
+    pages = {102938},
+    year = {2024},
+    issn = {0933-3657},
+    doi = {https://doi.org/10.1016/j.artmed.2024.102938},
+    url = {https://www.sciencedirect.com/science/article/pii/S0933365724001805},
+    author = {Iñigo Alonso and Maite Oronoz and Rodrigo Agerri},
+    keywords = {Large Language Models, Medical Question Answering, Multilinguality, Retrieval Augmented Generation, Natural Language Processing},
+    abstract = {Large Language Models (LLMs) have the potential of facilitating the development of Artificial Intelligence technology to assist medical experts for interactive decision support. This potential has been illustrated by the state-of-the-art performance obtained by LLMs in Medical Question Answering, with striking results such as passing marks in licensing medical exams. However, while impressive, the required quality bar for medical applications remains far from being achieved. Currently, LLMs remain challenged by outdated knowledge and by their tendency to generate hallucinated content. Furthermore, most benchmarks to assess medical knowledge lack reference gold explanations which means that it is not possible to evaluate the reasoning of LLMs predictions. Finally, the situation is particularly grim if we consider benchmarking LLMs for languages other than English which remains, as far as we know, a totally neglected topic. In order to address these shortcomings, in this paper we present MedExpQA, the first multilingual benchmark based on medical exams to evaluate LLMs in Medical Question Answering. To the best of our knowledge, MedExpQA includes for the first time reference gold explanations, written by medical doctors, of the correct and incorrect options in the exams. Comprehensive multilingual experimentation using both the gold reference explanations and Retrieval Augmented Generation (RAG) approaches show that performance of LLMs, with best results around 75 accuracy for English, still has large room for improvement, especially for languages other than English, for which accuracy drops 10 points. Therefore, despite using state-of-the-art RAG methods, our results also demonstrate the difficulty of obtaining and integrating readily available medical knowledge that may positively impact results on downstream evaluations for Medical Question Answering. Data, code, and fine-tuned models will be made publicly available.11https://huggingface.co/datasets/HiTZ/MedExpQA.}
+}
+
+@misc{yaosu2024racm3,
+  author       = {Michihiro Yasunaga},
+  title        = {RA-CM3: Retrieval-Augmented Multimodal Modeling},
+  year         = {2023},
+  howpublished = {\url{https://cs.stanford.edu/~myasu/blog/racm3/}},
+  note         = {Accessed: 2025-05-23}
+}
+
+@article{ALAWWAD2025111332,
+title = {Enhancing textual textbook question answering with large language models and retrieval augmented generation},
+journal = {Pattern Recognition},
+volume = {162},
+pages = {111332},
+year = {2025},
+issn = {0031-3203},
+doi = {https://doi.org/10.1016/j.patcog.2024.111332},
+url = {https://www.sciencedirect.com/science/article/pii/S0031320324010835},
+author = {Hessa A. Alawwad and Areej Alhothali and Usman Naseem and Ali Alkhathlan and Amani Jamal},
+keywords = {Natural language processing, Textbook question answering, Retrieval augmented generation, Large language models, Llama-2},
+abstract = {Textbook question answering (TQA) is a challenging task in artificial intelligence due to the complex nature of context needed to answer complex questions. Although previous research has improved the task, there are still some limitations in textual TQA, including weak reasoning and inability to capture contextual information in the lengthy context. We propose a framework (PLRTQA) that incorporates the retrieval augmented generation (RAG) technique to handle the “out- of-domain” scenario where concepts are spread across different lessons, and utilize transfer learning to handle the long context and enhance reasoning abilities. Our architecture outperforms the baseline, achieving an accuracy improvement of 4. 12% in the validation set and 9. 84% in the test set for textual multiple-choice questions. While this paper focuses on solving challenges in the textual TQA, It provides a foundation for future work in multimodal TQA where the visual components are integrated to address more complex educational scenarios. Code: https://github.com/hessaAlawwad/PLR-TQA}
+}
+
+@misc{zheng2023judgingllmasajudgemtbenchchatbot,
+      title={Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena}, 
+      author={Lianmin Zheng and Wei-Lin Chiang and Ying Sheng and Siyuan Zhuang and Zhanghao Wu and Yonghao Zhuang and Zi Lin and Zhuohan Li and Dacheng Li and Eric P. Xing and Hao Zhang and Joseph E. Gonzalez and Ion Stoica},
+      year={2023},
+      eprint={2306.05685},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2306.05685}, 
+}
+
+@inproceedings{tang-etal-2021-multi,
+    title = "Do Multi-Hop Question Answering Systems Know How to Answer the Single-Hop Sub-Questions?",
+    author = "Tang, Yixuan  and
+      Ng, Hwee Tou  and
+      Tung, Anthony",
+    editor = "Merlo, Paola  and
+      Tiedemann, Jorg  and
+      Tsarfaty, Reut",
+    booktitle = "Proceedings of the 16th Conference of the European Chapter of the Association for Computational Linguistics: Main Volume",
+    month = apr,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.eacl-main.283/",
+    doi = "10.18653/v1/2021.eacl-main.283",
+    pages = "3244--3249",
+    abstract = "Multi-hop question answering (QA) requires a model to retrieve and integrate information from multiple passages to answer a question. Rapid progress has been made on multi-hop QA systems with regard to standard evaluation metrics, including EM and F1. However, by simply evaluating the correctness of the answers, it is unclear to what extent these systems have learned the ability to perform multi-hop reasoning. In this paper, we propose an additional sub-question evaluation for the multi-hop QA dataset HotpotQA, in order to shed some light on explaining the reasoning process of QA systems in answering complex questions. We adopt a neural decomposition model to generate sub-questions for a multi-hop question, followed by extracting the corresponding sub-answers. Contrary to our expectation, multiple state-of-the-art multi-hop QA models fail to answer a large portion of sub-questions, although the corresponding multi-hop questions are correctly answered. Our work takes a step forward towards building a more explainable multi-hop QA system."
+}
+
+@article{qwen2,
+      title={Qwen2 Technical Report}, 
+      author={An Yang and Baosong Yang and Binyuan Hui and Bo Zheng and Bowen Yu and Chang Zhou and Chengpeng Li and Chengyuan Li and Dayiheng Liu and Fei Huang and Guanting Dong and Haoran Wei and Huan Lin and Jialong Tang and Jialin Wang and Jian Yang and Jianhong Tu and Jianwei Zhang and Jianxin Ma and Jin Xu and Jingren Zhou and Jinze Bai and Jinzheng He and Junyang Lin and Kai Dang and Keming Lu and Keqin Chen and Kexin Yang and Mei Li and Mingfeng Xue and Na Ni and Pei Zhang and Peng Wang and Ru Peng and Rui Men and Ruize Gao and Runji Lin and Shijie Wang and Shuai Bai and Sinan Tan and Tianhang Zhu and Tianhao Li and Tianyu Liu and Wenbin Ge and Xiaodong Deng and Xiaohuan Zhou and Xingzhang Ren and Xinyu Zhang and Xipin Wei and Xuancheng Ren and Yang Fan and Yang Yao and Yichang Zhang and Yu Wan and Yunfei Chu and Yuqiong Liu and Zeyu Cui and Zhenru Zhang and Zhihao Fan},
+      journal={arXiv preprint arXiv:2407.10671},
+      year={2024}
+}
+
+@inproceedings{trivedi-etal-2023-interleaving,
+    title = "Interleaving Retrieval with Chain-of-Thought Reasoning for Knowledge-Intensive Multi-Step Questions",
+    author = "Trivedi, Harsh  and
+      Balasubramanian, Niranjan  and
+      Khot, Tushar  and
+      Sabharwal, Ashish",
+    editor = "Rogers, Anna  and
+      Boyd-Graber, Jordan  and
+      Okazaki, Naoaki",
+    booktitle = "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2023",
+    address = "Toronto, Canada",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.acl-long.557/",
+    doi = "10.18653/v1/2023.acl-long.557",
+    pages = "10014--10037",
+    abstract = "Prompting-based large language models (LLMs) are surprisingly powerful at generating natural language reasoning steps or Chains-of-Thoughts (CoT) for multi-step question answering (QA). They struggle, however, when the necessary knowledge is either unavailable to the LLM or not up-to-date within its parameters. While using the question to retrieve relevant text from an external knowledge source helps LLMs, we observe that this one-step retrieve-and-read approach is insufficient for multi-step QA. Here, \textit{what to retrieve} depends on \textit{what has already been derived}, which in turn may depend on \textit{what was previously retrieved}. To address this, we propose IRCoT, a new approach for multi-step QA that interleaves retrieval with steps (sentences) in a CoT, guiding the retrieval with CoT and in turn using retrieved results to improve CoT. Using IRCoT with GPT3 substantially improves retrieval (up to 21 points) as well as downstream QA (up to 15 points) on four datasets: HotpotQA, 2WikiMultihopQA, MuSiQue, and IIRC. We observe similar substantial gains in out-of-distribution (OOD) settings as well as with much smaller models such as Flan-T5-large without additional training. IRCoT reduces model hallucination, resulting in factually more accurate CoT reasoning."
+}
+
+% ------------------------
+
+
+% Paper that implements a graph RAG for enterprise use cases%
+@misc{rasmussen2025zeptemporalknowledgegraph,
+      title={Zep: A Temporal Knowledge Graph Architecture for Agent Memory}, 
+      author={Preston Rasmussen and Pavlo Paliychuk and Travis Beauvais and Jack Ryan and Daniel Chalef},
+      year={2025},
+      eprint={2501.13956},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2501.13956}, 
 }
 
 % HippoRAG 2 %
@@ -716,36 +851,6 @@ url = {https://www.sciencedirect.com/science/article/pii/S1877050924029806},
 author = {Hazem Abdelazim and Tony Begemy and Ahmed Galal and Hala Sedki and Ali Mohamed},
 keywords = {Large Language Models, Retrieval Augmented Generation, Arabic NLP},
 abstract = {The introduction of Large Language Models (LLMs), and generative AI has significantly transformed the field of natural language processing. These models have exhibited profound reasoning capabilities, marking considerable progress across diverse general knowledge reasoning tasks. Consequently, the deployment of LLMs in domain-specific contexts has become a prime objective for governments and corporations eager to leverage the generative AI revolution. However, the Arabic language has notably lagged in attention and development compared to other languages in this arena. This research endeavors to delve into various facets of Arabic closed-domain question and answering systems that emulate the reasoning requirements of private enterprise data. Our study focuses on the practical deployment of Arabic LLMs in targeted applications, specifically utilizing the ACQAD (Arabic Complex Question Answering Dataset), which exhibits multi-hop reasoning. Different strategies are experimented using Long Context Window (LCW) and Retrieval Augmented Generation (RAG). Results showed that decomposing complex questions using Chain-of-Thought reasoning considerably improved the performance from 75% to 92% using LCW, but at much higher token cost compared to RAG. Trade-of between cost and performance showed that 80% accuracy can be attained using only 30% of the cost using RAG Sentence - level embeddings. Microsoft E5 embedding model is used and OpenAI GPT4-turbo LLM which proved superior reasoning performance compared to other Arabic LLMs}
-}
-
-% Other tasks such as textual textbook question answering %
-@article{ALAWWAD2025111332,
-title = {Enhancing textual textbook question answering with large language models and retrieval augmented generation},
-journal = {Pattern Recognition},
-volume = {162},
-pages = {111332},
-year = {2025},
-issn = {0031-3203},
-doi = {https://doi.org/10.1016/j.patcog.2024.111332},
-url = {https://www.sciencedirect.com/science/article/pii/S0031320324010835},
-author = {Hessa A. Alawwad and Areej Alhothali and Usman Naseem and Ali Alkhathlan and Amani Jamal},
-keywords = {Natural language processing, Textbook question answering, Retrieval augmented generation, Large language models, Llama-2},
-abstract = {Textbook question answering (TQA) is a challenging task in artificial intelligence due to the complex nature of context needed to answer complex questions. Although previous research has improved the task, there are still some limitations in textual TQA, including weak reasoning and inability to capture contextual information in the lengthy context. We propose a framework (PLRTQA) that incorporates the retrieval augmented generation (RAG) technique to handle the “out- of-domain” scenario where concepts are spread across different lessons, and utilize transfer learning to handle the long context and enhance reasoning abilities. Our architecture outperforms the baseline, achieving an accuracy improvement of 4. 12% in the validation set and 9. 84% in the test set for textual multiple-choice questions. While this paper focuses on solving challenges in the textual TQA, It provides a foundation for future work in multimodal TQA where the visual components are integrated to address more complex educational scenarios. Code: https://github.com/hessaAlawwad/PLR-TQA}
-}
-
-% Justify other use cases for Question Answering tasks%
-@article{ALONSO2024102938,
-title = {MedExpQA: Multilingual benchmarking of Large Language Models for Medical Question Answering},
-journal = {Artificial Intelligence in Medicine},
-volume = {155},
-pages = {102938},
-year = {2024},
-issn = {0933-3657},
-doi = {https://doi.org/10.1016/j.artmed.2024.102938},
-url = {https://www.sciencedirect.com/science/article/pii/S0933365724001805},
-author = {Iñigo Alonso and Maite Oronoz and Rodrigo Agerri},
-keywords = {Large Language Models, Medical Question Answering, Multilinguality, Retrieval Augmented Generation, Natural Language Processing},
-abstract = {Large Language Models (LLMs) have the potential of facilitating the development of Artificial Intelligence technology to assist medical experts for interactive decision support. This potential has been illustrated by the state-of-the-art performance obtained by LLMs in Medical Question Answering, with striking results such as passing marks in licensing medical exams. However, while impressive, the required quality bar for medical applications remains far from being achieved. Currently, LLMs remain challenged by outdated knowledge and by their tendency to generate hallucinated content. Furthermore, most benchmarks to assess medical knowledge lack reference gold explanations which means that it is not possible to evaluate the reasoning of LLMs predictions. Finally, the situation is particularly grim if we consider benchmarking LLMs for languages other than English which remains, as far as we know, a totally neglected topic. In order to address these shortcomings, in this paper we present MedExpQA, the first multilingual benchmark based on medical exams to evaluate LLMs in Medical Question Answering. To the best of our knowledge, MedExpQA includes for the first time reference gold explanations, written by medical doctors, of the correct and incorrect options in the exams. Comprehensive multilingual experimentation using both the gold reference explanations and Retrieval Augmented Generation (RAG) approaches show that performance of LLMs, with best results around 75 accuracy for English, still has large room for improvement, especially for languages other than English, for which accuracy drops 10 points. Therefore, despite using state-of-the-art RAG methods, our results also demonstrate the difficulty of obtaining and integrating readily available medical knowledge that may positively impact results on downstream evaluations for Medical Question Answering. Data, code, and fine-tuned models will be made publicly available.11https://huggingface.co/datasets/HiTZ/MedExpQA.}
 }
 
 % More on RAG - Related topics expand some ideas %

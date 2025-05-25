@@ -1,18 +1,25 @@
 \begin{table}[h]
     \centering
-    \small{
-        \begin{tabular}{lccccc}
-            \toprule
-            & {\textbf{LoCoMo}} & {\textbf{HotpotQA}} &{\textbf{2Wiki}} & {\textbf{MuSiQue}} \\
-            \midrule
-            \scriptsize \textit{\texttt{\#} of documents} & 5,882 & 66,609 & 56,680 & 21,100 \\
-            \scriptsize \textit{Avg document length} & 207.4 & 531.9 & 430.8 & 474.24 \\
-            \scriptsize \textit{Avg \texttt{\#} of tokens} & 54.7 & 120.2 & 104.1 & 106.3 \\
-            \midrule
-            \scriptsize \textit{\texttt{\#} of questions} & 1,525 & 7,405 & 12,576 & 2,417 \\
-            \bottomrule
-        \end{tabular}
+    \begin{tabular}[\textwidth]{
+        >{\raggedright\arraybackslash}p{2cm}  % Left-aligned and wrapped
+        c
+        >{\centering\arraybackslash}p{2.5cm}
+        >{\centering\arraybackslash}p{2.5cm}
+        c
     }
+        \toprule
+        \textbf{\scriptsize Dataset} &
+        \textbf{\scriptsize \# Documents} &
+        \textbf{\scriptsize Avg Doc Length (chars)} &
+        \textbf{\scriptsize Avg Doc Length (tokens)} &
+        \textbf{\scriptsize \# Questions} \\
+        \midrule
+        LoCoMo & 5,882 & 207.4 & 54.7 & 1,525 \\
+        HotpotQA & 66,609 & 531.9 & 120.2 & 7,405 \\
+        2Wiki & 56,680 & 430.8 & 104.1 & 12,576 \\
+        MuSiQue & 21,100 & 474.2 & 106.3 & 2,417 \\
+        \bottomrule
+    \end{tabular}
     \caption{\small Dataset statistics.}
     \label{tab:dataset_stats}
 \end{table}

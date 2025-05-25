@@ -65,7 +65,8 @@ class HippoRAG(Agent):
 
         self._index = hipporag
         self._corpus = corpus
-        self._reverse_doc_map = {doc['content']: doc['doc_id'] for doc in corpus}
+        self._reverse_doc_map = {doc['content']
+            : doc['doc_id'] for doc in corpus}
 
     def reason(self, question: str) -> NoteBook:
         """
@@ -106,12 +107,12 @@ class HippoRAG(Agent):
         if self._index is None or not self._corpus:
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
-            
+
         if not self._reverse_doc_map:
             raise ValueError(
                 "Reverse document map not created. Please index the dataset before retrieving documents.")
 
-        results = self._index.rag_qa(queries=questions) # type: ignore
+        results = self._index.rag_qa(queries=questions)  # type: ignore
 
         Logger().info("Successfully retrieved documents")
 

@@ -18,7 +18,7 @@ K & EM & R1 & R2 & L1 \\
 5   & 39.6 & 49.2 & 27.2 & 49.0 \\
 10  & 43.2 & 53.4 & 29.7 & 53.0 \\
 20  & 46.0 & 56.7 & 31.5 & 57.0 \\
-100 & 47.5 & 59.2 & 32.7 &  \\
+100 & 47.5 & 59.2 & 32.7 & 60.7 \\
 }\hotpotqa
 
 \pgfplotstableread[row sep=\\,col sep=&]{
@@ -26,7 +26,7 @@ K & EM & R1 & R2 & L1 \\
 5   & 25.2 & 28.1 & 19.4 & 26.0 \\
 10  & 27.9 & 31.2 & 21.9 & 29.0 \\
 20  & 31.5 & 35.2 & 24.9 & 35.0 \\
-100 & 33.4 & 37.5 & 26.1 &  \\
+100 & 33.4 & 37.5 & 26.1 & 35.0 \\
 }\twowiki
 
 \pgfplotstableread[row sep=\\,col sep=&]{
@@ -65,13 +65,13 @@ K & EM & R1 & R2 & L1 \\
         axis line style={draw=none},
         grid=major,
         grid style={dotted},
-        yticklabel style={font=\fontsize{1pt}{4.5pt}\selectfont},
-        xticklabel style={font=\fontsize{1pt}{4.5pt}\selectfont},
+        yticklabel style={font=\tiny},
+        xticklabel style={font=\tiny},
         title style={font=\tiny},
         xtick=data,
         symbolic x coords={5,10,20,100},
-        ylabel style={yshift=-14pt},
-        xlabel style={yshift=8pt}
+        ylabel style={yshift=-2pt},
+        xlabel style={yshift=2pt}
     ]
 
     % LoCoMo subplot

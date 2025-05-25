@@ -52,10 +52,8 @@ method & LoCoMo & HotpotQA & TwoWiki & MuSiQue \\
 all& 21633978  & 104914029 & 178107971 & 34321517 \\
 }\sumdata
 
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}[
-    every axis/.style={
+\pgfplotsset{
+    qacostgr/.style={
         ybar,
         bar width=.35cm,
         width=0.18\textwidth,
@@ -79,10 +77,15 @@ all& 21633978  & 104914029 & 178107971 & 34321517 \\
         xlabel={\tiny Retrieved Docs},
         title style={font=\scriptsize, yshift=12pt},
     }
-]
+}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
 
 % LoCoMo subplot (with y axis label)
 \begin{axis}[
+    qacostgr,
     at={(0\textwidth,0)},
     anchor=south west,
     symbolic x coords={5,10,20,100,all},
@@ -92,7 +95,7 @@ all& 21633978  & 104914029 & 178107971 & 34321517 \\
     title={LoCoMo},
     yticklabels={},
     ytick style={draw=none},
-    ylabel style={yshift=-24pt},
+    ylabel style={yshift=-6pt},
 ]
 \addplot+[
     fill={rgb,255:red,130; green,130; blue,180}, draw=none,
@@ -101,6 +104,7 @@ all& 21633978  & 104914029 & 178107971 & 34321517 \\
 
 % HotPotQA subplot (no ylabel)
 \begin{axis}[
+    qacostgr,
     at={(0.21\textwidth,0)},
     anchor=south west,
     symbolic x coords={5,10,20,100,all},
@@ -118,6 +122,7 @@ all& 21633978  & 104914029 & 178107971 & 34321517 \\
 
 % TwoWiki subplot (no ylabel)
 \begin{axis}[
+    qacostgr,
     at={(0.42\textwidth,0)},
     anchor=south west,
     symbolic x coords={5,10,20,100,all},
@@ -134,6 +139,7 @@ all& 21633978  & 104914029 & 178107971 & 34321517 \\
 
 % MuSiQue subplot (no ylabel)
 \begin{axis}[
+    qacostgr,
     at={(0.63\textwidth,0)},
     anchor=south west,
     symbolic x coords={5,10,20,100,all},

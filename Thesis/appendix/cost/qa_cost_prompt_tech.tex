@@ -25,35 +25,38 @@ HotpotQA  & 9358497 & 35014 \\
 MuSiQue   & 3220550 & 9451 \\
 }\hrdata
 
-\begin{figure}[h]
+\pgfplotsset{
+  qacoststyle/.style={
+    ybar stacked,
+    bar width=.5cm,
+    width=\textwidth,
+    height=.5\textwidth,
+    grid=major,
+    axis line style={draw=none},
+    tick label style={font=\scriptsize},
+    label style={font=\scriptsize},
+    symbolic x coords={LoCoMo,HotpotQA,2Wiki,MuSiQue},
+    xtick=data,
+    enlarge x limits=0.15,
+    nodes near coords,
+    nodes near coords align={vertical},
+    every node near coord/.append style={
+      text=black,
+      font=\tiny,
+      rotate=90,
+      anchor=west,
+    },
+    ymin=0, ymax=25000000,
+    ylabel={Total $token$ consumption},
+  }
+}
+
+\begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[
-        every axis/.style={
-            ybar stacked,
-            bar width=.5cm,
-            width=\textwidth,
-            height=.5\textwidth,
-            grid=major,
-            axis line style={draw=none},
-            tick label style={font=\scriptsize},
-            label style={font=\scriptsize},
-            symbolic x coords={LoCoMo,HotpotQA,2Wiki,MuSiQue},
-            xtick=data,
-            enlarge x limits=0.15,
-            nodes near coords,
-            nodes near coords align={vertical},
-            every node near coord/.append style={
-                text=black,
-                font=\tiny,
-                rotate=90,
-                anchor=west,
-            },
-            ymin=0, ymax=25000000,
-            ylabel={Total $token$ consumption},
-        }
-    ]
+    \begin{tikzpicture}
     
     \begin{axis}[
+        qacoststyle,
         hide axis,
         every node near coord/.append style={
             yshift=0.25cm,
@@ -75,7 +78,7 @@ MuSiQue   & 3220550 & 9451 \\
     \end{axis}
 
     \begin{axis}[
-        %hide axis,
+        qacoststyle,
         every node near coord/.append style={
             yshift=-0.25cm,
         }
@@ -97,6 +100,7 @@ MuSiQue   & 3220550 & 9451 \\
     \end{axis}
 
     \begin{axis}[
+        qacoststyle,
         every node near coord/.append style={
             yshift=-0.75cm,
         }

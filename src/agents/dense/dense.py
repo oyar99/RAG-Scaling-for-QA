@@ -98,17 +98,19 @@ class Dense(Agent):
         Returns:
             list[NoteBook]: The notebooks containing the retrieved documents
         """
+        # pylint: disable=duplicate-code
         if self._index is None or not self._corpus:
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
-            
+
         if not self._qa_prompt:
             raise ValueError(
                 "QA prompt not created. Please index the dataset before retrieving documents.")
-            
+
         if not self._sentence_transformer:
             raise ValueError(
                 "Sentence transformer not created. Please index the dataset before retrieving documents.")
+        # pylint: enable=duplicate-code
 
         devices = [f"cuda:{i}"
                    for i in range(min(torch.cuda.device_count(), 2))] if torch.cuda.is_available() else ['cpu']

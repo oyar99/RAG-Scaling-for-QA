@@ -2,11 +2,13 @@
 \label{sec:objectives}
 
 \subsection{General Objective}
-Evaluate the performance of three agent-based architectures designed to implement long-term memory in solving natural language long-input tasks including QA and MHQA.
+Evaluate the performance of multiple agent-based architectures designed to solve natural language long-input tasks including QA and MHQA.
 
 \subsection{Specific Objectives}
 
 \begin{enumerate}
-    \item Design and implement three agent-based architectures for long-term memory incorporating principles from cognitive science.
-    \item Evaluate the systems using $R@2$ and $R@5$ for retrieval performance and Exact Match (EM) and $F1$ score for QA across four benchmark datasets: LoCoMo, HotpotQA, MuSiQue, and 2WikiMultiHopQA \cite{maharana-etal-2024-evaluating}\cite{yang2018hotpotqa}\cite{trivedi2021musique}\cite{ho-etal-2020-constructing}.
+    \item Build strong baselines using standard RAG techniques with three distinct retrievers, as well as more advanced systems, such as HippoRAG, to serve as reference systems.
+    \item Design and implement multiple agent-based architectures for solving QA tasks incorporating principles from cognitive science.
+    \item Evaluate the systems using Recall@k for retrieval performance and Exact Match (EM), ROUGE-1 and ROUGE-2, and an LLM binary judge score for QA across four benchmark datasets: LoCoMo, HotpotQA, MuSiQue, and 2WikiMultiHopQA.
+    \item Analyze and compare the performance and cost-benefit of the proposed agent architectures against the established baselines to assess both their effectiveness and feasibility.
 \end{enumerate}
