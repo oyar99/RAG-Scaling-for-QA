@@ -125,7 +125,6 @@ class ColbertV2Reranker(Agent):
         ])
 
         # pylint: enable=duplicate-code
-
         Logger().info("Waiting for batch job to finish")
 
         wait_for_batch_job_and_save_result(batch, rerank_results_path)

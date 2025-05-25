@@ -50,6 +50,7 @@ class Oracle(Agent):
         Raises:
             ValueError: If the question has no answer.
         """
+        # pylint: disable=duplicate-code
         if not self._index:
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
@@ -57,6 +58,7 @@ class Oracle(Agent):
         if not self._qa_prompt:
             raise ValueError(
                 "QA prompt not created. Please index the dataset before retrieving documents.")
+        # pylint: enable=duplicate-code
 
         question_obj = self._index.get(question)
 

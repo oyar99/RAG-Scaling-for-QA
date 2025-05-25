@@ -76,6 +76,7 @@ class ColbertV2(Agent):
         Args:
             questions (list[str]): List of questions to answer.
         """
+        # pylint: disable=duplicate-code
         if not self._corpus:
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
@@ -83,6 +84,7 @@ class ColbertV2(Agent):
         if not self._qa_prompt:
             raise ValueError(
                 "QA prompt not created. Please index the dataset before retrieving documents.")
+        # pylint: enable=duplicate-code
 
         colbert_dir = os.path.join(os.path.normpath(
             os.getcwd() + os.sep + os.pardir), 'temp' + os.sep + 'colbert')
