@@ -1,12 +1,13 @@
 """Utility functions for questions processing."""
 
+from typing import Optional
 from models.question_answer import QuestionAnswer, QuestionCategory
 
 
 def filter_questions(
     questions: list[QuestionAnswer],
-    limit: int = None,
-    category: int = None
+    limit: Optional[int] = None,
+    category: Optional[int] = None
 ) -> list[QuestionAnswer]:
     """
     Filters the list of questions based on the specified category and limit.

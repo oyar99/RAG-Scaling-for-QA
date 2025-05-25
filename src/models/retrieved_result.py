@@ -1,6 +1,9 @@
 """RetrievedResult class."""
 
 
+from typing import Optional
+
+
 class RetrievedResult(dict):
     """
     RetrievedResult class to store the retrieved results.
@@ -13,7 +16,7 @@ class RetrievedResult(dict):
         score (float): the relevance score of the document
     """
 
-    def __init__(self, doc_id: int, content: str, score: float):
+    def __init__(self, doc_id: int, content: str, score: Optional[float] = None) -> None:
         dict.__init__(self, doc_id=doc_id,
                       content=content, score=score)
 

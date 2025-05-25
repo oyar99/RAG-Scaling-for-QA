@@ -2,6 +2,7 @@
 import io
 import json
 import time
+from typing import Optional
 from openai.types import Batch
 
 from azure_open_ai.openai_client import OpenAIClient
@@ -132,7 +133,7 @@ def retrieve_batch_job(
 
 
 def retrieve_file(
-    file_id: str,
+    file_id: Optional[str],
 ) -> bytes:
     """
     Retrieves a file using Azure OpenAI.
@@ -143,6 +144,9 @@ def retrieve_file(
     Returns:
         bytes: the file object if the file is retrieved successfully
     """
+    if not file_id:
+        raise ValueError("file_id must be a non-empty string.")
+    
     openai_client = OpenAIClient().get_client()
 
     if not openai_client:

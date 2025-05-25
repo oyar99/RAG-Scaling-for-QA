@@ -95,33 +95,39 @@ class Default(Agent):
             Returns:
                 NoteBook: The notebook containing the retrieved documents
             """
+            if not self._qa_prompt:
+                raise ValueError(
+                    "QA prompt not created. Please index the dataset before retrieving documents.")
+
             notebook = NoteBook()
 
             notes = self._qa_prompt.format(
-                context=get_content(question_batch['context'])
+                context=get_content(question_batch['context'])  # type: ignore
             )
-            
+
             notebook.update_notes(notes)
             notebook.update_sources([RetrievedResult(
-                doc_id=doc['doc_id'], content=doc['content'], score=None)
+                doc_id=doc['doc_id'], content=doc['content'], score=None)  # type: ignore
                 for doc in question_batch['context']])
-            notebook.update_questions(question_batch['content'])
+            notebook.update_questions(
+                question_batch['content'])  # type: ignore
             return notebook
 
         notebooks = [
             get_notebook(question_batch)
             for question_batch in question_batches
         ]
-        
+
         retrieved_docs = 0
         for notebook in notebooks:
             retrieved_docs += len(notebook.get_sources())
-            
-        Logger().info(f"Average number of retrieved docs: {1.0 * retrieved_docs / len(notebooks)}")
+
+        Logger().info(
+            f"Average number of retrieved docs: {1.0 * retrieved_docs / len(notebooks)}")
 
         return notebooks
 
-    def reason(self, _: str) -> NoteBook:
+    def reason(self, question: str) -> NoteBook:
         """Dummy reasoning since it just returns all the documents in the dataset.
 
         Args:

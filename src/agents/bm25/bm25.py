@@ -58,7 +58,7 @@ class BM25(Agent):
 
         Logger().info("Successfully indexed documents")
 
-    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
+    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:  # type: ignore
         """
         Uses its question index to answer the questions.
 
@@ -82,6 +82,10 @@ class BM25(Agent):
         if not self._index or not self._corpus:
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
+
+        if not self._qa_prompt:
+            raise ValueError(
+                "QA prompt not created. Please index the dataset before retrieving documents.")
         # pylint: enable=duplicate-code
 
         notebook = NoteBook()

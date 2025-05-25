@@ -38,7 +38,8 @@ def dia_idx(doc_id: str) -> int:
     """
     return int(doc_id.split(':')[1]) - 1
 
-def format_content(date: str, message: int, speaker: str, text: str, alt_text: str = None) -> str:
+
+def format_content(date: str, message: int, speaker: str, text: str, alt_text: Optional[str] = None) -> str:
     """
     Formats the content of a message.
 
@@ -167,24 +168,32 @@ class Locomo(Dataset):
         Returns:
             question (Optional[QuestionAnswer]): the question if found, None otherwise
         """
-        if not self._dataset:
+        if not self._dataset and not self._dataset_map:
             Logger().error("Dataset not read. Please read the dataset before getting questions.")
             raise ValueError(
                 "Dataset not read. Please read the dataset before getting questions.")
 
         match = re.match(r'^(conv-.\d+)-(.*)$',
                          question_id)
-        sample_id = match.group(1)
-        message_id = match.group(2)
 
-        if sample_id not in self._dataset_map:
+        if not match:
+            Logger().error(
+                f"Invalid question id format: {question_id}. Expected format: conv-<sample_id>-<message_id>")
+            raise ValueError(
+                f"Invalid question id format: {question_id}. Expected format: conv-<sample_id>-<message_id>"
+            )
+
+        sample_id = str(match.group(1))
+        message_id = str(match.group(2))
+
+        if sample_id not in self._dataset_map:  # type: ignore
             Logger().error(
                 f"Sample id {sample_id} not found in the dataset.")
             raise ValueError(
                 f"Sample id {sample_id} not found in the dataset.")
 
         return next((
-            qa for qa in self._dataset_map[sample_id]['qa']
+            qa for qa in self._dataset_map[sample_id]['qa']  # type: ignore
             if get_content_hash(qa['question']) == message_id), None
         )
 

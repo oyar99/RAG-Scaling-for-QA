@@ -54,12 +54,16 @@ class Oracle(Agent):
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
 
+        if not self._qa_prompt:
+            raise ValueError(
+                "QA prompt not created. Please index the dataset before retrieving documents.")
+
         question_obj = self._index.get(question)
 
         if question_obj is None:
             raise ValueError(f"Question {question} has no answer.")
 
-        docs = question_obj.get('docs')
+        docs = question_obj.get('docs') or []
 
         notebook = NoteBook()
 
@@ -73,7 +77,7 @@ class Oracle(Agent):
 
         return notebook
 
-    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
+    def batch_reason(self, questions: list[QuestionAnswer]) -> list[NoteBook]:
         """
         Uses its question index to answer the questions.
 

@@ -42,7 +42,7 @@ class HippoRAG(Agent):
         corpus = dataset.read_corpus()
 
         hipporag_dir = os.path.join(os.path.normpath(
-            os.getcwd() + os.sep + os.pardir), 'temp' + os.sep + 'hipporag' + os.sep + dataset.name)
+            os.getcwd() + os.sep + os.pardir), 'temp' + os.sep + 'hipporag' + os.sep + (dataset.name or ""))
 
         os.makedirs(hipporag_dir, exist_ok=True)
 
@@ -67,7 +67,7 @@ class HippoRAG(Agent):
         self._corpus = corpus
         self._reverse_doc_map = {doc['content']: doc['doc_id'] for doc in corpus}
 
-    def reason(self, _: str) -> NoteBook:
+    def reason(self, question: str) -> NoteBook:
         """
         Perform reasoning on the question using the indexed documents.
 
@@ -84,7 +84,7 @@ class HippoRAG(Agent):
             "HippoRAG agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
 
-    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
+    def batch_reason(self, questions: list[QuestionAnswer]) -> list[NoteBook]:
         """
         Uses its question index to answer the questions.
 
@@ -106,8 +106,12 @@ class HippoRAG(Agent):
         if self._index is None or not self._corpus:
             raise ValueError(
                 "Index not created. Please index the dataset before retrieving documents.")
+            
+        if not self._reverse_doc_map:
+            raise ValueError(
+                "Reverse document map not created. Please index the dataset before retrieving documents.")
 
-        results = self._index.rag_qa(queries=questions)
+        results = self._index.rag_qa(queries=questions) # type: ignore
 
         Logger().info("Successfully retrieved documents")
 

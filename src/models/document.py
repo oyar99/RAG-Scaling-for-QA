@@ -1,6 +1,9 @@
 """Document class."""
 
 
+from typing import Optional
+
+
 class Document(dict):
     """
     Document class to store the document information.
@@ -13,7 +16,7 @@ class Document(dict):
         content (str): the content of the document
     """
 
-    def __init__(self, doc_id: str, content: str, folder_id: str = None):
+    def __init__(self, doc_id: str, content: str, folder_id: Optional[str] = None):
         dict.__init__(self, doc_id=doc_id, folder_id=folder_id,
                       content=content)
 

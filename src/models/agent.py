@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from multiprocessing import Pool, cpu_count
+from typing import Optional
 from models.dataset import Dataset
 from models.question_answer import QuestionAnswer
 from models.retrieved_result import RetrievedResult
@@ -26,7 +27,7 @@ class NoteBook:
         """
         self._notes = notes
 
-    def get_notes(self) -> str:
+    def get_notes(self) -> Optional[str]:
         """
         Gets the notes from the notebook.
 
@@ -62,7 +63,7 @@ class NoteBook:
         """
         self._questions = questions
 
-    def get_questions(self) -> list[str]:
+    def get_questions(self) -> Optional[list[str]]:
         """
         Gets the questions from the notebook.
 

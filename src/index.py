@@ -1,18 +1,17 @@
 """Evaluating agent-based architectures for retrieval and answer generation tasks."""
 import argparse
-from typing import Any
 from dotenv import load_dotenv
 
 from logger.logger import Logger
 from orchestrator.orchestrator import Orchestrator
 
 
-def parse_args() -> dict[str, Any]:
+def parse_args() -> argparse.Namespace:
     """
     Parses the command line arguments.
 
     Returns:
-        dict[str, Any]: parsed arguments
+        argparse.Namespace: parsed arguments
     """
     parser = argparse.ArgumentParser(
         prog='agent-eval-mem',

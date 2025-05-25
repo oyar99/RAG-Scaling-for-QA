@@ -8,7 +8,7 @@ from models.document import Document
 K_LIST = [1, 2, 5, 10, 20, 100]
 
 
-def eval_retrieval_recall(doc_pairs: list[tuple[list[Document], list[Document]]]) -> dict[int, float]:
+def eval_retrieval_recall(doc_pairs: list[tuple[list[Document] | None, list[Document]]]) -> dict[int, float]:
     """
     Evaluates the recall between the ground truth documents and the model's retrieved documents.
 
@@ -29,7 +29,7 @@ A list of pairs with the ground documents and the retrieved documents.
     return avg_recall_at_k
 
 
-def recall_score(expected_docs: list[Document], actual_docs: list[Document]) -> dict[int, float]:
+def recall_score(expected_docs: list[Document] | None, actual_docs: list[Document]) -> dict[int, float]:
     """
     Evaluates the recall between the ground truth documents and the model's retrieved documents.
 

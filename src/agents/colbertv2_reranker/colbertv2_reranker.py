@@ -38,7 +38,7 @@ class ColbertV2Reranker(Agent):
         self._corpus = self._colbertv2._corpus
         self._qa_prompt = dataset.get_prompt('qa_rel')
 
-    def reason(self, _: str) -> NoteBook:
+    def reason(self, question: str) -> NoteBook:
         """
         Reason over the indexed dataset to answer the question.
         """
@@ -49,7 +49,7 @@ class ColbertV2Reranker(Agent):
             "ColBERTV2 Reranker agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
 
-    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
+    def batch_reason(self, questions: list[QuestionAnswer]) -> list[NoteBook]:
         """
         Uses its question index to answer the questions.
 
@@ -67,6 +67,14 @@ class ColbertV2Reranker(Agent):
         Args:
             questions (list[str]): List of questions to answer.
         """
+        if not self._corpus:
+            raise ValueError(
+                "Index not created. Please index the dataset before retrieving documents.")
+
+        if not self._qa_prompt:
+            raise ValueError(
+                "QA prompt not created. Please index the dataset before retrieving documents.")
+
         # pylint: disable=duplicate-code
         colbert_dir = os.path.join(os.path.normpath(
             os.getcwd() + os.sep + os.pardir), 'temp' + os.sep + 'colbert')

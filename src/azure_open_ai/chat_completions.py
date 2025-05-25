@@ -18,6 +18,10 @@ def chat_completions(
     """
     openai_client = OpenAIClient().get_client()
 
+    if not openai_client:
+        Logger().error("OpenAI client is not initialized.")
+        raise RuntimeError("OpenAI client is not initialized.")
+
     results = []
 
     for job in jobs:

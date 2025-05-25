@@ -1,6 +1,7 @@
 """A module to create a dataset class."""
 
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from logger.logger import Logger
 from models.document import Document
@@ -102,7 +103,7 @@ class Dataset(ABC):
                 }
             }
             for sample in dataset
-        ]
+        ] # type: ignore
 
         self._dataset = dataset
         self._dataset_map = {
@@ -112,7 +113,7 @@ class Dataset(ABC):
 
         return dataset
 
-    def get_question(self, question_id: str) -> QuestionAnswer:
+    def get_question(self, question_id: str) -> Optional[QuestionAnswer]:
         """
         Gets a question from the dataset.
 
@@ -137,7 +138,7 @@ class Dataset(ABC):
 
         return next((qa for qa in self._dataset_map[question_id]['qa'] if qa['question_id'] == question_id), None)
 
-    def get_supporting_docs(self, question_id: str) -> list[Document]:
+    def get_supporting_docs(self, question_id: str) -> Optional[list[Document]]:
         """
         Gets the list of docs that support the given question
 

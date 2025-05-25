@@ -64,10 +64,10 @@ def rouge_score(expected: list[str], actual: str) -> list[tuple[float, float, fl
             ' '.join(actual_tokens), ' '.join(expected_tokens))
 
         return [
-            (score[0]['rouge-1']['f'], score[0]
-             ['rouge-1']['p'], score[0]['rouge-1']['r']),
-            (score[0]['rouge-2']['f'], score[0]
-             ['rouge-2']['p'], score[0]['rouge-2']['r']),
+            (score[0]['rouge-1']['f'], score[0] # type: ignore
+             ['rouge-1']['p'], score[0]['rouge-1']['r']), # type: ignore
+            (score[0]['rouge-2']['f'], score[0] # type: ignore
+             ['rouge-2']['p'], score[0]['rouge-2']['r']), # type: ignore
         ]
 
     scores = max((compute_score(e, actual)

@@ -54,7 +54,7 @@ class MuSiQue(Dataset):
 
             return dataset
 
-    def read_corpus(self) -> list[str]:
+    def read_corpus(self) -> list[Document]:
         """
         Reads the MuSiQue dataset and returns the corpus.
 

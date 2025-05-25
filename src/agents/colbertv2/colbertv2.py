@@ -40,7 +40,7 @@ class ColbertV2(Agent):
             self._index.index(
                 name=dataset.name or 'index',
                 collection=[doc['content'] for doc in corpus],
-                overwrite='reuse'
+                overwrite='reuse'  # type: ignore
             )
 
         self._index = dataset.name or 'index'
@@ -48,7 +48,7 @@ class ColbertV2(Agent):
         self._qa_prompt = dataset.get_prompt('qa_rel')
         Logger().info("Successfully indexed documents")
 
-    def reason(self, _: str) -> NoteBook:
+    def reason(self, _: str) -> NoteBook: # type: ignore
         """
         Reason over the indexed dataset to answer the question.
         """
@@ -59,7 +59,7 @@ class ColbertV2(Agent):
             "ColBERTV2 agent does not support single question reasoning. Use multiprocessing_reason instead."
         )
 
-    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]:
+    def batch_reason(self, _: list[QuestionAnswer]) -> list[NoteBook]: # type: ignore
         """
         Uses its question index to answer the questions.
 
@@ -76,6 +76,14 @@ class ColbertV2(Agent):
         Args:
             questions (list[str]): List of questions to answer.
         """
+        if not self._corpus:
+            raise ValueError(
+                "Index not created. Please index the dataset before retrieving documents.")
+
+        if not self._qa_prompt:
+            raise ValueError(
+                "QA prompt not created. Please index the dataset before retrieving documents.")
+
         colbert_dir = os.path.join(os.path.normpath(
             os.getcwd() + os.sep + os.pardir), 'temp' + os.sep + 'colbert')
 
@@ -85,7 +93,8 @@ class ColbertV2(Agent):
 
         Logger().info("Searching for answers to questions")
 
-        results = searcher.search_all(queries=dict(enumerate(questions)), k=self._args.k or 5)
+        results = searcher.search_all(queries=dict(
+            enumerate(questions)), k=self._args.k or 5)
 
         notebooks = []
 

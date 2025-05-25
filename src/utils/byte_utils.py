@@ -1,7 +1,7 @@
 """A module to format a size in bytes into a human-readable string."""
 
 
-def format_size(size: int) -> str:
+def format_size(size: float) -> str:
     """
     Formats a integer representing a size in bytes into a human-readable string.
     For example, 1024 bytes will be formatted as "1.00KB".
@@ -9,7 +9,7 @@ def format_size(size: int) -> str:
     The size is rounded to two decimal places and the appropriate unit is appended.
 
     Args:
-        size (int): the size in bytes
+        size (float): the size in bytes
 
     Returns:
         formatted_size (str): a human-readable string representation of the size

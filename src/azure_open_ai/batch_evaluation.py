@@ -18,7 +18,7 @@ Please answer with 'Yes' or 'No' only. \
 def queue_evaluation_batch_job(
     model: str,
     question_answers: list[tuple[str, str, str]],
-    job_args: dict = None
+    job_args: Optional[dict] = None
 ) -> Optional[Batch]:
     """
     Queues a batch job for evaluation using Azure OpenAI.

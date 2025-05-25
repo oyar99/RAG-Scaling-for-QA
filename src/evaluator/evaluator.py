@@ -2,7 +2,7 @@
 
 import os
 import json
-from typing import Optional
+from typing import Optional, Any
 from openai.types import Batch
 from azure_open_ai.batch import wait_for_batch_job_and_save_result
 from evaluator.bleu_evaluator import eval_bleu_score
@@ -87,7 +87,7 @@ def evaluator(args, dataset: Dataset) -> None:
             evaluate(qa_pairs, args)
 
 
-def evaluate_retrieval(doc_pairs: list[tuple[list[Document], list[Document]]]) -> None:
+def evaluate_retrieval(doc_pairs: list[tuple[list[Document] | None, list[Document]]]) -> None:
     """
     Evaluates retrieval performance based on the provided document pairs.
     Evaluates the recall score across various Ks.
@@ -132,7 +132,7 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     if args.bert_eval:
         bert_score = eval_bert_score(qa_pairs)
         Logger().info(f"BERT score: {bert_score}")
-        
+
     rogue, rogue_precision, rogue_recall = rouge_scores[0]
     rogue_2, rogue_precision_2, rogue_recall_2 = rouge_scores[1]
 
@@ -149,7 +149,7 @@ def evaluate(qa_pairs: list[tuple[list[str], str]], args) -> None:
     Logger().info(f"BLEU score: {bleu_score}")
 
 
-def extract_metrics(eval_item: dict[str, any]) -> Optional[dict[str, int]]:
+def extract_metrics(eval_item: dict[str, Any]) -> Optional[dict[str, int]]:
     """
     Extracts the metrics from the evaluation item.
 
@@ -177,7 +177,10 @@ def extract_metrics(eval_item: dict[str, any]) -> Optional[dict[str, int]]:
     }
 
 
-def extract_doc_pair(dataset: Dataset, eval_item: dict[str, any]) -> Optional[tuple[list[Document], list[Document]]]:
+def extract_doc_pair(
+    dataset: Dataset,
+    eval_item: dict[str, Any]
+) -> Optional[tuple[list[Document] | None, list[Document]]]:
     """
     Extracts the document pairs for evaluation from the evaluation item.
 
@@ -216,7 +219,7 @@ def extract_doc_pair(dataset: Dataset, eval_item: dict[str, any]) -> Optional[tu
     return doc_pairs
 
 
-def extract_qa_pairs(dataset: Dataset, eval_item: dict[str, any]) -> list[tuple[list[str], str]]:
+def extract_qa_pairs(dataset: Dataset, eval_item: dict[str, Any]) -> list[tuple[list[str], str]]:
     """
     Extracts the question-answer pairs for evaluation from the evaluation item.
 
@@ -234,7 +237,7 @@ def extract_qa_pairs(dataset: Dataset, eval_item: dict[str, any]) -> list[tuple[
     return [(answers, actual) for _, answers, actual in pairs]
 
 
-def extract_qa_pairs_with_question(dataset: Dataset, eval_item: dict[str, any]) -> list[tuple[str, list[str], str]]:
+def extract_qa_pairs_with_question(dataset: Dataset, eval_item: dict[str, Any]) -> list[tuple[str, list[str], str]]:
     """
     Extracts the question-answer pairs for evaluation from the evaluation item.
 
@@ -294,7 +297,7 @@ def extract_qa_pairs_with_question(dataset: Dataset, eval_item: dict[str, any]) 
     return qa_pairs
 
 
-def extract_qa_pair(dataset: Dataset, eval_item: dict[str, any]) -> Optional[tuple[list[str], str]]:
+def extract_qa_pair(dataset: Dataset, eval_item: dict[str, Any]) -> Optional[tuple[list[str], str]]:
     """
     Extracts the question-answer pair for evaluation from the evaluation item.
     Used when a single question is present in the evaluation item.
@@ -320,7 +323,7 @@ def extract_qa_pair(dataset: Dataset, eval_item: dict[str, any]) -> Optional[tup
     return qa_pair
 
 
-def extract_qa_pair_with_question(dataset: Dataset, eval_item: dict[str, any]) -> Optional[tuple[str, list[str], str]]:
+def extract_qa_pair_with_question(dataset: Dataset, eval_item: dict[str, Any]) -> Optional[tuple[str, list[str], str]]:
     """
     Extracts the question-answer pair for evaluation from the evaluation item.
     Used when a single question is present in the evaluation item.
