@@ -130,7 +130,7 @@ python index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo -a bm
 
 To choose the RAG system to use, the `-a` command line parameter can be used along with `-k` to indicate retrieval depth.
 
-The results will be placed under `output/qa_jobs`.
+The QA results will be placed under `output/qa_jobs`, while retrieval results will be placed under `output/retrieval_jobs`.
 
 #### Example 2: Multi-Hop Questions (HotpotQA Dataset)
 
@@ -165,6 +165,8 @@ python index.py -e "eval" -ev "predictions.jsonl" -d hotpot
 ```
 
 The metrics will be logged in the app log file under `logs` with the respective id.
+
+When the script is executed to compute **L1 Score**, LLM Judge results will be placed under `eval_jobs`.
 
 ### Getting Help
 
