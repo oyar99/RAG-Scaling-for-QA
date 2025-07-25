@@ -113,7 +113,7 @@ Below are examples of using the script in `predict` mode.
 To generate predictions for **up to 20 single-hop questions** from a single conversation in the _LoCoMo_ dataset using `gpt-4o-mini`, run:
 
 ```sh
-python index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo
+python index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo -a bm25
 ```
 
 **Explanation:**
@@ -125,16 +125,19 @@ python index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo
 -q 20    # Limits the number of questions to at most 20.
 -ct 4    # Filters only single-hop questions.
 -d locomo    # Specifies the dataset (LoCoMo) to use.
+-a bm25 # Specifies the RAG strategy (BM25) to use.
 ```
 
 To choose the RAG system to use, the `-a` command line parameter can be used along with `-k` to indicate retrieval depth.
+
+The results will be placed under `output/qa_jobs`.
 
 #### Example 2: Multi-Hop Questions (HotpotQA Dataset)
 
 To generate predictions for all multi-hop questions from up to 10 conversations in the _hotpotQA_ dataset using gpt-4o-mini, you can run the following command:
 
 ```sh
-python index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
+python index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot -a dense
 ```
 
 **Explanation:**
@@ -143,6 +146,7 @@ python index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
 -l 10    # Limits the number of conversations/samples to at most 10.
 -ct 1    # Filters only multi-hop questions.
 -d hotpot    # Specifies the dataset (hotpotQA) to use.
+-a dense # Specifies the RAG strategy (msmarco-bert-base-dot-v) to use.
 ```
 
 ### Running Evaluation
@@ -160,7 +164,7 @@ python index.py -e "eval" -ev "predictions.jsonl" -d hotpot
 -ev predictions.jsonl    # Path to the batch output containing the generated answers.
 ```
 
-The metrics will be logged.
+The metrics will be logged in the app log file under `logs` with the respective id.
 
 ### Getting Help
 

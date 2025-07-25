@@ -162,8 +162,8 @@ cython_debug/
 #.idea/
 
 # Output evaluation files
-output/*.json
-output/*.jsonl
+output/**/*.json
+output/**/*.jsonl
 
 # Temp files created by the script
 temp/
