@@ -99,7 +99,7 @@ Qwen/Qwen2.5-14B-Instruct # Specifies the LLM model to use
 The script supports two execution modes:
 
 - `predict`: Generates answers for a given dataset.
-- `eval`: Runs evaluation metrics (`Exact Match (EM)`, `F1 Score`, `R1 Score`, `L1 Score`) against ground-truth answers.
+- `eval`: Runs evaluation metrics (`Exact Match (EM)`, `R_1 Score`, `R_2 Score`, `L1 Score`) against ground-truth answers.
 
 ### Running Predictions
 
