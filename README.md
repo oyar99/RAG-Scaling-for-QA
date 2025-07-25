@@ -25,7 +25,9 @@ Each dataset includes a subset of **five different types of questions**, with a 
 
 ## Requirements
 
-We recommend using **Python 3.13** and creating a virtual environment.
+The repo uses a wheel dependency that is supported only in Linux environments.
+
+We recommend using **Python 3.10** and creating a virtual environment.
 
 Verify the installed Python version:
 
@@ -42,10 +44,6 @@ python -m venv env
 Activate the virtual environment.
 
 ```bash
-.\env\Scripts\activate
-```
-
-```bash
 source env/bin/activate
 ```
 
@@ -59,6 +57,17 @@ Install `faiss_gpu-1.7.3`.
 
 ```bash
 pip install https://github.com/kyamagu/faiss-wheels/releases/download/v1.7.3/faiss_gpu-1.7.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+```
+
+Define environment variables.
+
+```env
+AZURE_OPENAI_API_KEY= # Azure OpenAI key
+AZURE_OPENAI_ENDPOINT= # Azure OpenAI endpoint
+SCRIPT_LOG_LEVEL=DEBUG # Log level
+CUDA_VISIBLE_DEVICES=2,3 # GPUS to use
+LLM_ENDPOINT=http://localhost:8000/v1 # VLLM deployed model endpoint
+REMOTE_LLM=1 # Whether the system should use VLLM deployed model or a cloud model
 ```
 
 ## Closed-Source Models
