@@ -142,7 +142,7 @@ python .\index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
 
 ### Running Evaluation
 
-To evalaute the generated predictions against ground truth using **Exact Match (EM)** and **R_1 Score**, run:
+To evalaute the generated predictions against ground truth using **Exact Match (EM)**, **R_1 Score**, and **R_2 Score**, run:
 
 ```sh
 python .\index.py -e "eval" -ev "predictions.jsonl" -d hotpot
