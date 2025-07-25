@@ -1,6 +1,6 @@
 # Analyzing Retrieval Scaling in RAG Systems for Complex QA Benchmarks
 
-In this work, we present a **systematic evaluation** of  of multiple RAG configurations using lexical (BM25) and semantic retrievers (msmarco-bert-base-dot-v,ColBERTv2), as well as graph-based approaches (HippoRAG).
+In this work, we present a **systematic evaluation** of multiple RAG configurations using lexical (BM25) and semantic retrievers (msmarco-bert-base-dot-v,ColBERTv2), as well as graph-based approaches (HippoRAG).
 
 ## Datasets
 
