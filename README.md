@@ -53,12 +53,6 @@ Install required packages.
 pip install -r requirements.txt
 ```
 
-Install `faiss_gpu-1.7.3`.
-
-```bash
-pip install https://github.com/kyamagu/faiss-wheels/releases/download/v1.7.3/faiss_gpu-1.7.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-```
-
 Define environment variables.
 
 ```env
@@ -119,7 +113,7 @@ Below are examples of using the script in `predict` mode.
 To generate predictions for **up to 20 single-hop questions** from a single conversation in the _LoCoMo_ dataset using `gpt-4o-mini`, run:
 
 ```sh
-python .\index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo
+python index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo
 ```
 
 **Explanation:**
@@ -132,6 +126,8 @@ python .\index.py -e predict -m gpt-4o-mini -c conv-26 -q 20 -ct 4 -d locomo
 -ct 4    # Filters only single-hop questions.
 -d locomo    # Specifies the dataset (LoCoMo) to use.
 ```
+
+To choose the RAG system to use, the `-a` command line parameter can be used along with `-k` to indicate retrieval depth.
 
 #### Example 2: Multi-Hop Questions (HotpotQA Dataset)
 
