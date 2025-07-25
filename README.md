@@ -1,12 +1,10 @@
-# Evaluating Cognitive Language Agent Architectures for Question Answering
+# Analyzing Retrieval Scaling in RAG Systems for Complex QA Benchmarks
 
-_Cognitive Language Agents_ is a framework for designing **intelligent** language agents that integrate **LLMs** for reasoning and communication, using language as their primary means of interacting with their environment. These agents consist of three key components: **memory, action, and decision-making**.
-
-In this work, we present a **systematic evaluation** of three agent-based architectures designed for **Question Answering (QA)** and **Multi-Hop Question Answering (MHQA)**. Our goal is to assess how well these architectures perform on **general-purpose tasks** and how effectively their **planning, collaboration, and decision-making capabilities** can be leveraged for both **retrieval** and **answering**.
+In this work, we present a **systematic evaluation** of  of multiple RAG configurations using lexical (BM25) and semantic retrievers (msmarco-bert-base-dot-v,ColBERTv2), as well as graph-based approaches (HippoRAG).
 
 ## Datasets
 
-We evaluate the **three systems** against well-known benchmark datasets for **QA and MHQA**:
+We evaluate the various RAG systems against well-known benchmark datasets for **QA and MHQA**:
 
 - **_LoCoMo_**: A dataset consisting of **10 very long-term conversations** between two users, annotated for the QA task. The dataset has been **forked into this repository** under the `src/datasets/locomo` directory. See [LoCoMo](https://github.com/snap-research/locomo) for details on dataset generation and statistics.
 
@@ -24,7 +22,6 @@ Each dataset includes a subset of **five different types of questions**, with a 
 2. **Temporal (2)**: The model must answer a question that requires **understanding dates and times** within the conversation.
 3. **Open-Domain (3)**: General broad questions about the conversation that require **deep comprehension**.
 4. **Single-Hop (4)**: The model must **extract a single piece of information** from the conversation to answer the question.
-5. **Adversarial (5)**: The model must determine whether the answer is **(a) not mentioned** or **(b) explicitly stated** in the conversation.
 
 ## Requirements
 
@@ -145,7 +142,7 @@ python .\index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
 
 ### Running Evaluation
 
-To evalaute the generated predictions against ground truth using **Exact Match (EM)** and **F1 Score**, run:
+To evalaute the generated predictions against ground truth using **Exact Match (EM)** and **R_1 Score**, run:
 
 ```sh
 python .\index.py -e "eval" -ev "predictions.jsonl" -d hotpot
