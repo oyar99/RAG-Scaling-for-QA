@@ -16,7 +16,7 @@ We evaluate the various RAG systems against well-known benchmark datasets for **
 
 ## Questions
 
-Each dataset includes a subset of **five different types of questions**, with a particular focus on **Multi-Hop questions**:
+Each dataset includes a subset of **different types of questions**, with a particular focus on **Multi-Hop questions**:
 
 1. **Multi-Hop (1)**: The model must **perform multiple reasoning steps** across different parts of the conversation to derive the correct answer.
 2. **Temporal (2)**: The model must answer a question that requires **understanding dates and times** within the conversation.
