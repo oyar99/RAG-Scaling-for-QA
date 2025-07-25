@@ -4,7 +4,7 @@ In this work, we present a **systematic evaluation** of multiple RAG configurati
 
 ## Datasets
 
-We evaluate the various RAG systems against well-known benchmark datasets for **QA and MHQA**:
+We evaluate the various RAG systems against well-known benchmark datasets for **QA** and **MHQA (Multi-Hop Question Answering)**:
 
 - **_LoCoMo_**: A dataset consisting of **10 very long-term conversations** between two users, annotated for the QA task. The dataset has been **forked into this repository** under the `src/datasets/locomo` directory. See [LoCoMo](https://github.com/snap-research/locomo) for details on dataset generation and statistics.
 
