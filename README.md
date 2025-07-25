@@ -134,7 +134,7 @@ To choose the RAG system to use, the `-a` command line parameter can be used alo
 To generate predictions for all multi-hop questions from up to 10 conversations in the _hotpotQA_ dataset using gpt-4o-mini, you can run the following command:
 
 ```sh
-python .\index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
+python index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
 ```
 
 **Explanation:**
@@ -150,7 +150,7 @@ python .\index.py -e predict -m gpt-4o-mini -l 10 -ct 1 -d hotpot
 To evalaute the generated predictions against ground truth using **Exact Match (EM)**, **R_1 Score**, and **R_2 Score**, run:
 
 ```sh
-python .\index.py -e "eval" -ev "predictions.jsonl" -d hotpot
+python index.py -e "eval" -ev "predictions.jsonl" -d hotpot
 ```
 
 **Explanation:**
@@ -167,5 +167,5 @@ The metrics will be logged.
 For more details on available command-line arguments, run:
 
 ```sh
-python .\index.py --help
+python index.py --help
 ```
